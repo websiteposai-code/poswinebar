@@ -42,11 +42,13 @@ import {
 import { getProducts } from "@/actions/menu"
 import {
     getCostTargetConfig,
-    evaluateRecipeCost,
     updateProductSellPrice,
+} from "@/actions/cost-config"
+import {
+    evaluateRecipeCost,
     DEFAULT_COST_CONFIG,
     type CostTargetConfig,
-} from "@/actions/cost-config"
+} from "@/lib/cost-calc"
 import { SmartPricingCard } from "@/components/recipes/smart-pricing-card"
 import { CostTargetModal } from "@/components/recipes/cost-target-modal"
 import type { Product } from "@/types"

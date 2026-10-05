@@ -12,34 +12,27 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   display: "swap",
-  preload: true,
 })
 
-// Display font — swap (not preloaded to save initial load)
+// Display font
 const playfair = Playfair_Display({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700"],
   display: "swap",
-  preload: false,
 })
 
-// Script font — minimal
+// Script font
 const caveat = Caveat({
   variable: "--font-script",
   subsets: ["latin"],
-  weight: ["400"],
   display: "swap",
-  preload: false,
 })
 
-// Mono font — minimal
+// Mono font
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400"],
   display: "swap",
-  preload: false,
 })
 
 export const metadata: Metadata = {

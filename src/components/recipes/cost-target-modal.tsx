@@ -5,11 +5,8 @@ import { X, Sliders, Save, Loader2, RotateCcw, UtensilsCrossed, Wine, GlassWater
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-    updateCostTargetConfig,
-    DEFAULT_COST_CONFIG,
-    type CostTargetConfig,
-} from "@/actions/cost-config"
+import { updateCostTargetConfig } from "@/actions/cost-config"
+import { DEFAULT_COST_CONFIG, type CostTargetConfig } from "@/lib/cost-calc"
 
 interface CostTargetModalProps {
     config: CostTargetConfig

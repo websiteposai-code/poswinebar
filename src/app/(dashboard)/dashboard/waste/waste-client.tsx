@@ -42,8 +42,8 @@ import {
     type WasteRecord,
     type WasteReasonCategory,
     type OpenedWineBottle,
-    WASTE_REASON_LABELS,
 } from "@/actions/waste"
+import { WASTE_REASON_LABELS } from "@/lib/waste-types"
 import { useAuthStore } from "@/stores/auth-store"
 
 const TYPE_CONFIG: Record<WasteType, { label: string; icon: typeof Trash2; color: string; bgColor: string; borderColor: string }> = {

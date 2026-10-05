@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import {
     calculateSuggestedPrice,
     evaluateRecipeCost,
-    updateProductSellPrice,
     type CostTargetConfig,
-} from "@/actions/cost-config"
+} from "@/lib/cost-calc"
+import { updateProductSellPrice } from "@/actions/cost-config"
 
 function fmt(n: number) {
     return new Intl.NumberFormat("vi-VN").format(n)

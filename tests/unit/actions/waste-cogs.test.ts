@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { WASTE_REASON_LABELS, type WasteReasonCategory } from "@/actions/waste"
+import { WASTE_REASON_LABELS, type WasteReasonCategory } from "@/lib/waste-types"
 
 describe("Waste & Corked Wine COGS Allocation Logic", () => {
     describe("Waste Reason Labels & Classifications", () => {

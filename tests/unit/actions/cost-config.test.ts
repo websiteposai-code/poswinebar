@@ -4,7 +4,7 @@ import {
     evaluateRecipeCost,
     DEFAULT_COST_CONFIG,
     type CostTargetConfig,
-} from "@/actions/cost-config"
+} from "@/lib/cost-calc"
 
 describe("Cost Configuration & Smart Pricing Engine", () => {
     describe("calculateSuggestedPrice", () => {
