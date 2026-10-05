@@ -427,6 +427,10 @@ model Customer {
   tabs        CustomerTab[]
   debts       DebtRecord[]
 
+  @@index([phone])
+  @@index([totalSpent(sort: Desc)])
+  @@index([isActive])
+  @@index([tier])
   @@map("customer")
 }
 
@@ -465,6 +469,10 @@ model Order {
   @@index([status])
   @@index([createdBy])
   @@index([openedAt])
+  @@index([closedAt])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([status, closedAt])
   @@map("order")
 }
 
@@ -493,6 +501,7 @@ model OrderItem {
   wineBottle WineBottle? @relation(fields: [wineBottleId], references: [id])
 
   @@index([orderId])
+  @@index([productId])
   @@index([status])
   @@map("order_item")
 }

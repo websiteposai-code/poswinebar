@@ -12,9 +12,8 @@ export default async function CustomersPage() {
     }
 
     try {
-        const [l, s] = await Promise.all([getAllCustomers(), getCustomerStats()])
-        list = l
-        stats = s
+        list = await getAllCustomers()
+        stats = await getCustomerStats(list)
     } catch (err) {
         console.error("[Customers SSR] Failed:", err)
     }

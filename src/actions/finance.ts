@@ -308,23 +308,76 @@ export async function getCOGSRecords(): Promise<COGSRecord[]> {
 }
 
 /**
- * COGS Summary — aggregated from real order data
+ * COGS Summary — aggregated from real order data + stock waste movements
  */
 export async function getCOGSSummary() {
-    const records = await getCOGSRecords()
+    const monthStart = new Date()
+    monthStart.setDate(1)
+    monthStart.setHours(0, 0, 0, 0)
 
     const todayStart = new Date()
     todayStart.setHours(0, 0, 0, 0)
 
+    const [records, wasteMovements] = await Promise.all([
+        getCOGSRecords(),
+        prisma.stockMovement.findMany({
+            where: {
+                type: { in: ["WASTE", "SPOILAGE", "BREAKAGE"] },
+                createdAt: { gte: monthStart },
+            },
+        }),
+    ])
+
     const todayRecords = records.filter(r => new Date(r.date) >= todayStart)
+    const todaySalesCOGS = todayRecords.reduce((s, r) => s + r.totalCOGS, 0)
+    const monthSalesCOGS = records.reduce((s, r) => s + r.totalCOGS, 0)
+    const monthRevenue = records.reduce((s, r) => s + r.totalRevenue, 0)
 
-    const totalCOGS = records.reduce((s, r) => s + r.totalCOGS, 0)
-    const todayCOGS = todayRecords.reduce((s, r) => s + r.totalCOGS, 0)
-    const avgMargin = records.length > 0
-        ? Math.round(records.reduce((s, r) => s + r.marginPct, 0) / records.length)
-        : 0
+    // Calculate waste costs
+    let monthGrossWaste = 0
+    let supplierClaimCost = 0
+    let todayWasteCost = 0
+    let corkedWaste = 0
+    let oxidationWaste = 0
+    let breakageWaste = 0
+    let otherWaste = 0
 
-    // Find top/lowest margin products
+    for (const m of wasteMovements) {
+        const cost = Number(m.totalCost ?? (Number(m.unitCost ?? 0) * Number(m.quantity)))
+        const reason = m.reason ?? ""
+        const isClaim = reason.includes("[NCC ĐỀN BÙ]") && !reason.includes("[NCC ĐÃ ĐỔI BÙ]")
+
+        monthGrossWaste += cost
+        if (isClaim) {
+            supplierClaimCost += cost
+        }
+
+        if (new Date(m.createdAt) >= todayStart) {
+            todayWasteCost += isClaim ? 0 : cost
+        }
+
+        // Categorize
+        if (reason.includes("[CORKED]") || reason.toLowerCase().includes("nút bần")) {
+            corkedWaste += cost
+        } else if (reason.includes("[OXIDATION]") || reason.toLowerCase().includes("oxy ho")) {
+            oxidationWaste += cost
+        } else if (m.type === "BREAKAGE" || reason.includes("[BREAKAGE]") || reason.toLowerCase().includes("vỡ")) {
+            breakageWaste += cost
+        } else {
+            otherWaste += cost
+        }
+    }
+
+    const netWasteCOGS = Math.max(0, monthGrossWaste - supplierClaimCost)
+    const trueCOGS = monthSalesCOGS + netWasteCOGS
+    const todayCOGS = todaySalesCOGS + todayWasteCost
+
+    const trueGrossProfit = monthRevenue - trueCOGS
+    const trueGrossMargin = monthRevenue > 0 ? Math.round((trueGrossProfit / monthRevenue) * 100) : 0
+    const theoreticalMargin = monthRevenue > 0 ? Math.round(((monthRevenue - monthSalesCOGS) / monthRevenue) * 100) : 0
+    const wastePctOfRevenue = monthRevenue > 0 ? Math.round((netWasteCOGS / monthRevenue) * 1000) / 10 : 0
+
+    // Find top/lowest margin products based on sales
     const productMap = new Map<string, { revenue: number; cogs: number }>()
     for (const r of records) {
         for (const item of r.items) {
@@ -342,8 +395,24 @@ export async function getCOGSSummary() {
 
     return {
         todayCOGS,
-        monthCOGS: totalCOGS,
-        avgMargin,
+        monthCOGS: trueCOGS, // True COGS including net waste
+        soldCOGS: monthSalesCOGS,
+        wasteCOGS: monthGrossWaste,
+        netWasteCOGS,
+        supplierClaimCost,
+        todayWasteCost,
+        totalRevenue: monthRevenue,
+        trueGrossProfit,
+        trueGrossMargin,
+        theoreticalMargin,
+        avgMargin: trueGrossMargin, // Default avgMargin now reflects true margin
+        wastePctOfRevenue,
+        wasteBreakdown: {
+            corked: corkedWaste,
+            oxidation: oxidationWaste,
+            breakage: breakageWaste,
+            other: otherWaste,
+        },
         totalOrders: records.length,
         topMarginProduct: products[0] ? `${products[0].name} (${products[0].margin}%)` : "N/A",
         lowestMarginProduct: products.length > 0
@@ -353,31 +422,120 @@ export async function getCOGSSummary() {
 }
 
 /**
- * COGS by product — real breakdown per product
+ * COGS by product — real breakdown per product including allocated waste & true margins
  */
 export async function getCOGSByProduct() {
-    const records = await getCOGSRecords()
+    const monthStart = new Date()
+    monthStart.setDate(1)
+    monthStart.setHours(0, 0, 0, 0)
 
-    const productMap = new Map<string, { revenue: number; cogs: number; qty: number }>()
+    const [records, wasteMovements] = await Promise.all([
+        getCOGSRecords(),
+        prisma.stockMovement.findMany({
+            where: {
+                type: { in: ["WASTE", "SPOILAGE", "BREAKAGE"] },
+                createdAt: { gte: monthStart },
+                productId: { not: null },
+            },
+        }),
+    ])
+
+    // Load products with waste to get product names even if 0 sold
+    const wasteProductIds = Array.from(new Set(wasteMovements.map(m => m.productId!).filter(Boolean)))
+    const wasteProducts = wasteProductIds.length > 0
+        ? await prisma.product.findMany({
+            where: { id: { in: wasteProductIds } },
+            select: { id: true, name: true },
+        })
+        : []
+    const productNameById = new Map(wasteProducts.map(p => [p.id, p.name]))
+
+    // Map sales by product
+    const productMap = new Map<string, {
+        productId?: string
+        revenue: number
+        soldCOGS: number
+        soldQty: number
+        wasteCOGS: number
+        wasteQty: number
+        supplierClaim: number
+    }>()
+
     for (const r of records) {
         for (const item of r.items) {
-            const existing = productMap.get(item.productName) ?? { revenue: 0, cogs: 0, qty: 0 }
+            const existing = productMap.get(item.productName) ?? {
+                revenue: 0,
+                soldCOGS: 0,
+                soldQty: 0,
+                wasteCOGS: 0,
+                wasteQty: 0,
+                supplierClaim: 0,
+            }
             existing.revenue += item.sellingPrice
-            existing.cogs += item.ingredientCost
-            existing.qty += item.qty
+            existing.soldCOGS += item.ingredientCost
+            existing.soldQty += item.qty
             productMap.set(item.productName, existing)
         }
     }
 
+    // Allocate waste movements
+    for (const m of wasteMovements) {
+        const prodName = productNameById.get(m.productId!)
+        if (!prodName) continue
+
+        const cost = Number(m.totalCost ?? (Number(m.unitCost ?? 0) * Number(m.quantity)))
+        const reason = m.reason ?? ""
+        const isClaim = reason.includes("[NCC ĐỀN BÙ]") && !reason.includes("[NCC ĐÃ ĐỔI BÙ]")
+
+        const existing = productMap.get(prodName) ?? {
+            productId: m.productId!,
+            revenue: 0,
+            soldCOGS: 0,
+            soldQty: 0,
+            wasteCOGS: 0,
+            wasteQty: 0,
+            supplierClaim: 0,
+        }
+
+        if (isClaim) {
+            existing.supplierClaim += cost
+        } else {
+            existing.wasteCOGS += cost
+            existing.wasteQty += Number(m.quantity)
+        }
+        productMap.set(prodName, existing)
+    }
+
     return Array.from(productMap.entries())
-        .map(([productName, data]) => ({
-            productName,
-            totalRevenue: data.revenue,
-            totalCOGS: data.cogs,
-            grossProfit: data.revenue - data.cogs,
-            grossMargin: data.revenue > 0 ? Math.round(((data.revenue - data.cogs) / data.revenue) * 100) : 0,
-            totalQty: data.qty,
-        }))
+        .map(([productName, data]) => {
+            const totalCOGS = data.soldCOGS + data.wasteCOGS
+            const grossProfit = data.revenue - totalCOGS
+            const trueMargin = data.revenue > 0
+                ? Math.round((grossProfit / data.revenue) * 100)
+                : data.wasteCOGS > 0 ? -100 : 0
+            const theoreticalMargin = data.revenue > 0
+                ? Math.round(((data.revenue - data.soldCOGS) / data.revenue) * 100)
+                : 0
+            const wasteRate = data.revenue > 0
+                ? Math.round((data.wasteCOGS / data.revenue) * 1000) / 10
+                : data.wasteCOGS > 0 ? 100 : 0
+
+            return {
+                productName,
+                totalRevenue: data.revenue,
+                totalCOGS,
+                soldCOGS: data.soldCOGS,
+                wasteCOGS: data.wasteCOGS,
+                supplierClaim: data.supplierClaim,
+                grossProfit,
+                grossMargin: trueMargin,
+                theoreticalMargin,
+                wasteRate,
+                totalQty: data.soldQty,
+                wasteQty: data.wasteQty,
+                hasWaste: data.wasteCOGS > 0,
+            }
+        })
         .sort((a, b) => b.grossProfit - a.grossProfit)
 }
 

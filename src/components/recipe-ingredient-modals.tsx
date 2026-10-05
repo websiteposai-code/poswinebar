@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { X, Plus, Trash2, Save, Loader2, ChefHat } from "lucide-react"
+import { X, Plus, Trash2, Save, Loader2, ChefHat, Info } from "lucide-react"
 import { toast } from "sonner"
 import {
     createIngredient,
@@ -114,8 +114,9 @@ export function AddIngredientModal({
                     </div>
 
                     {baseUnit && baseUnit !== unit && (
-                        <p className="text-xs text-green-600 bg-green-50 px-3 py-2 rounded-lg">
-                            💡 1 {unit} = {baseQuantity} {baseUnit} → Giá/{baseUnit}: {costPerBase.toLocaleString("vi-VN")}₫
+                        <p className="text-xs text-green-700 bg-green-50 px-3 py-2 rounded-lg flex items-center gap-1.5 border border-green-200">
+                            <Info className="h-3.5 w-3.5 text-green-700 shrink-0" />
+                            1 {unit} = {baseQuantity} {baseUnit} → Giá/{baseUnit}: {costPerBase.toLocaleString("vi-VN")}₫
                         </p>
                     )}
 

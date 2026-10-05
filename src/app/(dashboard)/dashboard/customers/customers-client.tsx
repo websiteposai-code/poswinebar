@@ -53,11 +53,11 @@ function fmtK(n: number) {
 type TierKey = "REGULAR" | "SILVER" | "GOLD" | "PLATINUM" | "VIP"
 
 const TIER_DISPLAY: Record<TierKey, { label: string; cls: string; icon: string; bg: string }> = {
-    REGULAR: { label: "Regular", cls: "text-cream-600", icon: "☕", bg: "bg-cream-100 border-cream-300 text-cream-600" },
-    SILVER: { label: "Silver", cls: "text-slate-600", icon: "🥈", bg: "bg-slate-100 border-slate-300 text-slate-700" },
-    GOLD: { label: "Gold", cls: "text-amber-600", icon: "🥇", bg: "bg-amber-100 border-amber-300 text-amber-700" },
-    PLATINUM: { label: "Platinum", cls: "text-indigo-600", icon: "💎", bg: "bg-indigo-100 border-indigo-300 text-indigo-700" },
-    VIP: { label: "VIP", cls: "text-wine-600", icon: "👑", bg: "bg-wine-100 border-wine-300 text-wine-700" },
+    REGULAR: { label: "Standard", cls: "text-stone-600", icon: "•", bg: "bg-cream-100 border-cream-300 text-stone-600" },
+    SILVER: { label: "Silver", cls: "text-stone-700", icon: "✦", bg: "bg-stone-100 border-stone-300 text-stone-700" },
+    GOLD: { label: "Gold Club", cls: "text-amber-800", icon: "★", bg: "bg-amber-100 border-amber-300 text-amber-800" },
+    PLATINUM: { label: "Platinum", cls: "text-stone-900 font-bold", icon: "✦✦", bg: "bg-stone-900 border-stone-800 text-cream-100" },
+    VIP: { label: "Private Reserve", cls: "text-wine-800 font-bold", icon: "♛", bg: "bg-wine-100 border-wine-300 text-wine-800" },
 }
 
 export type CustomersInitialData = { list: CustomerProfile[]; stats: CustomerStats }
@@ -338,7 +338,7 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
                                                         const currentIdx = tiers.indexOf(cust.tier as TierKey)
                                                         const nextTier = currentIdx < tiers.length - 1 ? tiers[currentIdx + 1] : null
                                                         const thresholds: Record<TierKey, number> = { REGULAR: 0, SILVER: 10000000, GOLD: 30000000, PLATINUM: 80000000, VIP: 100000000 }
-                                                        if (!nextTier) return <p className="text-[10px] text-indigo-600 font-bold">💎 Đã đạt hạng cao nhất!</p>
+                                                        if (!nextTier) return <p className="text-[10px] text-wine-800 font-bold flex items-center gap-1">✦ Đã đạt hạng cao nhất</p>
                                                         const needed = thresholds[nextTier] - cust.totalSpent
                                                         const progress = Math.min(100, (cust.totalSpent / thresholds[nextTier]) * 100)
                                                         return (<>

@@ -152,25 +152,33 @@ export async function updateIngredientStock(id: string, newStock: number) {
 }
 
 export async function getInventoryStats() {
-    const [products, bottleCount, ingredients] = await Promise.all([
+    const [products, bottleCount, ingredients, bottleValSum, productCostSum] = await Promise.all([
         prisma.product.findMany({
             where: { isActive: true, trackInventory: true },
-            include: {
+            select: {
+                id: true,
+                type: true,
+                lowStockAlert: true,
                 _count: { select: { wineBottles: { where: { status: "IN_STOCK" } } } },
-                wineBottles: { where: { status: "IN_STOCK" }, select: { costPrice: true } },
             },
         }),
         prisma.wineBottle.groupBy({ by: ["status"], _count: true }),
-        prisma.ingredient.findMany({ where: { isActive: true } }),
+        prisma.ingredient.findMany({
+            where: { isActive: true },
+            select: { id: true, currentStock: true, minStock: true, expiryDate: true },
+        }),
+        prisma.wineBottle.aggregate({
+            where: { status: "IN_STOCK" },
+            _sum: { costPrice: true },
+        }),
+        prisma.product.aggregate({
+            where: { isActive: true, trackInventory: true },
+            _sum: { costPrice: true },
+        }),
     ])
 
     const lowStockIngredients = ingredients.filter((i) => Number(i.currentStock) <= Number(i.minStock))
-
-    // Calculate inventory value = sum of cost prices * stock
-    const productValues = products.reduce((sum, p) => {
-        const bottleVal = p.wineBottles.reduce((s, b) => s + Number(b.costPrice ?? 0), 0)
-        return sum + bottleVal + Number(p.costPrice)
-    }, 0)
+    const totalValue = Number(bottleValSum._sum.costPrice ?? 0) + Number(productCostSum._sum.costPrice ?? 0)
 
     // Count products with real stock issues
     const wineProducts = products.filter(p => ["WINE_BOTTLE", "WINE_GLASS", "WINE_TASTING"].includes(p.type))
@@ -182,7 +190,7 @@ export async function getInventoryStats() {
         inStock: products.length - outOfStockProducts.length,
         lowStock: lowStockProducts.length + lowStockIngredients.length,
         outOfStock: outOfStockProducts.length,
-        totalValue: productValues,
+        totalValue,
         expiringSoon: ingredients.filter(i => i.expiryDate && ((new Date(i.expiryDate).getTime() - Date.now()) / 86400000) <= 14).length,
         // legacy
         totalBottles: bottleCount.reduce((s, b) => s + b._count, 0),

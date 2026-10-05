@@ -20,36 +20,41 @@ let snapshot: {
 }
 
 export async function setup() {
-    pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
-    const adapter = new PrismaPg(pool)
-    prisma = new PrismaClient({ adapter })
+    try {
+        pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
+        const adapter = new PrismaPg(pool)
+        prisma = new PrismaClient({ adapter })
 
-    console.log('\n🛡️  [Global Setup] Snapshotting DB state before tests...')
+        console.log('\n🛡️  [Global Setup] Snapshotting DB state before tests...')
 
-    // Snapshot all table statuses
-    const tables = await prisma.floorTable.findMany({
-        select: { id: true, status: true },
-    })
-    const tableStatuses = tables.map(t => ({ id: t.id, status: t.status }))
+        // Snapshot all table statuses
+        const tables = await prisma.floorTable.findMany({
+            select: { id: true, status: true },
+        })
+        const tableStatuses = tables.map(t => ({ id: t.id, status: t.status }))
 
-    // Snapshot current open shift
-    const shift = await prisma.shiftRecord.findFirst({
-        where: { closedAt: null },
-        select: { id: true, staffId: true },
-    })
+        // Snapshot current open shift
+        const shift = await prisma.shiftRecord.findFirst({
+            where: { closedAt: null },
+            select: { id: true, staffId: true },
+        })
 
-    snapshot = {
-        tableStatuses,
-        openShiftId: shift?.id ?? null,
-        openShiftStaffId: shift?.staffId ?? null,
+        snapshot = {
+            tableStatuses,
+            openShiftId: shift?.id ?? null,
+            openShiftStaffId: shift?.staffId ?? null,
+        }
+
+        console.log(`   📋 Tables: ${tableStatuses.length} (${tableStatuses.filter(t => t.status !== 'AVAILABLE').length} non-available)`)
+        console.log(`   🔄 Shift: ${shift ? 'OPEN' : 'NONE'}`)
+        console.log('   ✅ Snapshot saved!\n')
+    } catch (err) {
+        console.warn('   ⚠️  [Global Setup] Could not snapshot DB (DB unreachable). Proceeding in offline mode.\n')
     }
-
-    console.log(`   📋 Tables: ${tableStatuses.length} (${tableStatuses.filter(t => t.status !== 'AVAILABLE').length} non-available)`)
-    console.log(`   🔄 Shift: ${shift ? 'OPEN' : 'NONE'}`)
-    console.log('   ✅ Snapshot saved!\n')
 }
 
 export async function teardown() {
+    if (!snapshot || !prisma) return
     console.log('\n🛡️  [Global Teardown] Restoring DB state after tests...')
 
     // 1. Restore table statuses

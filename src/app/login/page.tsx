@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { Wine, Delete, Loader2 } from "lucide-react"
+import { Wine, Delete, Loader2, KeyRound } from "lucide-react"
 import { useAuthStore } from "@/stores/auth-store"
 import { toast } from "sonner"
 import { verifyStaffPin } from "@/actions/staff"
@@ -138,10 +138,13 @@ export default function LoginPage() {
                 </p>
 
                 {/* Dev hint */}
-                <div className="mt-6 rounded-lg bg-cream-100 p-3 text-xs text-cream-500">
-                    <p className="font-semibold mb-1">🔧 Dev Mode — PINs:</p>
-                    <p>Owner: 1234 · Manager: 5678 · Cashier: 0000</p>
-                    <p>Bartender: 1111 · Waiter: 2222</p>
+                <div className="mt-6 rounded-xl border border-cream-200/80 bg-cream-100/70 p-3 text-xs text-cream-600">
+                    <p className="font-semibold mb-1 flex items-center gap-1.5 text-stone-700">
+                        <KeyRound className="h-3.5 w-3.5 text-amber-700" />
+                        Mã PIN truy cập mẫu:
+                    </p>
+                    <p className="font-mono text-[11px] text-stone-600">Owner: 1234 · Manager: 5678 · Cashier: 0000</p>
+                    <p className="font-mono text-[11px] text-stone-600">Bartender: 1111 · Waiter: 2222</p>
                 </div>
             </div>
         </div>

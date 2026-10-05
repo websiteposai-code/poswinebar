@@ -28,7 +28,7 @@ export function ServiceWorkerRegistration() {
                     if (!newWorker) return
                     newWorker.onstatechange = () => {
                         if (newWorker.state === "activated") {
-                            toast.info("🔄 Noon & Noir đã cập nhật phiên bản mới", {
+                            toast.info("Noon & Noir đã có phiên bản cập nhật mới", {
                                 action: { label: "Tải lại", onClick: () => window.location.reload() },
                                 duration: 10000,
                             })
@@ -43,8 +43,8 @@ export function ServiceWorkerRegistration() {
         // Online/Offline detection
         const handleOnline = () => {
             setIsOnline(true)
-            toast.success("🌐 Đã kết nối lại mạng", {
-                description: "Đang gửi các đơn đã lưu offline...",
+            toast.success("Đã kết nối lại mạng", {
+                description: "Đang đồng bộ các đơn đã lưu offline...",
                 duration: 4000,
             })
             // Tell SW to replay queued requests
@@ -53,7 +53,7 @@ export function ServiceWorkerRegistration() {
 
         const handleOffline = () => {
             setIsOnline(false)
-            toast.warning("📴 Mất kết nối mạng", {
+            toast.warning("Mất kết nối mạng", {
                 description: "POS sẽ hoạt động offline. Đơn hàng sẽ được lưu tạm.",
                 duration: 8000,
             })
@@ -69,7 +69,7 @@ export function ServiceWorkerRegistration() {
                 const queue = getOfflineQueue()
                 queue.push(event.data.payload)
                 saveOfflineQueue(queue)
-                toast.info("📋 Đã lưu offline", {
+                toast.info("Đã lưu đơn ngoại tuyến", {
                     description: `${queue.length} đơn đang chờ gửi`,
                     duration: 3000,
                 })
@@ -147,7 +147,7 @@ async function replayQueue() {
     saveOfflineQueue(failed)
 
     if (success > 0) {
-        toast.success(`✅ Đã gửi ${success} đơn offline thành công`, {
+        toast.success(`Đã đồng bộ ${success} đơn offline thành công`, {
             description: failed.length > 0 ? `${failed.length} đơn chưa gửi được` : undefined,
             duration: 5000,
         })

@@ -240,7 +240,48 @@ export async function syncCustomerTier(customerId: string) {
     } catch { /* invalid UUID or DB error */ }
 }
 
-export async function getCustomerStats(): Promise<CustomerStats> {
+export async function getCustomerStats(preloaded?: CustomerProfile[]): Promise<CustomerStats> {
+    if (preloaded) {
+        const totalRevenue = preloaded.reduce((s, c) => s + Number(c.totalSpent), 0)
+        const totalOrders = preloaded.reduce((s, c) => s + (c.visitCount ?? c.orderCount ?? 0), 0)
+
+        const byTier: Record<string, number> = { REGULAR: 0, SILVER: 0, GOLD: 0, PLATINUM: 0, VIP: 0 }
+        preloaded.forEach((c) => { byTier[c.tier] = (byTier[c.tier] || 0) + 1 })
+
+        const topSpenders = [...preloaded]
+            .sort((a, b) => Number(b.totalSpent) - Number(a.totalSpent))
+            .slice(0, 5)
+            .map((c) => ({ name: c.name, spent: Number(c.totalSpent), tier: c.tier, orders: c.visitCount ?? c.orderCount ?? 0 }))
+
+        // RFM segmentation
+        const now = Date.now()
+        let activeCount = 0, atRiskCount = 0, lostCount = 0
+        for (const c of preloaded) {
+            const lastVisit = c.lastVisit ? new Date(c.lastVisit) : null
+            if (!lastVisit) { lostCount++; continue }
+            const days = Math.floor((now - lastVisit.getTime()) / 86400000)
+            if (days <= 30) activeCount++
+            else if (days <= 90) atRiskCount++
+            else lostCount++
+        }
+
+        return {
+            totalCustomers: preloaded.length,
+            byTier,
+            totalRevenue,
+            totalOrders,
+            avgSpendPerVisit: totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0,
+            avgOrdersPerCustomer: preloaded.length > 0 ? Math.round((totalOrders / preloaded.length) * 10) / 10 : 0,
+            monthlyNew: preloaded.filter((c) => {
+                const d = new Date()
+                const cd = new Date(c.createdAt)
+                return cd.getMonth() === d.getMonth() && cd.getFullYear() === d.getFullYear()
+            }).length,
+            topSpenders,
+            segments: { active: activeCount, atRisk: atRiskCount, lost: lostCount },
+        }
+    }
+
     const customers = await prisma.customer.findMany({
         where: { isActive: true },
         include: {

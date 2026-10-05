@@ -1,6 +1,7 @@
 "use client"
 
 import { forwardRef } from "react"
+import { Printer } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Order } from "@/actions/orders"
 
@@ -208,9 +209,10 @@ export function ReceiptPrintFrame({
                 <div className="flex items-center gap-2 print:hidden">
                     <button
                         onClick={handlePrint}
-                        className="rounded-lg bg-green-900 px-6 py-2 text-sm font-bold text-cream-50 hover:bg-green-800 transition-all"
+                        className="rounded-lg bg-green-900 px-6 py-2 text-sm font-bold text-cream-50 hover:bg-green-800 transition-all flex items-center gap-2"
                     >
-                        🖨️ In hoá đơn
+                        <Printer className="h-4 w-4" />
+                        In hoá đơn
                     </button>
                     <button
                         onClick={onClose}

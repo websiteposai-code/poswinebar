@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, use } from "react"
-import { Star, Wine, Send, Heart, CheckCircle2 } from "lucide-react"
+import { Star, Wine, Send, Heart, CheckCircle2, UtensilsCrossed, Music, HeartHandshake, MessageSquare, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -159,12 +159,13 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
             <div className="max-w-md mx-auto px-4 py-6 space-y-6">
                 {/* Per-item feedback */}
                 <div>
-                    <h2 className="text-sm font-bold text-green-900 mb-3">
-                        🍽 Đánh giá từng món
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-green-900 mb-3 flex items-center gap-1.5">
+                        <UtensilsCrossed className="h-4 w-4 text-green-800" />
+                        Đánh giá từng món
                     </h2>
                     <div className="space-y-3">
                         {session.items.map((item) => (
-                            <div key={item.orderItemId} className="rounded-xl border border-cream-200 bg-white p-3">
+                            <div key={item.orderItemId} className="rounded-xl border border-cream-200 bg-white p-3 shadow-2xs">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-xs font-semibold text-green-900">{item.productName}</span>
                                     <StarRating
@@ -186,7 +187,7 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
                                             [item.orderItemId]: { ...prev[item.orderItemId], comment: e.target.value },
                                         }))
                                     }
-                                    placeholder="Nhận xét (tùy chọn)..."
+                                    placeholder="Góp ý về món ăn / thức uống này..."
                                     className="h-8 text-xs border-cream-200"
                                 />
                             </div>
@@ -196,24 +197,34 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
 
                 {/* Overall Ratings */}
                 <div className="space-y-3">
-                    <h2 className="text-sm font-bold text-green-900">
-                        ⭐ Đánh giá chung
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-green-900 flex items-center gap-1.5">
+                        <Sparkles className="h-4 w-4 text-amber-600" />
+                        Cảm nhận tổng thể
                     </h2>
-                    <div className="rounded-xl border border-cream-200 bg-white p-4 space-y-3">
+                    <div className="rounded-xl border border-cream-200 bg-white p-4 space-y-3 shadow-2xs">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-cream-600">🎶 Không gian</span>
+                            <span className="text-xs text-stone-700 flex items-center gap-1.5 font-medium">
+                                <Music className="h-3.5 w-3.5 text-stone-500" />
+                                Không gian & Âm nhạc
+                            </span>
                             <StarRating value={ambienceRating} onChange={setAmbienceRating} />
                         </div>
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-cream-600">👨‍🍳 Phục vụ</span>
+                            <span className="text-xs text-stone-700 flex items-center gap-1.5 font-medium">
+                                <HeartHandshake className="h-3.5 w-3.5 text-stone-500" />
+                                Tốc độ & Thái độ phục vụ
+                            </span>
                             <StarRating value={serviceRating} onChange={setServiceRating} />
                         </div>
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-cream-600">🍷 Trải nghiệm</span>
+                            <span className="text-xs text-stone-700 flex items-center gap-1.5 font-medium">
+                                <Wine className="h-3.5 w-3.5 text-wine-700" />
+                                Trải nghiệm Rượu vang & Ẩm thực
+                            </span>
                             <StarRating value={visitRating} onChange={setVisitRating} />
                         </div>
                         <div className="border-t border-cream-200 pt-3 flex items-center justify-between">
-                            <span className="text-xs font-bold text-green-900">Tổng thể</span>
+                            <span className="text-xs font-bold text-green-900 uppercase tracking-wide">Mức độ hài lòng chung</span>
                             <StarRating value={overallRating} onChange={setOverallRating} size="lg" />
                         </div>
                     </div>
@@ -221,15 +232,16 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
 
                 {/* Comment */}
                 <div>
-                    <label className="text-xs font-bold text-green-900 mb-1.5 block">
-                        💬 Nhận xét thêm
+                    <label className="text-xs font-bold uppercase tracking-wider text-green-900 mb-1.5 flex items-center gap-1.5">
+                        <MessageSquare className="h-3.5 w-3.5 text-green-800" />
+                        Góp ý thêm cho Noon & Noir
                     </label>
                     <textarea
                         value={overallComment}
                         onChange={(e) => setOverallComment(e.target.value)}
-                        placeholder="Chia sẻ trải nghiệm của bạn tại Noon & Noir..."
+                        placeholder="Chia sẻ trải nghiệm hoặc mong muốn của bạn cho những lần ghé sau..."
                         rows={3}
-                        className="w-full rounded-xl border border-cream-200 bg-white px-3 py-2 text-xs text-green-900 placeholder:text-cream-400 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600 resize-none"
+                        className="w-full rounded-xl border border-cream-200 bg-white px-3 py-2 text-xs text-green-900 placeholder:text-cream-400 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600 resize-none shadow-2xs"
                     />
                 </div>
 

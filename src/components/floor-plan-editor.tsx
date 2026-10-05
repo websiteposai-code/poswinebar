@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react"
 import {
     Move, RotateCw, Save, PenTool, DoorOpen,
-    Trash2, Circle, Square, RectangleHorizontal, X, Type,
+    Trash2, Circle, Square, RectangleHorizontal, X, Type, Edit3, Check,
 } from "lucide-react"
 import { updateTablePositions, updateZoneLayout, updateTable } from "@/actions/tables"
 
@@ -169,10 +169,11 @@ export default function FloorPlanEditor({ tables, zoneId, layoutData, onSaved }:
                     <h3 className="font-semibold text-green-900 text-sm">Sơ đồ mặt bằng</h3>
                     <button
                         onClick={() => { setEditMode(!editMode); setTool("select"); setSelectedTable(null) }}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${editMode ? "bg-wine-600 text-white" : "bg-green-700 text-white hover:bg-green-800"
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${editMode ? "bg-wine-600 text-white" : "bg-green-700 text-white hover:bg-green-800"
                             }`}
                     >
-                        {editMode ? "🔓 Đang chỉnh sửa" : "✏️ Chỉnh sửa"}
+                        {editMode ? <Check className="h-3.5 w-3.5" /> : <Edit3 className="h-3.5 w-3.5" />}
+                        {editMode ? "Đang chỉnh sửa" : "Chỉnh sửa"}
                     </button>
                 </div>
 
@@ -281,8 +282,8 @@ export default function FloorPlanEditor({ tables, zoneId, layoutData, onSaved }:
                             />
                             <text
                                 x={(w.x1 + w.x2) / 2} y={(w.y1 + w.y2) / 2 - 8}
-                                textAnchor="middle" fill="#8B4513" fontSize="11" fontWeight="bold"
-                            >🚪</text>
+                                textAnchor="middle" fill="#8B4513" fontSize="10" fontWeight="bold"
+                            >Cửa</text>
                             {editMode && (
                                 <g onClick={() => deleteWall(w.id)} className="cursor-pointer opacity-0 hover:opacity-100 transition-opacity">
                                     <circle cx={(w.x1 + w.x2) / 2} cy={(w.y1 + w.y2) / 2 + 15} r={8} fill="red" />
@@ -368,7 +369,7 @@ export default function FloorPlanEditor({ tables, zoneId, layoutData, onSaved }:
                                     fill={colors.text} fontSize="10" opacity={0.7}
                                     transform={`rotate(${-t.rotation} ${cx} ${cy})`}
                                 >
-                                    {t.seats}👤
+                                    {t.seats} chỗ
                                 </text>
                             </g>
                         )

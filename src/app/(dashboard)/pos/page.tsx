@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect, useCallback } from "react"
+import { useState, useMemo, useEffect, useCallback, useRef } from "react"
 import {
     Search,
     Plus,
@@ -98,8 +98,12 @@ import { checkPromotions, type AppliedPromo } from "@/actions/promotions"
 import { getAllowNegativeStock, getWineRecommendations, getAlternativesForOutOfStock, type WineRecommendation } from "@/actions/wine-advisor"
 import { POSInlineSkeleton } from "@/components/inline-skeletons"
 import { usePOSShortcuts, ShortcutBadge } from "@/hooks/use-pos-shortcuts"
-import { useRef } from "react"
-import { ReceiptPrintFrame } from "@/components/pos/receipt"
+import dynamic from "next/dynamic"
+
+const ReceiptPrintFrame = dynamic(
+    () => import("@/components/pos/receipt").then((mod) => mod.ReceiptPrintFrame),
+    { ssr: false }
+)
 import { usePrefetchStore } from "@/stores/prefetch-store"
 import { useIsMobile } from "@/hooks/use-mobile"
 import type { Product, Category, Customer, CustomerTab } from "@/types"
@@ -2894,9 +2898,9 @@ function OpenTabModal({
 
     const tierColors: Record<string, string> = {
         REGULAR: "bg-cream-200 text-cream-600",
-        SILVER: "bg-gray-200 text-gray-700",
-        GOLD: "bg-amber-100 text-amber-700",
-        PLATINUM: "bg-purple-100 text-purple-700",
+        SILVER: "bg-stone-200 text-stone-700",
+        GOLD: "bg-amber-100 text-amber-800",
+        PLATINUM: "bg-stone-800 text-cream-100 border border-stone-700",
     }
 
     return (

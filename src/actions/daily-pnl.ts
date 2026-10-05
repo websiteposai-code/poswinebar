@@ -38,7 +38,7 @@ async function buildPnL(dateStr: string): Promise<DailyPnL> {
         }),
         prisma.stockMovement.aggregate({
             where: { type: { in: ["WASTE", "SPOILAGE", "BREAKAGE"] }, createdAt: { gte: start, lt: end } },
-            _sum: { unitCost: true },
+            _sum: { totalCost: true },
         }),
     ])
 
@@ -87,7 +87,7 @@ async function buildPnL(dateStr: string): Promise<DailyPnL> {
         expenses: expenseGroups, totalExpenses, netProfit, netMargin,
         orderCount: orders.length, avgOrderValue: orders.length > 0 ? Math.round(revenue / orders.length) : 0,
         topProducts, paymentBreakdown: { cash, card, qr },
-        wasteAndSpoilage: Number(waste._sum.unitCost ?? 0),
+        wasteAndSpoilage: Number(waste._sum.totalCost ?? 0),
     }
 }
 

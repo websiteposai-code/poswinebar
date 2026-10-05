@@ -507,7 +507,7 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
                                                                             </td>
                                                                             <td className="py-2 text-center">
                                                                                 <span className={cn("rounded-full px-1.5 py-0.5 text-[8px] font-bold",
-                                                                                    item.category === "GOODS" ? "bg-blue-100 text-blue-700" : item.category === "NPL" ? "bg-amber-100 text-amber-700" : "bg-purple-100 text-purple-700"
+                                                                                    item.category === "GOODS" ? "bg-blue-100 text-blue-700" : item.category === "NPL" ? "bg-amber-100 text-amber-700" : "bg-cream-200 text-stone-700 border border-cream-300"
                                                                                 )}>{item.category === "GOODS" ? "Hàng" : item.category}</span>
                                                                             </td>
                                                                             <td className="py-2 text-right font-mono text-[11px] text-cream-600">₫{fmt(item.unitPrice)}</td>

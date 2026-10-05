@@ -18,9 +18,18 @@ export async function getDashboardStats() {
     const yesterdayStart = new Date(todayStart.getTime() - 86400000)
 
     const [todayOrders, yesterdayOrders, tables] = await Promise.all([
-        prisma.order.findMany({ where: { createdAt: { gte: todayStart }, status: { not: "CANCELLED" } } }),
-        prisma.order.findMany({ where: { createdAt: { gte: yesterdayStart, lt: todayStart }, status: { not: "CANCELLED" } } }),
-        prisma.floorTable.findMany({ where: { isActive: true } }),
+        prisma.order.findMany({
+            where: { createdAt: { gte: todayStart }, status: { not: "CANCELLED" } },
+            select: { totalAmount: true },
+        }),
+        prisma.order.findMany({
+            where: { createdAt: { gte: yesterdayStart, lt: todayStart }, status: { not: "CANCELLED" } },
+            select: { totalAmount: true },
+        }),
+        prisma.floorTable.findMany({
+            where: { isActive: true },
+            select: { status: true },
+        }),
     ])
 
     const todayRevenue = todayOrders.reduce((s, o) => s + Number(o.totalAmount), 0)
@@ -40,20 +49,38 @@ export async function getDashboardStats() {
 
 export async function getWeeklyRevenue(): Promise<DailyRevenue[]> {
     const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"]
-    const result: DailyRevenue[] = []
     const now = new Date()
 
+    const earliestDay = new Date(now.getTime() - 6 * 86400000)
+    const overallStart = new Date(earliestDay.toISOString().split("T")[0])
+    const latestDay = new Date(now.toISOString().split("T")[0])
+    const overallEnd = new Date(latestDay.getTime() + 86400000)
+
+    const allOrders = await prisma.order.findMany({
+        where: {
+            createdAt: { gte: overallStart, lt: overallEnd },
+            status: { not: "CANCELLED" },
+        },
+        select: {
+            createdAt: true,
+            totalAmount: true,
+        },
+    })
+
+    const result: DailyRevenue[] = []
     for (let i = 6; i >= 0; i--) {
         const d = new Date(now.getTime() - i * 86400000)
         const start = new Date(d.toISOString().split("T")[0])
         const end = new Date(start.getTime() + 86400000)
-        const orders = await prisma.order.findMany({
-            where: { createdAt: { gte: start, lt: end }, status: { not: "CANCELLED" } },
-        })
+
+        const dayOrders = allOrders.filter(
+            (o) => o.createdAt >= start && o.createdAt < end
+        )
+
         result.push({
             date: days[start.getDay()],
-            revenue: orders.reduce((s, o) => s + Number(o.totalAmount), 0),
-            orders: orders.length,
+            revenue: dayOrders.reduce((s, o) => s + Number(o.totalAmount), 0),
+            orders: dayOrders.length,
         })
     }
     return result
@@ -81,6 +108,7 @@ export async function getHourlyData(): Promise<HourlyData[]> {
     const todayStart = new Date(new Date().toISOString().split("T")[0])
     const orders = await prisma.order.findMany({
         where: { createdAt: { gte: todayStart }, status: { not: "CANCELLED" } },
+        select: { createdAt: true, totalAmount: true },
     })
 
     const hourMap = new Map<number, { orders: number; revenue: number }>()

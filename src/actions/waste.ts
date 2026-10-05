@@ -11,6 +11,25 @@ import { withRbac } from "@/lib/with-rbac"
 
 export type WasteType = "WASTE" | "SPOILAGE" | "BREAKAGE"
 
+export type WasteReasonCategory =
+    | "CORKED"        // Vang lỗi nút bần (TCA)
+    | "OXIDATION"     // Vang mở ly oxy hoá / quá hạn
+    | "BREAKAGE"      // Rơi vỡ chai / ly
+    | "SPILLAGE"      // Đổ / tràn khi rót
+    | "TASTING"       // Nếm thử chất lượng / training
+    | "SPOILAGE"      // Hư hỏng nguyên liệu bếp
+    | "OTHER"         // Lý do khác
+
+export const WASTE_REASON_LABELS: Record<WasteReasonCategory, { label: string; badge: string; icon: string }> = {
+    CORKED: { label: "Lỗi nút bần (Corked / TCA)", badge: "bg-red-50 text-red-800 border-red-200", icon: "corked" },
+    OXIDATION: { label: "Oxy hoá vang mở ly (Oxidized)", badge: "bg-amber-50 text-amber-800 border-amber-200", icon: "oxidation" },
+    BREAKAGE: { label: "Rơi vỡ chai / ly", badge: "bg-orange-50 text-orange-800 border-orange-200", icon: "breakage" },
+    SPILLAGE: { label: "Đổ / tràn khi phục vụ", badge: "bg-amber-50 text-amber-800 border-amber-200", icon: "spillage" },
+    TASTING: { label: "Nếm thử / Training / Sample", badge: "bg-stone-100 text-stone-800 border-stone-200", icon: "tasting" },
+    SPOILAGE: { label: "Hư hỏng nguyên liệu bếp", badge: "bg-stone-100 text-stone-800 border-stone-200", icon: "spoilage" },
+    OTHER: { label: "Lý do khác", badge: "bg-cream-100 text-cream-800 border-cream-200", icon: "other" },
+}
+
 export type WasteRecord = {
     id: string
     type: WasteType
@@ -24,6 +43,9 @@ export type WasteRecord = {
     reason: string | null
     staffName: string | null
     createdAt: string
+    reasonCategory?: WasteReasonCategory | null
+    isPendingSupplierClaim?: boolean
+    isClaimSettled?: boolean
 }
 
 export type WasteReport = {
@@ -31,7 +53,10 @@ export type WasteReport = {
     summary: {
         totalRecords: number
         totalCost: number
+        netWasteCost: number
+        supplierClaimCost: number
         byType: { type: WasteType; count: number; cost: number }[]
+        byReason: { category: WasteReasonCategory; label: string; count: number; cost: number }[]
         byMonth: { month: string; cost: number; count: number }[]
         wastePctOfRevenue: number
     }
@@ -42,8 +67,11 @@ export async function recordWaste(params: {
     type: WasteType
     productId?: string
     ingredientId?: string
+    bottleId?: string
     quantity: number
     reason: string
+    reasonCategory?: WasteReasonCategory
+    pendingSupplierClaim?: boolean
     staffId: string
 }): Promise<{ success: boolean; error?: string }> {
     const guard = await withRbac("inventory", "create")
@@ -51,20 +79,52 @@ export async function recordWaste(params: {
 
     try {
         let unitCost = 0
+        let totalCost = 0
         let productName: string | null = null
         let ingredientName: string | null = null
+        let targetProductId = params.productId
 
-        if (params.productId) {
-            // Wine/product waste — mark bottle as DAMAGED
-            const product = await prisma.product.findUnique({ where: { id: params.productId } })
+        // CASE 1: Specific Wine Bottle (e.g. from opened bottles or single corked bottle)
+        if (params.bottleId) {
+            const bottle = await prisma.wineBottle.findUnique({
+                where: { id: params.bottleId },
+                include: { product: true },
+            })
+            if (!bottle) return { success: false, error: "Chai rượu không tồn tại" }
+            targetProductId = bottle.productId
+            productName = bottle.product.name
+
+            const bottleCost = Number(bottle.costPrice ?? bottle.product.costPrice ?? 0)
+            const glassesTotal = bottle.product.glassesPerBottle || 8
+
+            if (bottle.status === "OPENED") {
+                const glassesLeft = bottle.glassesRemaining ?? 0
+                const costPerGlass = glassesTotal > 0 ? bottleCost / glassesTotal : 0
+                unitCost = Math.round(costPerGlass)
+                const qtyToDeduct = params.quantity > 0 ? params.quantity : glassesLeft
+                totalCost = Math.round(costPerGlass * qtyToDeduct)
+            } else {
+                unitCost = bottleCost
+                totalCost = bottleCost
+            }
+
+            await prisma.wineBottle.update({
+                where: { id: bottle.id },
+                data: { status: "DAMAGED", glassesRemaining: 0 },
+            })
+        }
+        // CASE 2: Product-level waste (unopened wine bottle, food dish, etc.)
+        else if (targetProductId) {
+            const product = await prisma.product.findUnique({ where: { id: targetProductId } })
             if (!product) return { success: false, error: "Sản phẩm không tồn tại" }
             unitCost = Number(product.costPrice)
             productName = product.name
+            totalCost = Math.round(unitCost * params.quantity)
 
-            // If wine, try to mark bottles as DAMAGED
+            // If wine product, mark bottles as DAMAGED
             if (["WINE_BOTTLE", "WINE_GLASS", "WINE_TASTING"].includes(product.type)) {
                 const bottles = await prisma.wineBottle.findMany({
-                    where: { productId: params.productId, status: { in: ["IN_STOCK", "OPENED"] } },
+                    where: { productId: targetProductId, status: { in: ["IN_STOCK", "OPENED"] } },
                     orderBy: { receivedAt: "asc" },
                     take: Math.ceil(params.quantity),
                 })
@@ -73,16 +133,20 @@ export async function recordWaste(params: {
                         where: { id: bottle.id },
                         data: { status: "DAMAGED" },
                     })
-                    if (bottle.costPrice) unitCost = Number(bottle.costPrice)
+                    if (bottle.costPrice) {
+                        unitCost = Number(bottle.costPrice)
+                        totalCost = Math.round(unitCost * params.quantity)
+                    }
                 }
             }
         }
-
-        if (params.ingredientId) {
+        // CASE 3: Ingredient-level waste
+        else if (params.ingredientId) {
             const ingredient = await prisma.ingredient.findUnique({ where: { id: params.ingredientId } })
             if (!ingredient) return { success: false, error: "Nguyên liệu không tồn tại" }
             unitCost = Number(ingredient.costPerUnit)
             ingredientName = ingredient.name
+            totalCost = Math.round(unitCost * params.quantity)
 
             // Deduct from stock
             await prisma.ingredient.update({
@@ -91,33 +155,41 @@ export async function recordWaste(params: {
             })
         }
 
-        const totalCost = unitCost * params.quantity
+        // Format tagged reason
+        const prefixTags: string[] = []
+        if (params.reasonCategory) prefixTags.push(`[${params.reasonCategory}]`)
+        if (params.pendingSupplierClaim) prefixTags.push("[NCC ĐỀN BÙ]")
+        const formattedReason = prefixTags.length > 0 ? `${prefixTags.join(" ")} ${params.reason}` : params.reason
 
         // Create stock movement
         await prisma.stockMovement.create({
             data: {
                 type: params.type,
-                productId: params.productId ?? null,
+                productId: targetProductId ?? null,
                 ingredientId: params.ingredientId ?? null,
+                bottleId: params.bottleId ?? null,
                 quantity: params.quantity,
                 unitCost,
                 totalCost,
-                reason: params.reason,
+                reason: formattedReason,
                 createdBy: params.staffId,
             },
         })
 
-        // Auto-create expense in fund transactions
-        await prisma.fundTransaction.create({
-            data: {
-                transactionType: "EXPENSE",
-                category: `${params.type} — ${productName ?? ingredientName ?? "Unknown"}`,
-                amount: totalCost,
-                description: `${params.type}: ${productName ?? ingredientName} x${params.quantity} — ${params.reason}`,
-            },
-        })
+        // Auto-create expense in fund transactions ONLY IF NOT pending supplier claim
+        if (!params.pendingSupplierClaim && totalCost > 0) {
+            await prisma.fundTransaction.create({
+                data: {
+                    transactionType: "EXPENSE",
+                    category: `${params.type} — ${productName ?? ingredientName ?? "Hao hụt"}`,
+                    amount: totalCost,
+                    description: `${params.type}: ${productName ?? ingredientName} x${params.quantity} — ${formattedReason}`,
+                },
+            })
+        }
 
         revalidatePath("/dashboard/waste")
+        revalidatePath("/dashboard/margins")
         revalidatePath("/dashboard/reports")
         return { success: true }
     } catch (err) {
@@ -168,20 +240,37 @@ export async function getWasteRecords(params?: {
         : []
     const staffMap = new Map(staffList.map((s) => [s.id, s.fullName]))
 
-    return movements.map((m) => ({
-        id: m.id,
-        type: m.type as WasteType,
-        productId: m.productId,
-        productName: m.productId ? (productMap.get(m.productId) ?? null) : null,
-        ingredientId: m.ingredientId,
-        ingredientName: m.ingredient?.name ?? null,
-        quantity: Number(m.quantity),
-        unitCost: Number(m.unitCost ?? 0),
-        totalCost: Number(m.totalCost ?? 0),
-        reason: m.reason,
-        staffName: m.createdBy ? (staffMap.get(m.createdBy) ?? null) : null,
-        createdAt: m.createdAt.toISOString(),
-    }))
+    return movements.map((m) => {
+        const reason = m.reason ?? ""
+        const isPendingSupplierClaim = reason.includes("[NCC ĐỀN BÙ]")
+        const isClaimSettled = reason.includes("[NCC ĐÃ ĐỔI BÙ]")
+
+        let reasonCategory: WasteReasonCategory = "OTHER"
+        if (reason.includes("[CORKED]")) reasonCategory = "CORKED"
+        else if (reason.includes("[OXIDATION]")) reasonCategory = "OXIDATION"
+        else if (reason.includes("[BREAKAGE]") || m.type === "BREAKAGE") reasonCategory = "BREAKAGE"
+        else if (reason.includes("[SPILLAGE]")) reasonCategory = "SPILLAGE"
+        else if (reason.includes("[TASTING]")) reasonCategory = "TASTING"
+        else if (reason.includes("[SPOILAGE]") || m.type === "SPOILAGE") reasonCategory = "SPOILAGE"
+
+        return {
+            id: m.id,
+            type: m.type as WasteType,
+            productId: m.productId,
+            productName: m.productId ? (productMap.get(m.productId) ?? null) : null,
+            ingredientId: m.ingredientId,
+            ingredientName: m.ingredient?.name ?? null,
+            quantity: Number(m.quantity),
+            unitCost: Number(m.unitCost ?? 0),
+            totalCost: Number(m.totalCost ?? 0),
+            reason: m.reason,
+            staffName: m.createdBy ? (staffMap.get(m.createdBy) ?? null) : null,
+            createdAt: m.createdAt.toISOString(),
+            reasonCategory,
+            isPendingSupplierClaim,
+            isClaimSettled,
+        }
+    })
 }
 
 // Full waste report with analytics
@@ -192,6 +281,10 @@ export async function getWasteReport(params?: {
     const records = await getWasteRecords(params)
 
     const totalCost = records.reduce((s, r) => s + r.totalCost, 0)
+    const supplierClaimCost = records
+        .filter((r) => r.isPendingSupplierClaim && !r.isClaimSettled)
+        .reduce((s, r) => s + r.totalCost, 0)
+    const netWasteCost = Math.max(0, totalCost - supplierClaimCost)
 
     // By type
     const typeMap = new Map<WasteType, { count: number; cost: number }>()
@@ -202,6 +295,21 @@ export async function getWasteReport(params?: {
         typeMap.set(r.type, entry)
     }
     const byType = Array.from(typeMap.entries()).map(([type, data]) => ({ type, ...data }))
+
+    // By reason category
+    const reasonMap = new Map<WasteReasonCategory, { count: number; cost: number }>()
+    for (const r of records) {
+        const cat = r.reasonCategory ?? "OTHER"
+        const entry = reasonMap.get(cat) ?? { count: 0, cost: 0 }
+        entry.count++
+        entry.cost += r.totalCost
+        reasonMap.set(cat, entry)
+    }
+    const byReason = Array.from(reasonMap.entries()).map(([category, data]) => ({
+        category,
+        label: WASTE_REASON_LABELS[category]?.label ?? category,
+        ...data,
+    }))
 
     // By month
     const monthMap = new Map<string, { cost: number; count: number }>()
@@ -234,7 +342,10 @@ export async function getWasteReport(params?: {
         summary: {
             totalRecords: records.length,
             totalCost,
+            netWasteCost,
+            supplierClaimCost,
             byType,
+            byReason,
             byMonth,
             wastePctOfRevenue,
         },
@@ -262,5 +373,116 @@ export async function getWasteFormOptions(): Promise<{
     return {
         products: products.map((p) => ({ id: p.id, name: p.name, type: p.type, costPrice: Number(p.costPrice) })),
         ingredients: ingredients.map((i) => ({ id: i.id, name: i.name, unit: i.unit, costPerUnit: Number(i.costPerUnit) })),
+    }
+}
+
+export type OpenedWineBottle = {
+    id: string
+    productId: string
+    productName: string
+    batchCode: string | null
+    openedAt: string
+    hoursOpened: number
+    glassesLeft: number
+    glassesTotal: number
+    bottleCost: number
+    costPerGlass: number
+    remainingCost: number
+    isOxidizedWarning: boolean
+}
+
+// Get all bottles currently OPENED for By-the-glass monitoring
+export async function getOpenedWineBottles(): Promise<OpenedWineBottle[]> {
+    const bottles = await prisma.wineBottle.findMany({
+        where: { status: "OPENED" },
+        include: {
+            product: {
+                select: {
+                    id: true,
+                    name: true,
+                    costPrice: true,
+                    glassesPerBottle: true,
+                },
+            },
+        },
+        orderBy: { openedAt: "asc" },
+    })
+
+    return bottles.map((b) => {
+        const openedDate = b.openedAt ? new Date(b.openedAt) : new Date(b.createdAt)
+        const hoursOpened = Math.round((Date.now() - openedDate.getTime()) / (1000 * 60 * 60))
+        const glassesTotal = b.product.glassesPerBottle || 8
+        const glassesLeft = b.glassesRemaining ?? 0
+        const bottleCost = Number(b.costPrice ?? b.product.costPrice ?? 0)
+        const costPerGlass = glassesTotal > 0 ? Math.round(bottleCost / glassesTotal) : 0
+        const remainingCost = costPerGlass * glassesLeft
+
+        return {
+            id: b.id,
+            productId: b.productId,
+            productName: b.product.name,
+            batchCode: b.batchCode,
+            openedAt: openedDate.toISOString(),
+            hoursOpened,
+            glassesLeft,
+            glassesTotal,
+            bottleCost,
+            costPerGlass,
+            remainingCost,
+            isOxidizedWarning: hoursOpened >= 72, // > 3 days open
+        }
+    })
+}
+
+// Settle supplier claim (NCC đổi chai mới hoặc hoàn tiền)
+export async function settleSupplierClaim(params: {
+    movementId: string
+    action: "REPLACED_BOTTLE" | "REFUNDED" | "REJECTED"
+    staffId: string
+    notes?: string
+}): Promise<{ success: boolean; error?: string }> {
+    const guard = await withRbac("inventory", "edit")
+    if (!guard.ok) return { success: false, error: guard.error }
+
+    try {
+        const movement = await prisma.stockMovement.findUnique({
+            where: { id: params.movementId },
+            include: { supplier: true },
+        })
+        if (!movement) return { success: false, error: "Không tìm thấy giao dịch hao hụt" }
+
+        const actionText =
+            params.action === "REPLACED_BOTTLE"
+                ? "NCC đã đổi chai mới"
+                : params.action === "REFUNDED"
+                    ? "NCC đã hoàn tiền"
+                    : "NCC từ chối đổi trả"
+
+        const todayStr = new Date().toLocaleDateString("vi-VN")
+        const updatedReason = `${movement.reason ?? ""} [NCC ĐÃ ĐỔI BÙ - ${actionText} - ${todayStr}${params.notes ? `: ${params.notes}` : ""}]`
+
+        await prisma.stockMovement.update({
+            where: { id: params.movementId },
+            data: { reason: updatedReason },
+        })
+
+        // If replaced bottle, create an IN_STOCK WineBottle
+        if (params.action === "REPLACED_BOTTLE" && movement.productId) {
+            await prisma.wineBottle.create({
+                data: {
+                    productId: movement.productId,
+                    status: "IN_STOCK",
+                    costPrice: movement.unitCost ?? 0,
+                    ownershipType: "PURCHASED",
+                },
+            })
+        }
+
+        revalidatePath("/dashboard/waste")
+        revalidatePath("/dashboard/margins")
+        return { success: true }
+    } catch (err) {
+        console.error("[Waste] settleSupplierClaim failed:", err)
+        return { success: false, error: "Lỗi xử lý đổi bù nhà cung cấp" }
     }
 }
