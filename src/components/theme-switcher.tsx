@@ -49,7 +49,6 @@ export function ThemePicker({ compact = false }: { compact?: boolean }) {
             {!compact && (
                 <div className="mb-4">
                     <h3 className="font-display text-lg font-bold text-green-900 flex items-center gap-2">
-                        <Palette className="h-5 w-5" />
                         Giao diện
                     </h3>
                     <p className="text-xs text-cream-500 mt-1">Chọn bộ màu phù hợp với không gian của bạn</p>

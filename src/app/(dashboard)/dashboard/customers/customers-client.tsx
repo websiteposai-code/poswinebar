@@ -1,29 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-    Users,
-    Search,
-    UserPlus,
-    Crown,
-    Phone,
-    Mail,
-    Calendar,
-    Wine,
-    Star,
-    ChevronDown,
-    ChevronUp,
-    Heart,
-    ShoppingBag,
-    Activity,
-    AlertCircle,
-    UserX,
-    TrendingUp,
-    Award,
-    X,
-    AlertTriangle,
-    Clock,
-} from "lucide-react"
+import { Search, UserPlus, Phone, Mail, Calendar, ChevronDown, ChevronUp, ShoppingBag, X, Clock } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -121,9 +99,6 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-                        <Users className="h-5 w-5 text-amber-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Khách hàng & CRM</h1>
                         <p className="text-sm text-cream-500">Quản lý profile, loyalty, sở thích rượu</p>
@@ -139,7 +114,7 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
                 <div className="space-y-3">
                     <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
                         <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                            <div className="flex items-center gap-1.5 mb-1"><Users className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng KH</span></div>
+                            <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng KH</span></div>
                             <p className="font-mono text-xl font-bold text-green-900">{stats.totalCustomers}</p>
                         </div>
                         {(["PLATINUM", "GOLD", "SILVER", "REGULAR"] as TierKey[]).map((tier) => {
@@ -152,22 +127,22 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
                             )
                         })}
                         <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                            <div className="flex items-center gap-1.5 mb-1"><TrendingUp className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">TB/đơn</span></div>
+                            <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">TB/đơn</span></div>
                             <p className="font-mono text-xl font-bold text-wine-700">₫{fmtK(stats.avgSpendPerVisit)}</p>
                         </div>
                     </div>
                     {/* RFM Segments */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                         <div className="rounded-xl border border-green-200 bg-green-50 p-3.5 shadow-sm">
-                            <div className="flex items-center gap-1.5 mb-1"><Activity className="h-3.5 w-3.5 text-green-600" /><span className="text-[10px] font-medium uppercase tracking-wider text-green-600">Active (≤30 ngày)</span></div>
+                            <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-green-600">Active (≤30 ngày)</span></div>
                             <p className="font-mono text-xl font-bold text-green-700">{stats.segments?.active ?? 0}</p>
                         </div>
                         <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 shadow-sm">
-                            <div className="flex items-center gap-1.5 mb-1"><AlertCircle className="h-3.5 w-3.5 text-amber-600" /><span className="text-[10px] font-medium uppercase tracking-wider text-amber-600">At Risk (31-90 ngày)</span></div>
+                            <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-amber-600">At Risk (31-90 ngày)</span></div>
                             <p className="font-mono text-xl font-bold text-amber-700">{stats.segments?.atRisk ?? 0}</p>
                         </div>
                         <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 shadow-sm">
-                            <div className="flex items-center gap-1.5 mb-1"><UserX className="h-3.5 w-3.5 text-red-500" /><span className="text-[10px] font-medium uppercase tracking-wider text-red-500">Lost (90+ ngày)</span></div>
+                            <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-red-500">Lost (90+ ngày)</span></div>
                             <p className="font-mono text-xl font-bold text-red-600">{stats.segments?.lost ?? 0}</p>
                         </div>
                     </div>
@@ -285,7 +260,7 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
 
                                                 {/* RFM Score */}
                                                 <div>
-                                                    <h4 className="text-[10px] font-bold uppercase text-cream-400 mb-1.5 flex items-center gap-1"><Activity className="h-3 w-3" /> Phân tích RFM</h4>
+                                                    <h4 className="text-[10px] font-bold uppercase text-cream-400 mb-1.5 flex items-center gap-1">Phân tích RFM</h4>
                                                     <div className="rounded-lg bg-white border border-cream-200 p-3 space-y-1.5">
                                                         {(["recency", "frequency", "monetary"] as const).map((dim) => {
                                                             const val = expandedDetail.rfm[dim]
@@ -301,24 +276,24 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
                                                     </div>
                                                 </div>
 
-                                                {cust.notes && <p className="text-[11px] text-cream-500 italic bg-white rounded-lg border border-cream-200 p-2.5">📝 {cust.notes}</p>}
+                                                {cust.notes && <p className="text-[11px] text-cream-500 italic bg-white rounded-lg border border-cream-200 p-2.5">{cust.notes}</p>}
                                             </div>
 
                                             {/* Middle: Loyalty & Favorites */}
                                             <div className="space-y-3">
                                                 <h4 className="text-[10px] font-bold uppercase text-cream-400 mb-1.5">Loyalty & Thống kê</h4>
                                                 <div className="rounded-lg bg-white border border-cream-200 p-3 space-y-2">
-                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1"><Crown className="h-3 w-3" /> Hạng</span><Badge className={cn("text-[9px] font-bold border", tierCfg.bg)}>{tierCfg.icon} {tierCfg.label}</Badge></div>
-                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1"><ShoppingBag className="h-3 w-3" /> Tổng chi</span><span className="font-mono font-bold text-wine-700">₫{fmt(cust.totalSpent)}</span></div>
-                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1"><Heart className="h-3 w-3" /> Số đơn</span><span className="font-bold text-green-700">{expandedDetail.orderCount}</span></div>
+                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1">Hạng</span><Badge className={cn("text-[9px] font-bold border", tierCfg.bg)}>{tierCfg.icon} {tierCfg.label}</Badge></div>
+                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1">Tổng chi</span><span className="font-mono font-bold text-wine-700">₫{fmt(cust.totalSpent)}</span></div>
+                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1">Số đơn</span><span className="font-bold text-green-700">{expandedDetail.orderCount}</span></div>
                                                     <div className="border-t border-cream-200 pt-2 flex justify-between text-xs"><span className="text-cream-500">TB/đơn</span><span className="font-mono font-bold text-green-900">₫{fmt(expandedDetail.avgOrderValue)}</span></div>
-                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1"><Star className="h-3 w-3" /> Điểm</span><span className="font-mono font-bold text-amber-600">{fmt(cust.loyaltyPts)} pts</span></div>
+                                                    <div className="flex justify-between text-xs"><span className="text-cream-500 flex items-center gap-1">Điểm</span><span className="font-mono font-bold text-amber-600">{fmt(cust.loyaltyPts)} pts</span></div>
                                                 </div>
 
                                                 {/* Favorite Products */}
                                                 {expandedDetail.favoriteProducts.length > 0 && (
                                                     <div>
-                                                        <h4 className="text-[10px] font-bold uppercase text-cream-400 mb-1.5 flex items-center gap-1"><Wine className="h-3 w-3" /> Hay gọi nhất</h4>
+                                                        <h4 className="text-[10px] font-bold uppercase text-cream-400 mb-1.5 flex items-center gap-1">Hay gọi nhất</h4>
                                                         <div className="rounded-lg bg-white border border-cream-200 p-3 space-y-1.5">
                                                             {expandedDetail.favoriteProducts.map((fp, i) => (
                                                                 <div key={i} className="flex justify-between text-xs">
@@ -355,7 +330,7 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
 
                                             {/* Right: Order History */}
                                             <div>
-                                                <h4 className="text-[10px] font-bold uppercase text-cream-400 mb-1.5 flex items-center gap-1"><Clock className="h-3 w-3" /> Lịch sử ({expandedDetail.orderHistory?.length ?? 0} đơn gần nhất)</h4>
+                                                <h4 className="text-[10px] font-bold uppercase text-cream-400 mb-1.5 flex items-center gap-1">Lịch sử ({expandedDetail.orderHistory?.length ?? 0} đơn gần nhất)</h4>
                                                 <div className="space-y-2 max-h-72 overflow-y-auto">
                                                     {(expandedDetail.orderHistory ?? []).length > 0 ? (expandedDetail.orderHistory ?? []).map((order) => (
                                                         <div key={order.id} className="rounded-lg bg-white border border-cream-200 p-2.5">
@@ -396,7 +371,7 @@ export function CustomersClient({ initialData }: { initialData: CustomersInitial
             {showAddModal && (
                 <AddCustomerModal
                     onClose={() => setShowAddModal(false)}
-                    onCreated={() => { setShowAddModal(false); loadData(); toast.success("✅ Thêm khách hàng thành công!") }}
+                    onCreated={() => { setShowAddModal(false); loadData(); toast.success("Thêm khách hàng thành công!") }}
                 />
             )}
         </div>
@@ -441,7 +416,7 @@ function AddCustomerModal({ onClose, onCreated }: { onClose: () => void; onCreat
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-cream-200">
                     <div>
-                        <h2 className="text-lg font-bold text-green-900">👤 Thêm khách hàng mới</h2>
+                        <h2 className="text-lg font-bold text-green-900">Thêm khách hàng mới</h2>
                         <p className="text-xs text-cream-500">Tạo hồ sơ khách hàng CRM</p>
                     </div>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100 transition-all"><X className="h-4 w-4 text-cream-400" /></button>

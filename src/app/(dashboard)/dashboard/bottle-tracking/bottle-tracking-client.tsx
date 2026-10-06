@@ -1,10 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-    Wine, Clock, TrendingUp, DollarSign, AlertTriangle,
-    RefreshCw, Package, ChevronDown, ChevronUp,
-} from "lucide-react"
+import { RefreshCw, Package, ChevronDown, ChevronUp } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -63,7 +60,6 @@ export function BottleTrackingClient({ initial }: { initial: BottleTrackingIniti
             <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
                 <div>
                     <h1 className="text-2xl font-display font-bold text-green-900 flex items-center gap-3">
-                        <Wine className="h-6 w-6 text-wine-600" />
                         Quản lý bán theo ly
                     </h1>
                     <p className="text-sm text-cream-500 mt-0.5">
@@ -87,18 +83,18 @@ export function BottleTrackingClient({ initial }: { initial: BottleTrackingIniti
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     <div className="rounded-xl border border-wine-200 bg-white p-4">
                         <div className="flex items-center gap-2 text-xs font-bold text-wine-600 uppercase mb-1">
-                            <Wine className="h-3.5 w-3.5" /> Chai đang mở
+                            Chai đang mở
                         </div>
                         <p className="text-2xl font-bold text-wine-800">{stats.openedBottles}</p>
                         {stats.expiredBottles > 0 && (
                             <p className="text-[10px] text-red-600 font-bold mt-0.5">
-                                ⚠️ {stats.expiredBottles} chai quá hạn oxy hóa
+                                {stats.expiredBottles} chai quá hạn oxy hóa
                             </p>
                         )}
                     </div>
                     <div className="rounded-xl border border-green-200 bg-white p-4">
                         <div className="flex items-center gap-2 text-xs font-bold text-green-600 uppercase mb-1">
-                            <Package className="h-3.5 w-3.5" /> Tổng ly đã bán
+                            Tổng ly đã bán
                         </div>
                         <p className="text-2xl font-bold text-green-800">{stats.totalGlassesSold}</p>
                         <p className="text-[10px] text-cream-500 mt-0.5">
@@ -107,7 +103,7 @@ export function BottleTrackingClient({ initial }: { initial: BottleTrackingIniti
                     </div>
                     <div className="rounded-xl border border-amber-200 bg-white p-4">
                         <div className="flex items-center gap-2 text-xs font-bold text-amber-600 uppercase mb-1">
-                            <DollarSign className="h-3.5 w-3.5" /> Doanh thu by Glass
+                            Doanh thu by Glass
                         </div>
                         <p className="text-2xl font-bold text-amber-800">₫{formatPrice(stats.totalGlassRevenue)}</p>
                         <p className="text-[10px] text-green-600 font-bold mt-0.5">
@@ -116,7 +112,7 @@ export function BottleTrackingClient({ initial }: { initial: BottleTrackingIniti
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-4">
                         <div className="flex items-center gap-2 text-xs font-bold text-cream-600 uppercase mb-1">
-                            <TrendingUp className="h-3.5 w-3.5" /> Tốc độ TB
+                            Tốc độ TB
                         </div>
                         <p className="text-2xl font-bold text-green-800">{stats.avgSellSpeedPerHour}</p>
                         <p className="text-[10px] text-cream-500 mt-0.5">ly / giờ / chai</p>
@@ -133,7 +129,6 @@ export function BottleTrackingClient({ initial }: { initial: BottleTrackingIniti
 
                 {openedBottles.length === 0 ? (
                     <div className="rounded-xl border border-cream-200 bg-white p-8 text-center">
-                        <Wine className="h-10 w-10 text-cream-300 mx-auto mb-2" />
                         <p className="text-sm text-cream-500">Không có chai nào đang mở</p>
                     </div>
                 ) : (
@@ -162,11 +157,11 @@ export function BottleTrackingClient({ initial }: { initial: BottleTrackingIniti
                                         </div>
                                         <div className="text-right">
                                             {bottle.isExpired ? (
-                                                <Badge className="bg-red-600 text-white text-[9px]">⚠️ Quá hạn</Badge>
+                                                <Badge className="bg-red-600 text-white text-[9px]">Quá hạn</Badge>
                                             ) : oxPct > 70 ? (
-                                                <Badge className="bg-amber-500 text-white text-[9px]">⏰ Cảnh báo</Badge>
+                                                <Badge className="bg-amber-500 text-white text-[9px]">Cảnh báo</Badge>
                                             ) : (
-                                                <Badge className="bg-green-600 text-white text-[9px]">✅ Tốt</Badge>
+                                                <Badge className="bg-green-600 text-white text-[9px]">Tốt</Badge>
                                             )}
                                         </div>
                                     </div>
@@ -188,7 +183,7 @@ export function BottleTrackingClient({ initial }: { initial: BottleTrackingIniti
                                     <div className="mb-3">
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-[10px] font-bold text-cream-600 flex items-center gap-1">
-                                                <Clock className="h-3 w-3" /> Oxy hóa
+                                                Oxy hóa
                                             </span>
                                             <span className="text-[10px] font-mono text-cream-600">
                                                 {bottle.oxidationHours}h / {bottle.maxOxidationHours}h

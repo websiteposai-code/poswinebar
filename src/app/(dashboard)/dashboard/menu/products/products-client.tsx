@@ -3,30 +3,7 @@
 import { useState, useCallback } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-    Plus,
-    Pencil,
-    Trash2,
-    Search,
-    Filter,
-    Eye,
-    EyeOff,
-    Wine,
-    UtensilsCrossed,
-    Loader2,
-    Check,
-    X,
-    ChevronDown,
-    FolderOpen,
-    LayoutGrid,
-    Package,
-    GlassWater,
-    Grape,
-    Coffee,
-    Clock,
-    AlertTriangle,
-    ChefHat,
-} from "lucide-react"
+import { Plus, Pencil, Trash2, Search, Eye, EyeOff, Wine, UtensilsCrossed, Loader2, Check, X, FolderOpen, LayoutGrid, Package, GlassWater, Grape, Coffee, ChefHat } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -249,9 +226,6 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
             {/* Page Header */}
             <div className="border-b border-cream-300 bg-cream-50 px-6 py-5">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                        <UtensilsCrossed className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">
                             Menu & Sản phẩm
@@ -305,7 +279,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                         <option value="">Tất cả danh mục</option>
                         {categories.map((cat) => (
                             <option key={cat.id} value={cat.id}>
-                                {cat.icon} {cat.name}
+                                {cat.name}
                             </option>
                         ))}
                     </select>
@@ -328,7 +302,6 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                 {/* Product Table */}
                 {filteredProducts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-cream-300 bg-cream-100 py-20">
-                        <Package className="h-12 w-12 text-cream-400 mb-3" />
                         <p className="text-cream-500">Không tìm thấy sản phẩm</p>
                         <Button onClick={openCreateDialog} variant="outline" className="mt-4">
                             <Plus className="mr-1 h-4 w-4" />
@@ -373,7 +346,6 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                                             ? (((product.sellPrice - product.costPrice) / product.sellPrice) * 100).toFixed(0)
                                             : "—"
                                     const typeConfig = TYPE_CONFIG[product.type]
-                                    const TypeIcon = typeConfig.icon
 
                                     return (
                                         <tr
@@ -386,14 +358,8 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                                             {/* Product info */}
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cream-200 text-lg">
-                                                        {product.type === "WINE_BOTTLE" || product.type === "WINE_GLASS"
-                                                            ? "🍷"
-                                                            : product.type === "FOOD"
-                                                                ? "🍽️"
-                                                                : product.type === "DRINK"
-                                                                    ? "🍸"
-                                                                    : "📦"}
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cream-200 font-display text-base italic text-green-800">
+                                                        {product.name.trim().charAt(0).toUpperCase()}
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-semibold text-green-900">
@@ -423,13 +389,12 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                                             {/* Type badge */}
                                             <td className="px-4 py-3">
                                                 <Badge className={cn("text-xs font-medium", typeConfig.color)}>
-                                                    <TypeIcon className="mr-1 h-3 w-3" />
                                                     {typeConfig.label}
                                                 </Badge>
                                                 {product.isByGlass && (
                                                     <div className="mt-1">
                                                         <span className="glass-indicator rounded-full bg-green-100 px-1.5 py-0.5 text-green-700">
-                                                            🍷 {product.glassesPerBottle} ly/chai
+                                                            {product.glassesPerBottle} ly/chai
                                                         </span>
                                                     </div>
                                                 )}
@@ -437,7 +402,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
 
                                             {/* Category */}
                                             <td className="px-4 py-3 text-sm text-cream-500">
-                                                {product.category?.icon} {product.category?.name}
+                                                {product.category?.name}
                                             </td>
 
                                             {/* Sell price */}
@@ -597,7 +562,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                                     <option value="">Chọn danh mục</option>
                                     {categories.map((cat) => (
                                         <option key={cat.id} value={cat.id}>
-                                            {cat.icon} {cat.name}
+                                            {cat.name}
                                         </option>
                                     ))}
                                 </select>
@@ -615,7 +580,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
 
                         {/* Pricing */}
                         <div className="rounded-lg border border-cream-300 bg-cream-100/50 p-4">
-                            <h3 className="mb-3 text-sm font-semibold text-green-900">💰 Giá</h3>
+                            <h3 className="mb-3 text-sm font-semibold text-green-900">Giá</h3>
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
                                 <div className="space-y-1.5">
                                     <Label>Giá vốn</Label>
@@ -649,7 +614,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                         {/* Wine Details — conditional */}
                         {isWineType && (
                             <div className="rounded-lg border border-wine-100 bg-wine-50 p-4">
-                                <h3 className="mb-3 text-sm font-semibold text-wine-700">🍷 Thông tin rượu</h3>
+                                <h3 className="mb-3 text-sm font-semibold text-wine-700">Thông tin rượu</h3>
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
                                     <div className="space-y-1.5">
                                         <Label>Vintage</Label>
@@ -733,7 +698,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                                 {/* By-Glass Setup Section */}
                                 <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4">
                                     <h4 className="text-xs font-bold text-green-800 uppercase mb-3 flex items-center gap-1.5">
-                                        <GlassWater className="h-3.5 w-3.5" /> Setup bán theo ly
+                                        Setup bán theo ly
                                     </h4>
 
                                     {/* isByGlass toggle */}
@@ -761,7 +726,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 pt-2 border-t border-green-200">
                                             <div className="space-y-1.5">
                                                 <Label className="flex items-center gap-1">
-                                                    <GlassWater className="h-3 w-3 text-green-700" /> Số ly / chai
+                                                    Số ly / chai
                                                 </Label>
                                                 <Input
                                                     type="number"
@@ -775,7 +740,7 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
                                             </div>
                                             <div className="space-y-1.5">
                                                 <Label className="flex items-center gap-1">
-                                                    <Clock className="h-3 w-3 text-amber-600" /> Giờ oxy hóa tối đa
+                                                    Giờ oxy hóa tối đa
                                                 </Label>
                                                 <Input
                                                     type="number"
@@ -808,7 +773,6 @@ export default function ProductsClient({ initialProducts, initialCategories }: P
 
                                     {form.isByGlass && form.oxidationHours && (
                                         <div className="mt-3 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 flex items-start gap-2">
-                                            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
                                             <p className="text-[10px] text-amber-700">
                                                 Chai mở quá <strong>{form.oxidationHours}h</strong> sẽ hiện cảnh báo đỏ tại POS và Dashboard.
                                                 {form.oxidationHours <= 24 ? " Sparkling/Rosé nên dưới 24h." :

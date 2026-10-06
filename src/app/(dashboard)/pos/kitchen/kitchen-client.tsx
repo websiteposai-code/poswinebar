@@ -1,18 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-    ChefHat,
-    Clock,
-    CheckCircle2,
-    AlertCircle,
-    Timer,
-    Flame,
-    Bell,
-    RefreshCcw,
-    Volume2,
-    VolumeX,
-} from "lucide-react"
+import { RefreshCcw, Volume2, VolumeX } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -99,7 +88,7 @@ export default function KitchenClient({ initialOrders }: KitchenClientProps) {
                 o.id === orderId ? { ...o, status: newStatus } : o
             ).filter(o => !["COMPLETED", "PAID", "CANCELLED", "VOID"].includes(o.status)))
             if (newStatus === "READY" && soundEnabled) {
-                toast.success("🔔 Đơn đã sẵn sàng!", { duration: 3000 })
+                toast.success("Đơn đã sẵn sàng!", { duration: 3000 })
             }
         }
     }
@@ -115,9 +104,6 @@ export default function KitchenClient({ initialOrders }: KitchenClientProps) {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-cream-300 bg-cream-50 px-3 lg:px-5 py-2.5 lg:py-3">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100">
-                        <ChefHat className="h-5 w-5 text-orange-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-base lg:text-lg font-bold text-green-900">
                             Kitchen Display
@@ -172,7 +158,6 @@ export default function KitchenClient({ initialOrders }: KitchenClientProps) {
                 {/* PENDING Column */}
                 <div className="flex flex-1 flex-col rounded-xl border border-amber-200 bg-amber-50/30 min-h-[200px] lg:min-h-0">
                     <div className="flex items-center gap-2 border-b border-amber-200 px-4 py-3">
-                        <AlertCircle className="h-4 w-4 text-amber-500" />
                         <span className="text-sm font-bold text-amber-800">Chờ xử lý</span>
                         <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
                             {pendingOrders.length}
@@ -195,7 +180,6 @@ export default function KitchenClient({ initialOrders }: KitchenClientProps) {
                 {/* PREPARING Column */}
                 <div className="flex flex-1 flex-col rounded-xl border border-orange-200 bg-orange-50/30 min-h-[200px] lg:min-h-0">
                     <div className="flex items-center gap-2 border-b border-orange-200 px-4 py-3">
-                        <Flame className="h-4 w-4 text-orange-500" />
                         <span className="text-sm font-bold text-orange-800">Đang làm</span>
                         <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
                             {preparingOrders.length}
@@ -218,7 +202,6 @@ export default function KitchenClient({ initialOrders }: KitchenClientProps) {
                 {/* READY Column */}
                 <div className="flex flex-1 flex-col rounded-xl border border-green-200 bg-green-50/30 min-h-[200px] lg:min-h-0">
                     <div className="flex items-center gap-2 border-b border-green-200 px-4 py-3">
-                        <Bell className="h-4 w-4 text-green-500" />
                         <span className="text-sm font-bold text-green-800">Sẵn sàng</span>
                         <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-[10px] font-bold text-white">
                             {readyOrders.length}
@@ -243,7 +226,6 @@ export default function KitchenClient({ initialOrders }: KitchenClientProps) {
             {totalActive === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="text-center">
-                        <ChefHat className="h-16 w-16 text-cream-300 mx-auto mb-4" />
                         <p className="font-display text-xl font-bold text-cream-400">Bếp đang nghỉ</p>
                         <p className="text-sm text-cream-400 mt-1">Chưa có đơn hàng nào</p>
                         <p className="font-script text-xs text-cream-300 mt-3 italic">
@@ -287,13 +269,11 @@ function OrderCard({
                     </span>
                     {(isUrgent || isCritical) && (
                         <span className="flex items-center gap-0.5 rounded-full bg-red-100 px-1.5 py-0.5 text-[9px] font-bold text-red-600">
-                            <AlertCircle className="h-2.5 w-2.5" />
                             Trễ!
                         </span>
                     )}
                 </div>
                 <div className="flex items-center gap-1">
-                    <Timer className={cn("h-3 w-3", elapsed > 15 ? "text-red-500" : "text-cream-400")} />
                     <span
                         className={cn(
                             "font-mono text-[10px] font-bold",
@@ -332,7 +312,7 @@ function OrderCard({
                             </span>
                             {item.notes && (
                                 <p className="text-[9px] text-wine-600 italic">
-                                    📝 {item.notes}
+                                    {item.notes}
                                 </p>
                             )}
                         </div>

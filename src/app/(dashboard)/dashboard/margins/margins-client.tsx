@@ -2,22 +2,7 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
-import {
-    Tag,
-    TrendingUp,
-    TrendingDown,
-    BarChart3,
-    Search,
-    AlertTriangle,
-    Wine,
-    Trash2,
-    ShieldCheck,
-    Clock,
-    Package,
-    HelpCircle,
-    Info,
-    ArrowUpRight,
-} from "lucide-react"
+import { TrendingUp, TrendingDown, Search, AlertTriangle, Wine, Trash2, ShieldCheck, ArrowUpRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -133,7 +118,6 @@ export default function MarginsClient({ initial }: Props) {
         }
     }, [wasteRate])
 
-    const WasteStatusIcon = wasteStatus.icon
 
     return (
         <div className="p-4 lg:p-6 space-y-5">
@@ -141,7 +125,7 @@ export default function MarginsClient({ initial }: Props) {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
                     <h1 className="font-display text-xl font-bold text-green-900 flex items-center gap-2">
-                        <Tag className="h-5 w-5" /> Lợi nhuận & Biên lãi thực tế
+                        Lợi nhuận & Biên lãi thực tế
                     </h1>
                     <p className="text-xs text-cream-500 mt-0.5">
                         Phân tích True COGS = Giá vốn bán hàng + Phân bổ Hao hụt / Vang hỏng (Corked & Spoilage)
@@ -231,7 +215,6 @@ export default function MarginsClient({ initial }: Props) {
                         </span>
                     </div>
                     <div className="flex items-center gap-1.5 mt-2">
-                        <WasteStatusIcon className={cn("h-4 w-4", wasteStatus.badgeClass.split(" ")[1])} />
                         <span className="text-xs font-bold text-stone-800">{wasteStatus.label}</span>
                     </div>
                     <p className="text-[10px] text-cream-500 mt-1 leading-tight">
@@ -245,12 +228,10 @@ export default function MarginsClient({ initial }: Props) {
                 <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50/60 to-cream-50 p-3.5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                         <div className="flex items-center gap-1.5">
-                            <Wine className="h-4 w-4 text-amber-800" />
                             <span className="text-xs font-bold text-amber-900">Chi tiết Hao hụt & Vang hỏng trong kỳ</span>
                         </div>
                         {supplierClaim > 0 && (
                             <span className="inline-flex items-center gap-1.5 text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md px-2.5 py-0.5 font-medium">
-                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
                                 Chờ NCC đổi bù: ₫{formatPrice(supplierClaim)} (không tính mất đứt)
                             </span>
                         )}
@@ -258,28 +239,24 @@ export default function MarginsClient({ initial }: Props) {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                         <div className="rounded-lg bg-white/90 border border-amber-200/60 p-2.5 shadow-2xs">
                             <span className="text-[10px] text-stone-500 flex items-center gap-1 mb-0.5">
-                                <AlertTriangle className="h-3 w-3 text-red-600" />
                                 Lỗi nút bần (Corked / TCA)
                             </span>
                             <span className="font-mono font-bold text-red-700 text-sm">₫{formatPrice(summary.wasteBreakdown.corked)}</span>
                         </div>
                         <div className="rounded-lg bg-white/90 border border-amber-200/60 p-2.5 shadow-2xs">
                             <span className="text-[10px] text-stone-500 flex items-center gap-1 mb-0.5">
-                                <Clock className="h-3 w-3 text-amber-600" />
                                 Oxy hoá vang mở ly
                             </span>
                             <span className="font-mono font-bold text-amber-800 text-sm">₫{formatPrice(summary.wasteBreakdown.oxidation)}</span>
                         </div>
                         <div className="rounded-lg bg-white/90 border border-amber-200/60 p-2.5 shadow-2xs">
                             <span className="text-[10px] text-stone-500 flex items-center gap-1 mb-0.5">
-                                <Trash2 className="h-3 w-3 text-orange-600" />
                                 Rơi vỡ / Đổ tràn
                             </span>
                             <span className="font-mono font-bold text-orange-700 text-sm">₫{formatPrice(summary.wasteBreakdown.breakage)}</span>
                         </div>
                         <div className="rounded-lg bg-white/90 border border-amber-200/60 p-2.5 shadow-2xs">
                             <span className="text-[10px] text-stone-500 flex items-center gap-1 mb-0.5">
-                                <Package className="h-3 w-3 text-stone-500" />
                                 Hỏng nguyên liệu / Khác
                             </span>
                             <span className="font-mono font-bold text-stone-700 text-sm">₫{formatPrice(summary.wasteBreakdown.other)}</span>
@@ -453,7 +430,6 @@ export default function MarginsClient({ initial }: Props) {
 
             {filtered.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-cream-300">
-                    <BarChart3 className="h-10 w-10 text-cream-300 mb-2" />
                     <p className="text-sm font-medium text-stone-600">Không tìm thấy sản phẩm phù hợp</p>
                     <p className="text-xs text-stone-400 mt-1">Thử thay đổi từ khóa tìm kiếm hoặc bỏ lọc</p>
                 </div>

@@ -1,25 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-    CalendarDays,
-    Clock,
-    Users,
-    Phone,
-    Mail,
-    MapPin,
-    Plus,
-    X,
-    Check,
-    XCircle,
-    Armchair,
-    AlertTriangle,
-    ChevronRight,
-    UserCheck,
-    Search,
-    Filter,
-    MessageSquare,
-} from "lucide-react"
+import { CalendarDays, Plus, X, Check, XCircle, Armchair, UserCheck } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -42,19 +24,19 @@ import { usePrefetchStore } from "@/stores/prefetch-store"
 import { useAuthStore } from "@/stores/auth-store"
 
 const STATUS_CONFIG: Record<ReservationStatus, { label: string; color: string; icon: string }> = {
-    PENDING: { label: "Chờ xác nhận", color: "bg-amber-100 border-amber-300 text-amber-700", icon: "⏳" },
-    CONFIRMED: { label: "Đã xác nhận", color: "bg-blue-100 border-blue-300 text-blue-700", icon: "✅" },
-    SEATED: { label: "Đã ngồi", color: "bg-green-100 border-green-300 text-green-700", icon: "🪑" },
-    COMPLETED: { label: "Hoàn tất", color: "bg-cream-200 border-cream-300 text-cream-500", icon: "✔️" },
-    CANCELLED: { label: "Đã hủy", color: "bg-red-100 border-red-300 text-red-600", icon: "❌" },
-    NO_SHOW: { label: "Không đến", color: "bg-red-50 border-red-200 text-red-500", icon: "👻" },
+    PENDING: { label: "Chờ xác nhận", color: "bg-amber-100 border-amber-300 text-amber-700", icon: "" },
+    CONFIRMED: { label: "Đã xác nhận", color: "bg-blue-100 border-blue-300 text-blue-700", icon: "" },
+    SEATED: { label: "Đã ngồi", color: "bg-green-100 border-green-300 text-green-700", icon: "" },
+    COMPLETED: { label: "Hoàn tất", color: "bg-cream-200 border-cream-300 text-cream-500", icon: "" },
+    CANCELLED: { label: "Đã hủy", color: "bg-red-100 border-red-300 text-red-600", icon: "" },
+    NO_SHOW: { label: "Không đến", color: "bg-red-50 border-red-200 text-red-500", icon: "" },
 }
 
 const SOURCE_LABELS: Record<string, { label: string; icon: string }> = {
-    PHONE: { label: "Điện thoại", icon: "📞" },
-    WALK_IN: { label: "Walk-in", icon: "🚶" },
-    WEBSITE: { label: "Website", icon: "🌐" },
-    ZALO: { label: "Zalo", icon: "💬" },
+    PHONE: { label: "Điện thoại", icon: "" },
+    WALK_IN: { label: "Walk-in", icon: "" },
+    WEBSITE: { label: "Website", icon: "" },
+    ZALO: { label: "Zalo", icon: "" },
 }
 
 function fmt(n: number) { return new Intl.NumberFormat("vi-VN").format(n) }
@@ -115,7 +97,7 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
     const handleStatusChange = async (id: string, status: ReservationStatus) => {
         const result = await updateReservationStatus(id, status)
         if (result.success) {
-            toast.success(`${STATUS_CONFIG[status].icon} ${STATUS_CONFIG[status].label}`)
+            toast.success(STATUS_CONFIG[status].label)
             loadData()
         } else {
             toast.error(result.error ?? "Lỗi")
@@ -139,9 +121,6 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
-                        <CalendarDays className="h-5 w-5 text-blue-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Đặt bàn</h1>
                         <p className="text-sm text-cream-500">Quản lý reservation, xếp bàn khách</p>
@@ -156,27 +135,27 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
             {stats && isToday && (
                 <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><CalendarDays className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Hôm nay</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Hôm nay</span></div>
                         <p className="font-mono text-xl font-bold text-green-900">{stats.todayTotal}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px]">⏳</span><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Chờ XN</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Chờ XN</span></div>
                         <p className="font-mono text-xl font-bold text-amber-600">{stats.pending}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px]">✅</span><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đã XN</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đã XN</span></div>
                         <p className="font-mono text-xl font-bold text-blue-600">{stats.confirmed}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px]">🪑</span><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đã ngồi</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đã ngồi</span></div>
                         <p className="font-mono text-xl font-bold text-green-600">{stats.seated}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px]">👻</span><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">No-show</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">No-show</span></div>
                         <p className="font-mono text-xl font-bold text-red-500">{stats.noShow}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><Users className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng khách</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng khách</span></div>
                         <p className="font-mono text-xl font-bold text-wine-700">{stats.totalGuests}</p>
                     </div>
                 </div>
@@ -202,7 +181,7 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
                                     : "bg-cream-200 text-cream-500"
                             )}
                         >
-                            {s === "ALL" ? "Tất cả" : `${STATUS_CONFIG[s].icon} ${STATUS_CONFIG[s].label}`}
+                            {s === "ALL" ? "Tất cả" : STATUS_CONFIG[s].label}
                         </button>
                     ))}
                 </div>
@@ -213,7 +192,7 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
             <div className="space-y-2">
                 {reservations.map((rsv) => {
                     const sCfg = STATUS_CONFIG[rsv.status]
-                    const srcCfg = SOURCE_LABELS[rsv.source] ?? { label: rsv.source, icon: "📋" }
+                    const srcCfg = SOURCE_LABELS[rsv.source] ?? { label: rsv.source }
 
                     return (
                         <div key={rsv.id} className="rounded-xl border border-cream-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-all">
@@ -232,24 +211,24 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="text-sm font-bold text-green-900">{rsv.customerName}</span>
                                         <Badge className={cn("text-[8px] font-bold border", sCfg.color)}>
-                                            {sCfg.icon} {sCfg.label}
+                                            {sCfg.label}
                                         </Badge>
-                                        <span className="text-[9px] text-cream-400 bg-cream-100 rounded-full px-2 py-0.5">{srcCfg.icon} {srcCfg.label}</span>
+                                        <span className="text-[9px] text-cream-400 bg-cream-100 rounded-full px-2 py-0.5">{srcCfg.label}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-[11px] text-cream-500">
-                                        <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {rsv.customerPhone}</span>
-                                        <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {rsv.guestCount} khách</span>
-                                        {rsv.zonePreference && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {rsv.zonePreference}</span>}
+                                        <span className="flex items-center gap-1">{rsv.customerPhone}</span>
+                                        <span className="flex items-center gap-1">{rsv.guestCount} khách</span>
+                                        {rsv.zonePreference && <span className="flex items-center gap-1">{rsv.zonePreference}</span>}
                                         {rsv.tableNumber && (
                                             <span className="flex items-center gap-1 font-bold text-green-700">
-                                                <Armchair className="h-3 w-3" /> {rsv.tableNumber}
+                                                {rsv.tableNumber}
                                             </span>
                                         )}
                                     </div>
                                     {(rsv.notes || rsv.specialRequests) && (
                                         <div className="mt-1.5 flex gap-2 text-[10px]">
-                                            {rsv.notes && <span className="text-cream-500 bg-cream-100 rounded px-2 py-0.5">📝 {rsv.notes}</span>}
-                                            {rsv.specialRequests && <span className="text-amber-700 bg-amber-50 rounded px-2 py-0.5 border border-amber-200">⭐ {rsv.specialRequests}</span>}
+                                            {rsv.notes && <span className="text-cream-500 bg-cream-100 rounded px-2 py-0.5">{rsv.notes}</span>}
+                                            {rsv.specialRequests && <span className="text-amber-700 bg-amber-50 rounded px-2 py-0.5 border border-amber-200">★ {rsv.specialRequests}</span>}
                                         </div>
                                     )}
                                 </div>
@@ -302,7 +281,7 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
                                                 className="h-7 text-[10px] border-red-200 text-red-500 hover:bg-red-50"
                                                 onClick={() => handleStatusChange(rsv.id, "NO_SHOW")}
                                             >
-                                                👻
+                                                Không đến
                                             </Button>
                                         </>
                                     )}
@@ -334,7 +313,6 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
 
                 {reservations.length === 0 && !loading && (
                     <div className="py-16 text-center">
-                        <CalendarDays className="mx-auto h-10 w-10 text-cream-300 mb-3" />
                         <p className="text-sm text-cream-400">Không có đặt bàn nào</p>
                         <p className="text-xs text-cream-300 mt-1">Nhấn &quot;Đặt bàn mới&quot; để tạo</p>
                     </div>
@@ -345,7 +323,7 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
             {showAddModal && (
                 <AddReservationModal
                     onClose={() => setShowAddModal(false)}
-                    onCreated={() => { setShowAddModal(false); loadData(); toast.success("✅ Đặt bàn thành công!") }}
+                    onCreated={() => { setShowAddModal(false); loadData(); toast.success("Đặt bàn thành công!") }}
                     zones={dbZones}
                 />
             )}
@@ -356,7 +334,7 @@ export function ReservationsClient({ initialData }: { initialData: ReservationsI
                     reservationId={showAssignModal}
                     reservation={reservations.find((r) => r.id === showAssignModal)!}
                     onClose={() => setShowAssignModal(null)}
-                    onAssigned={() => { setShowAssignModal(null); loadData(); toast.success("✅ Đã xếp bàn!") }}
+                    onAssigned={() => { setShowAssignModal(null); loadData(); toast.success("Đã xếp bàn!") }}
                     zones={dbZones}
                     tables={dbTables}
                 />
@@ -417,7 +395,7 @@ function AddReservationModal({ onClose, onCreated, zones }: { onClose: () => voi
             <div className="w-full max-w-lg rounded-2xl border border-cream-200 bg-white shadow-2xl">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-cream-200">
                     <div>
-                        <h2 className="text-lg font-bold text-green-900">📅 Đặt bàn mới</h2>
+                        <h2 className="text-lg font-bold text-green-900">Đặt bàn mới</h2>
                         <p className="text-xs text-cream-500">Tạo reservation cho khách</p>
                     </div>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100 transition-all"><X className="h-4 w-4 text-cream-400" /></button>
@@ -498,7 +476,7 @@ function AddReservationModal({ onClose, onCreated, zones }: { onClose: () => voi
                                             source === s ? "bg-green-900 text-cream-50" : "bg-cream-100 text-cream-500 border border-cream-300"
                                         )}
                                     >
-                                        {SOURCE_LABELS[s].icon} {SOURCE_LABELS[s].label}
+                                        {SOURCE_LABELS[s].label}
                                     </button>
                                 ))}
                             </div>
@@ -561,7 +539,7 @@ function AssignTableModal({
             <div className="w-full max-w-[500px] max-h-[70vh] rounded-2xl border border-cream-200 bg-white shadow-2xl overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-cream-200">
                     <div>
-                        <h2 className="text-lg font-bold text-green-900">🪑 Xếp bàn</h2>
+                        <h2 className="text-lg font-bold text-green-900">Xếp bàn</h2>
                         <p className="text-xs text-cream-500">{reservation.customerName} · {reservation.guestCount} khách · {reservation.time}</p>
                     </div>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100"><X className="h-4 w-4 text-cream-400" /></button>

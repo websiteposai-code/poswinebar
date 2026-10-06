@@ -3,29 +3,7 @@
 import { useState, useCallback, useMemo } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-    ChefHat,
-    Plus,
-    Search,
-    Trash2,
-    Pencil,
-    Save,
-    Loader2,
-    X,
-    FolderOpen,
-    LayoutGrid,
-    CookingPot,
-    AlertCircle,
-    CheckCircle2,
-    DollarSign,
-    Package,
-    Sliders,
-    Sparkles,
-    AlertTriangle,
-    ShieldCheck,
-    ArrowRight,
-    FileText,
-} from "lucide-react"
+import { ChefHat, Plus, Search, Trash2, Pencil, Save, Loader2, X, FolderOpen, LayoutGrid, CookingPot, CheckCircle2, Sliders, ArrowRight } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -173,9 +151,6 @@ export default function RecipesClient({
             {/* Page Header */}
             <div className="border-b border-cream-300 bg-cream-50 px-6 py-5">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                        <CookingPot className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">
                             Menu & Sản phẩm
@@ -196,7 +171,6 @@ export default function RecipesClient({
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
                         <div className="flex items-center gap-1.5 mb-1.5">
-                            <ChefHat className="h-3.5 w-3.5 text-cream-400" />
                             <span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Công thức</span>
                         </div>
                         <p className="font-mono text-xl font-bold leading-none text-green-900">{totalRecipes}</p>
@@ -204,7 +178,6 @@ export default function RecipesClient({
 
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
                         <div className="flex items-center gap-1.5 mb-1.5">
-                            <Package className="h-3.5 w-3.5 text-cream-400" />
                             <span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Nguyên liệu dùng</span>
                         </div>
                         <p className="font-mono text-xl font-bold leading-none text-blue-700">{totalIngredients}</p>
@@ -212,7 +185,6 @@ export default function RecipesClient({
 
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
                         <div className="flex items-center gap-1.5 mb-1.5">
-                            <DollarSign className="h-3.5 w-3.5 text-cream-400" />
                             <span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Giá vốn TB</span>
                         </div>
                         <p className="font-mono text-xl font-bold leading-none text-wine-700">₫{fmt(avgCost)}</p>
@@ -220,7 +192,6 @@ export default function RecipesClient({
 
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
                         <div className="flex items-center gap-1.5 mb-1.5">
-                            <AlertCircle className="h-3.5 w-3.5 text-cream-400" />
                             <span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Chưa có CT</span>
                         </div>
                         <p className={cn("font-mono text-xl font-bold leading-none", noRecipeCount > 0 ? "text-amber-600" : "text-green-600")}>
@@ -237,10 +208,6 @@ export default function RecipesClient({
                             : "border-green-200 bg-green-50/30"
                     )}>
                         <div className="flex items-center gap-1.5 mb-1.5">
-                            <ShieldCheck className={cn(
-                                "h-3.5 w-3.5",
-                                evaluatedStats.overBudget > 0 ? "text-red-600" : evaluatedStats.warning > 0 ? "text-amber-600" : "text-green-600"
-                            )} />
                             <span className="text-[10px] font-bold uppercase tracking-wider text-green-900">Kiểm soát Cost</span>
                         </div>
                         <p className={cn(
@@ -294,7 +261,6 @@ export default function RecipesClient({
                 {/* Recipe Cards */}
                 {filtered.length === 0 && !showCreateFlow ? (
                     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-cream-300 bg-cream-100 py-20">
-                        <ChefHat className="h-12 w-12 text-cream-400 mb-3" />
                         <p className="text-cream-500">
                             {searchTerm ? "Không tìm thấy công thức" : "Chưa có công thức nào"}
                         </p>
@@ -420,9 +386,6 @@ function RecipeCard({
         <div className="group rounded-xl border border-cream-200 bg-white shadow-sm hover:border-green-300 hover:shadow-md transition-all overflow-hidden">
             <div className="flex flex-wrap items-center justify-between px-4 py-3 border-b border-cream-100 gap-2">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-800">
-                        <CookingPot className="h-4.5 w-4.5" />
-                    </div>
                     <div>
                         <div className="flex flex-wrap items-center gap-2">
                             <h3 className="text-sm font-bold text-green-900">{recipe.productName}</h3>
@@ -430,19 +393,16 @@ function RecipeCard({
                             {/* Cost % Alert Badge */}
                             {ev.status === "OPTIMAL" && (
                                 <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-green-50 text-green-800 border border-green-200">
-                                    <ShieldCheck className="h-3 w-3 text-green-700" />
                                     Cost {ev.costPct}% (≤{ev.targetCostPct}%)
                                 </span>
                             )}
                             {ev.status === "WARNING" && (
                                 <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                                    <AlertTriangle className="h-3 w-3 text-amber-600" />
                                     Cận biên {ev.costPct}%
                                 </span>
                             )}
                             {ev.status === "OVER_BUDGET" && (
                                 <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-red-50 text-red-800 border border-red-200 animate-pulse">
-                                    <AlertTriangle className="h-3 w-3 text-red-600" />
                                     Vượt trần {ev.costPct}% (+{ev.diffPct}%)
                                 </span>
                             )}
@@ -513,7 +473,6 @@ function RecipeCard({
             {(ev.status === "OVER_BUDGET" || ev.status === "UNPRICED") && product && (
                 <div className="flex flex-wrap items-center justify-between px-4 py-2 bg-amber-50/70 border-t border-amber-200/60 text-xs gap-2">
                     <div className="flex items-center gap-2">
-                        <Sparkles className="h-3.5 w-3.5 text-amber-700 shrink-0" />
                         <span className="text-[11px] text-amber-900">
                             Gợi ý giá bán tối ưu (Margin {costConfig.defaultTargetMarginPct}%): <strong className="font-mono font-bold text-green-900">₫{fmt(ev.suggestedPrice)}</strong>
                         </span>
@@ -531,7 +490,6 @@ function RecipeCard({
 
             {recipe.notes && (
                 <p className="px-4 py-2 text-[10px] text-cream-500 italic border-t border-cream-100 flex items-center gap-1.5">
-                    <FileText className="h-3 w-3 text-cream-400 shrink-0" />
                     {recipe.notes}
                 </p>
             )}

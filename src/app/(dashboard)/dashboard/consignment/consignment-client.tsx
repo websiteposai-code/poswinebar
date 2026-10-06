@@ -1,22 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import {
-    Handshake,
-    Package,
-    CheckCircle2,
-    XCircle,
-    AlertTriangle,
-    Clock,
-    DollarSign,
-    ChevronDown,
-    ChevronUp,
-    ArrowRight,
-    RefreshCcw,
-    X,
-    Plus,
-    Trash2,
-} from "lucide-react"
+import { CheckCircle2, DollarSign, ChevronDown, ChevronUp, RefreshCcw, X, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -42,8 +27,8 @@ function fmtK(n: number) {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-    ACTIVE: { label: "Đang bán", color: "bg-green-100 border-green-300 text-green-700", icon: "🟢" },
-    SETTLED: { label: "Đã quyết toán", color: "bg-blue-100 border-blue-300 text-blue-700", icon: "✅" },
+    ACTIVE: { label: "Đang bán", color: "bg-green-100 border-green-300 text-green-700", icon: "" },
+    SETTLED: { label: "Đã quyết toán", color: "bg-blue-100 border-blue-300 text-blue-700", icon: "" },
     RETURNED: { label: "Đã trả", color: "bg-cream-200 border-cream-300 text-cream-500", icon: "↩️" },
 }
 
@@ -91,7 +76,7 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
     const handleDamaged = async (consignmentId: string, itemId: string) => {
         const result = await markConsignmentItemDamaged(consignmentId, itemId)
         if (result.success) {
-            toast.success("⚠️ Đã đánh dấu hỏng")
+            toast.success("Đã đánh dấu hỏng")
             loadData()
         }
     }
@@ -103,7 +88,7 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
             periodEnd: new Date(),
         })
         if (result.success) {
-            toast.success("✅ Đã tạo quyết toán!")
+            toast.success("Đã tạo quyết toán!")
             loadData()
         }
     }
@@ -111,7 +96,7 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
     const handleConfirmSettlement = async (settlementId: string) => {
         const result = await confirmSettlement(settlementId)
         if (result.success) {
-            toast.success("✅ Đã xác nhận quyết toán!")
+            toast.success("Đã xác nhận quyết toán!")
             loadData()
         }
     }
@@ -128,9 +113,6 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100">
-                        <Handshake className="h-5 w-5 text-teal-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Ký gửi (Consignment)</h1>
                         <p className="text-sm text-cream-500">Quản lý hàng ký gửi NCC, quyết toán hoa hồng</p>
@@ -147,19 +129,19 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                    <div className="flex items-center gap-1.5 mb-1"><Handshake className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đang ký gửi</span></div>
+                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đang ký gửi</span></div>
                     <p className="font-mono text-xl font-bold text-green-900">{totalActive}</p>
                 </div>
                 <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                    <div className="flex items-center gap-1.5 mb-1"><Package className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng SP</span></div>
+                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng SP</span></div>
                     <p className="font-mono text-xl font-bold text-blue-600">{totalItems}</p>
                 </div>
                 <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                    <div className="flex items-center gap-1.5 mb-1"><CheckCircle2 className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đã bán</span></div>
+                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đã bán</span></div>
                     <p className="font-mono text-xl font-bold text-green-600">{totalSold}</p>
                 </div>
                 <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                    <div className="flex items-center gap-1.5 mb-1"><DollarSign className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Doanh thu</span></div>
+                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Doanh thu</span></div>
                     <p className="font-mono text-xl font-bold text-wine-700">₫{fmtK(totalRevenue)}</p>
                 </div>
             </div>
@@ -170,13 +152,13 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
                     onClick={() => setActiveTab("list")}
                     className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-all", activeTab === "list" ? "bg-green-900 text-cream-50" : "bg-cream-200 text-cream-500")}
                 >
-                    📦 Đơn ký gửi ({consignments.length})
+                    Đơn ký gửi ({consignments.length})
                 </button>
                 <button
                     onClick={() => setActiveTab("settlements")}
                     className={cn("rounded-lg px-3 py-1.5 text-xs font-medium transition-all", activeTab === "settlements" ? "bg-green-900 text-cream-50" : "bg-cream-200 text-cream-500")}
                 >
-                    💰 Quyết toán ({settlements.length})
+                    Quyết toán ({settlements.length})
                 </button>
             </div>
 
@@ -197,12 +179,12 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="font-mono text-sm font-bold text-green-900">{csm.consignmentNo}</span>
-                                            <Badge className={cn("text-[8px] font-bold border", sCfg.color)}>{sCfg.icon} {sCfg.label}</Badge>
+                                            <Badge className={cn("text-[8px] font-bold border", sCfg.color)}>{sCfg.label}</Badge>
                                         </div>
                                         <div className="flex items-center gap-3 text-[11px] text-cream-500">
-                                            <span>🏢 {csm.supplierName}</span>
-                                            <span>📅 {new Date(csm.receivedAt).toLocaleDateString("vi-VN")}</span>
-                                            <span>💰 Hoa hồng: {csm.commissionRate}%</span>
+                                            <span>{csm.supplierName}</span>
+                                            <span>{new Date(csm.receivedAt).toLocaleDateString("vi-VN")}</span>
+                                            <span>Hoa hồng: {csm.commissionRate}%</span>
                                         </div>
                                     </div>
 
@@ -264,7 +246,7 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
                                                                             <button
                                                                                 onClick={(e) => { e.stopPropagation(); handleDamaged(csm.id, item.id) }}
                                                                                 className="rounded px-1.5 py-0.5 text-[9px] bg-red-50 text-red-500 hover:bg-red-100"
-                                                                            >⚠️ Hỏng</button>
+                                                                            >Hỏng</button>
                                                                         </div>
                                                                     )}
                                                                 </td>
@@ -287,7 +269,7 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
                                         )}
 
                                         {csm.notes && (
-                                            <p className="text-[10px] text-cream-500 italic mt-2">📝 {csm.notes}</p>
+                                            <p className="text-[10px] text-cream-500 italic mt-2">{csm.notes}</p>
                                         )}
                                     </div>
                                 )}
@@ -312,13 +294,13 @@ export function ConsignmentClient({ initial }: { initial: ConsignmentInitialData
                                                 stl.status === "CONFIRMED" ? "bg-blue-100 border-blue-300 text-blue-700" :
                                                     "bg-amber-100 border-amber-300 text-amber-700"
                                         )}>
-                                            {stl.status === "PAID" ? "✅ Đã thanh toán" : stl.status === "CONFIRMED" ? "📋 Đã xác nhận" : "⏳ Chờ xác nhận"}
+                                            {stl.status === "PAID" ? "Đã thanh toán" : stl.status === "CONFIRMED" ? "Đã xác nhận" : "Chờ xác nhận"}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-3 text-[11px] text-cream-500">
-                                        <span>🏢 {stl.supplierName}</span>
-                                        <span>📅 {new Date(stl.periodStart).toLocaleDateString("vi-VN")} → {new Date(stl.periodEnd).toLocaleDateString("vi-VN")}</span>
-                                        <span>📦 {stl.totalSoldItems} chai</span>
+                                        <span>{stl.supplierName}</span>
+                                        <span>{new Date(stl.periodStart).toLocaleDateString("vi-VN")} → {new Date(stl.periodEnd).toLocaleDateString("vi-VN")}</span>
+                                        <span>{stl.totalSoldItems} chai</span>
                                     </div>
                                 </div>
                                 <div className="text-right space-y-0.5">
@@ -385,14 +367,14 @@ function CreateConsignmentModal({ onClose, onCreated }: { onClose: () => void; o
             receivedBy: "Chien (Owner)",
         })
         setSubmitting(false)
-        if (r.success) { toast.success("✅ Đã tạo đơn ký gửi!"); onCreated() }
+        if (r.success) { toast.success("Đã tạo đơn ký gửi!"); onCreated() }
     }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div className="w-full max-w-[520px] max-h-[90vh] overflow-y-auto rounded-2xl border border-cream-200 bg-white shadow-2xl">
                 <div className="sticky top-0 flex items-center justify-between px-5 py-4 border-b border-cream-200 bg-white z-10">
-                    <h2 className="text-lg font-bold text-green-900">📦 Tạo đơn ký gửi mới</h2>
+                    <h2 className="text-lg font-bold text-green-900">Tạo đơn ký gửi mới</h2>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100"><X className="h-4 w-4 text-cream-400" /></button>
                 </div>
                 <div className="p-5 space-y-4">

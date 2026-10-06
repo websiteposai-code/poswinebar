@@ -2,29 +2,7 @@
 
 import { useState, useEffect, useCallback, use } from "react"
 import { useRouter } from "next/navigation"
-import {
-    ArrowLeft,
-    Shield,
-    Phone,
-    Mail,
-    Clock,
-    Award,
-    Wine,
-    ChefHat,
-    Martini,
-    HandPlatter,
-    Users,
-    TrendingUp,
-    CalendarDays,
-    Timer,
-    DollarSign,
-    BarChart3,
-    ShoppingBag,
-    CheckCircle2,
-    AlertCircle,
-    UserX,
-    Palmtree,
-} from "lucide-react"
+import { ArrowLeft, Shield, Award, Wine, ChefHat, Martini, HandPlatter, Users, TrendingUp, CalendarDays, Timer, DollarSign, BarChart3, ShoppingBag, CheckCircle2, AlertCircle, UserX, Palmtree } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
     getStaffById,
@@ -123,7 +101,6 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
         return (
             <div className="min-h-screen bg-cream-50 flex items-center justify-center">
                 <div className="text-center">
-                    <Users className="h-12 w-12 text-cream-300 mx-auto mb-3" />
                     <p className="text-cream-500">Không tìm thấy nhân viên</p>
                     <button onClick={() => router.push("/dashboard/staff")} className="mt-3 text-sm text-green-700 hover:underline">
                         ← Quay lại
@@ -167,7 +144,6 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                                 "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold",
                                 ROLE_COLORS[staff.role]
                             )}>
-                                <RoleIcon className="h-3 w-3" />
                                 {ROLE_LABELS[staff.role as StaffRole]}
                             </span>
                             <span className={cn(
@@ -179,13 +155,13 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                         </div>
                         <div className="flex items-center gap-4 text-xs text-cream-500">
                             {staff.phone && (
-                                <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {staff.phone}</span>
+                                <span className="flex items-center gap-1">{staff.phone}</span>
                             )}
                             {staff.email && (
-                                <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {staff.email}</span>
+                                <span className="flex items-center gap-1">{staff.email}</span>
                             )}
                             <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" /> Từ {staff.createdAt.toLocaleDateString("vi-VN")}
+                                Từ {staff.createdAt.toLocaleDateString("vi-VN")}
                             </span>
                         </div>
                     </div>
@@ -196,10 +172,8 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                             { label: "Doanh thu", value: `₫${formatCompact(staff.totalRevenue)}`, icon: TrendingUp, color: "text-wine-700" },
                             { label: "Lương", value: `₫${formatCompact(staff.baseSalary)}`, icon: DollarSign, color: "text-green-700" },
                         ].map((stat) => {
-                            const SIcon = stat.icon
                             return (
                                 <div key={stat.label} className="rounded-xl border border-cream-200 bg-cream-50 px-4 py-3 text-center min-w-[100px]">
-                                    <SIcon className="h-4 w-4 text-cream-400 mx-auto mb-1" />
                                     <p className={cn("font-mono text-lg font-bold", stat.color)}>{stat.value}</p>
                                     <p className="text-[8px] text-cream-400">{stat.label}</p>
                                 </div>
@@ -238,7 +212,7 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                     <div className="space-y-4">
                         <div className="rounded-xl border border-cream-300 bg-cream-100 p-5">
                             <h3 className="text-[10px] font-bold text-cream-400 uppercase mb-3 flex items-center gap-1.5">
-                                <CalendarDays className="h-3.5 w-3.5" /> Chấm công tháng này
+                                Chấm công tháng này
                             </h3>
                             {attSummary && (
                                 <div className="grid grid-cols-2 gap-2">
@@ -267,7 +241,7 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                     <div className="space-y-4">
                         <div className="rounded-xl border border-cream-300 bg-cream-100 p-5">
                             <h3 className="text-[10px] font-bold text-cream-400 uppercase mb-3 flex items-center gap-1.5">
-                                <TrendingUp className="h-3.5 w-3.5" /> Hiệu suất 30 ngày
+                                Hiệu suất 30 ngày
                             </h3>
                             {performance && (
                                 <div className="space-y-3">
@@ -304,7 +278,7 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                     <div className="space-y-4">
                         <div className="rounded-xl border border-cream-300 bg-cream-100 p-5">
                             <h3 className="text-[10px] font-bold text-cream-400 uppercase mb-3 flex items-center gap-1.5">
-                                <Timer className="h-3.5 w-3.5" /> Ca gần đây
+                                Ca gần đây
                             </h3>
                             <div className="space-y-2 max-h-[300px] overflow-y-auto">
                                 {shifts.length === 0 && <p className="text-xs text-cream-400 text-center py-4">Chưa có ca nào</p>}
@@ -346,7 +320,7 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                         <div className="rounded-xl border border-cream-300 bg-cream-100 overflow-x-auto">
                             <div className="px-5 py-3 border-b border-cream-200 bg-cream-50">
                                 <h3 className="text-xs font-bold text-green-900 uppercase flex items-center gap-1.5">
-                                    <CalendarDays className="h-3.5 w-3.5" /> Lịch sử chấm công
+                                    Lịch sử chấm công
                                 </h3>
                             </div>
                             <div className="overflow-x-auto">
@@ -402,11 +376,10 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                                         { label: "Nghỉ phép", value: attSummary.leave, color: "text-blue-600", icon: Palmtree },
                                         { label: "Đi muộn", value: attSummary.late, color: "text-amber-600", icon: AlertCircle },
                                     ].map((item) => {
-                                        const IIcon = item.icon
                                         return (
                                             <div key={item.label} className="flex items-center justify-between rounded-lg bg-cream-50 px-3 py-2">
                                                 <span className="flex items-center gap-1.5 text-[10px] text-cream-500">
-                                                    <IIcon className="h-3 w-3" /> {item.label}
+                                                    {item.label}
                                                 </span>
                                                 <span className={cn("font-mono text-sm font-bold", item.color)}>{item.value}</span>
                                             </div>
@@ -428,7 +401,7 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                 <div className="rounded-xl border border-cream-300 bg-cream-100 overflow-x-auto">
                     <div className="px-5 py-3 border-b border-cream-200 bg-cream-50">
                         <h3 className="text-xs font-bold text-green-900 uppercase flex items-center gap-1.5">
-                            <Timer className="h-3.5 w-3.5" /> Lịch sử ca làm ({shifts.length} ca)
+                            Lịch sử ca làm ({shifts.length} ca)
                         </h3>
                     </div>
                     <div className="overflow-x-auto">
@@ -520,7 +493,7 @@ export default function StaffDetailPage({ params }: { params: Promise<{ id: stri
                     <div className="col-span-4 rounded-xl border border-cream-300 bg-cream-100 overflow-x-auto">
                         <div className="px-5 py-3 border-b border-cream-200 bg-cream-50">
                             <h3 className="text-xs font-bold text-green-900 uppercase flex items-center gap-1.5">
-                                <BarChart3 className="h-3.5 w-3.5" /> Chi tiết theo ngày
+                                Chi tiết theo ngày
                             </h3>
                         </div>
                         <div className="overflow-x-auto">

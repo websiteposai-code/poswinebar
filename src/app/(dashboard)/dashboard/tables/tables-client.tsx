@@ -1,21 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-    Armchair,
-    Plus,
-    RefreshCcw,
-    Users,
-    Clock,
-    DollarSign,
-    Check,
-    Trash2,
-    Edit3,
-    MoreHorizontal,
-    Sparkles,
-    X,
-    MapPin,
-} from "lucide-react"
+import { Armchair, Plus, RefreshCcw, Users, Clock, DollarSign, Check, Trash2, Sparkles, X, MapPin } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -150,9 +136,6 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
             {/* Header */}
             <div className="flex items-center justify-between mb-6 animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 icon-hover">
-                        <Armchair className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Quản lý Bàn</h1>
                         <p className="text-sm text-cream-500">Sơ đồ bàn & trạng thái real-time</p>
@@ -193,7 +176,6 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                     { label: "Đặt trước", value: stats.reserved, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
                     { label: "Dọn dẹp", value: stats.cleaning, icon: Sparkles, color: "text-cream-500", bg: "bg-cream-100" },
                 ].map((stat) => {
-                    const Icon = stat.icon
                     return (
                         <div
                             key={stat.label}
@@ -202,7 +184,6 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                                 stat.bg
                             )}
                         >
-                            <Icon className={cn("h-5 w-5", stat.color)} />
                             <div>
                                 <p className={cn("font-mono text-xl font-bold", stat.color)}>{stat.value}</p>
                                 <p className="text-[10px] text-cream-400">{stat.label}</p>
@@ -248,7 +229,7 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                             viewMode === "list" ? "bg-white text-green-900 shadow-sm" : "text-cream-500 hover:text-green-900"
                         )}
                     >
-                        📋 Danh sách
+                        Danh sách
                     </button>
                     <button
                         onClick={() => setViewMode("floorplan")}
@@ -256,7 +237,7 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                             viewMode === "floorplan" ? "bg-white text-green-900 shadow-sm" : "text-cream-500 hover:text-green-900"
                         )}
                     >
-                        🗺️ Sơ đồ
+                        Sơ đồ
                     </button>
                 </div>
             </div>
@@ -279,7 +260,6 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
 
             {viewMode === "floorplan" && selectedZone === "all" && (
                 <div className="bg-white rounded-xl border border-cream-300 p-12 text-center">
-                    <span className="text-5xl mb-4 block">🗺️</span>
                     <p className="text-green-800 font-medium">Chọn một khu vực để xem sơ đồ mặt bằng</p>
                     <p className="text-cream-400 text-sm mt-1">Sơ đồ hiển thị cho từng khu vực riêng biệt</p>
                 </div>
@@ -342,10 +322,9 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                                             {order.orderNo}
                                         </p>
                                         <p className="text-[10px] text-wine-600">
-                                            🍽 {order.itemCount} món
+                                            {order.itemCount} món
                                         </p>
                                         <p className="flex items-center justify-center gap-0.5 text-[10px] text-cream-500">
-                                            <Clock className="h-2.5 w-2.5" />
                                             {formatDuration(elapsed)}
                                         </p>
                                         <p className="font-mono text-xs font-bold text-wine-700">
@@ -514,7 +493,7 @@ function AddTableModal({ zones, onClose, onCreated }: { zones: TableZone[]; onCl
         setSubmitting(true)
         const r = await createTable({ zoneId, tableNumber: tableNumber.trim(), seats, shape })
         setSubmitting(false)
-        if (r.success) { toast.success(`✅ Đã thêm bàn ${tableNumber}`); onCreated() }
+        if (r.success) { toast.success(`Đã thêm bàn ${tableNumber}`); onCreated() }
         else toast.error(r.error ?? "Lỗi")
     }
 
@@ -522,7 +501,7 @@ function AddTableModal({ zones, onClose, onCreated }: { zones: TableZone[]; onCl
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-modal-backdrop">
             <div className="w-full max-w-[380px] rounded-2xl border border-cream-200 bg-white shadow-2xl animate-modal-content">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-cream-200">
-                    <h2 className="text-lg font-bold text-green-900">➕ Thêm bàn mới</h2>
+                    <h2 className="text-lg font-bold text-green-900">Thêm bàn mới</h2>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100"><X className="h-4 w-4 text-cream-400" /></button>
                 </div>
                 <div className="p-5 space-y-4">
@@ -546,7 +525,7 @@ function AddTableModal({ zones, onClose, onCreated }: { zones: TableZone[]; onCl
                             <div className="flex gap-1">
                                 {["square", "circle", "rectangle"].map((s) => (
                                     <button key={s} onClick={() => setShape(s)} className={cn("flex-1 rounded-md py-1.5 text-[10px] font-medium border", shape === s ? "bg-green-900 text-cream-50 border-green-900" : "border-cream-300 text-cream-500")}>
-                                        {s === "square" ? "⬜" : s === "circle" ? "⭕" : "▬"}
+                                        {s === "square" ? "Vuông" : s === "circle" ? "Tròn" : "Dài"}
                                     </button>
                                 ))}
                             </div>
@@ -576,7 +555,7 @@ function ZoneManagerModal({ zones, onClose, onChanged }: { zones: TableZone[]; o
         setAdding(true)
         const r = await createZone({ name: newName.trim() })
         setAdding(false)
-        if (r.success) { toast.success(`✅ Đã thêm "${newName}"`); setNewName(""); onChanged() }
+        if (r.success) { toast.success(`Đã thêm "${newName}"`); setNewName(""); onChanged() }
     }
 
     const handleDelete = async (id: string, name: string) => {
@@ -589,7 +568,7 @@ function ZoneManagerModal({ zones, onClose, onChanged }: { zones: TableZone[]; o
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-modal-backdrop">
             <div className="w-full max-w-[360px] rounded-2xl border border-cream-200 bg-white shadow-2xl animate-modal-content">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-cream-200">
-                    <h2 className="text-lg font-bold text-green-900">📍 Quản lý khu vực</h2>
+                    <h2 className="text-lg font-bold text-green-900">Quản lý khu vực</h2>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100"><X className="h-4 w-4 text-cream-400" /></button>
                 </div>
                 <div className="p-5 space-y-3">

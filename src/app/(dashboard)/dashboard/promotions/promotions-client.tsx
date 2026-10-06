@@ -1,23 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-    Sparkles,
-    Clock,
-    Percent,
-    Gift,
-    DollarSign,
-    Calendar,
-    ToggleLeft,
-    ToggleRight,
-    Plus,
-    X,
-    Tag,
-    TrendingUp,
-    Zap,
-    Moon,
-    Users,
-} from "lucide-react"
+import { Clock, Percent, Gift, DollarSign, ToggleLeft, ToggleRight, Plus, X } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -101,9 +85,6 @@ export default function PromotionsClient({ initial }: { initial: PromotionsIniti
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-                        <Sparkles className="h-5 w-5 text-amber-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Khuyến mãi</h1>
                         <p className="text-sm text-cream-500">Happy Hour, combo deals, giảm giá tự động</p>
@@ -119,23 +100,23 @@ export default function PromotionsClient({ initial }: { initial: PromotionsIniti
             {stats && (
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><Tag className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng KM</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Tổng KM</span></div>
                         <p className="font-mono text-xl font-bold text-green-900">{stats.totalPromotions}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><Zap className="h-3.5 w-3.5 text-green-500" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đang áp dụng</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Đang áp dụng</span></div>
                         <p className="font-mono text-xl font-bold text-green-600">{stats.activeNow}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><TrendingUp className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Lượt sử dụng</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">Lượt sử dụng</span></div>
                         <p className="font-mono text-xl font-bold text-blue-700">{fmt(promos.reduce((s, p) => s + p.currentUsage, 0))}</p>
                     </div>
                     <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><Sparkles className="h-3.5 w-3.5 text-cream-400" /><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">KM phổ biến</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">KM phổ biến</span></div>
                         <p className="text-[11px] font-bold text-wine-700 leading-tight mt-1">{stats.mostUsedPromo}</p>
                     </div>
                     <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1"><Clock className="h-3.5 w-3.5 text-amber-500" /><span className="text-[10px] font-medium uppercase tracking-wider text-amber-500">Active ngay lúc này</span></div>
+                        <div className="flex items-center gap-1.5 mb-1"><span className="text-[10px] font-medium uppercase tracking-wider text-amber-500">Active ngay lúc này</span></div>
                         <p className="font-mono text-xl font-bold text-amber-700">{promos.filter(isActiveNow).length}</p>
                     </div>
                 </div>
@@ -153,8 +134,8 @@ export default function PromotionsClient({ initial }: { initial: PromotionsIniti
                         )}
                     >
                         {f === "ALL" ? `Tất cả ${promos.length}` :
-                            f === "ACTIVE" ? `✅ Đang chạy ${promos.filter((p) => p.status === "ACTIVE").length}` :
-                                f === "EXPIRED" ? `⏰ Hết hạn` : `❌ Đã tắt`}
+                            f === "ACTIVE" ? `Đang chạy ${promos.filter((p) => p.status === "ACTIVE").length}` :
+                                f === "EXPIRED" ? `Hết hạn` : `Đã tắt`}
                     </button>
                 ))}
                 <span className="text-xs text-cream-400 ml-auto">Hiện tại: {currentHour} · {DAY_LABELS[today] ?? today}</span>
@@ -217,14 +198,14 @@ export default function PromotionsClient({ initial }: { initial: PromotionsIniti
                                             <p className="font-mono text-xl font-bold">-₫{fmt(promo.discountAmount)}</p>
                                         )}
                                         {promo.type === "COMBO" && promo.discountAmount && (
-                                            <p className="font-mono text-xl font-bold">🎁 FREE</p>
+                                            <p className="font-mono text-xl font-bold">FREE</p>
                                         )}
                                     </div>
                                     <div className="text-[10px] text-cream-500 space-y-0.5">
                                         {promo.minOrderAmount && <p>Đơn tối thiểu: <span className="font-mono font-bold text-green-700">₫{fmt(promo.minOrderAmount)}</span></p>}
                                         {promo.maxDiscount && <p>Giảm tối đa: <span className="font-mono font-bold text-wine-600">₫{fmt(promo.maxDiscount)}</span></p>}
-                                        {promo.comboRequirement && <p>📦 {promo.comboRequirement}</p>}
-                                        {promo.comboReward && <p>🎁 {promo.comboReward}</p>}
+                                        {promo.comboRequirement && <p>{promo.comboRequirement}</p>}
+                                        {promo.comboReward && <p>{promo.comboReward}</p>}
                                     </div>
                                 </div>
 
@@ -246,12 +227,12 @@ export default function PromotionsClient({ initial }: { initial: PromotionsIniti
                                         </div>
                                         {promo.startTime && promo.endTime && (
                                             <p className="text-[10px] text-cream-500 flex items-center gap-1">
-                                                <Clock className="h-3 w-3" /> {promo.startTime} — {promo.endTime}
+                                                {promo.startTime} — {promo.endTime}
                                             </p>
                                         )}
                                         {promo.endDate && (
                                             <p className="text-[10px] text-cream-500 flex items-center gap-1">
-                                                <Calendar className="h-3 w-3" /> Đến {new Date(promo.endDate).toLocaleDateString("vi-VN")}
+                                                Đến {new Date(promo.endDate).toLocaleDateString("vi-VN")}
                                             </p>
                                         )}
                                     </div>
@@ -329,14 +310,14 @@ function CreatePromoModal({ onClose, onCreated }: { onClose: () => void; onCreat
             maxUsage: maxUsage ? Number(maxUsage) : undefined,
         })
         setSubmitting(false)
-        if (r.success) { toast.success("✅ Đã tạo chương trình khuyến mãi!"); onCreated() }
+        if (r.success) { toast.success("Đã tạo chương trình khuyến mãi!"); onCreated() }
     }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div className="w-full max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl border border-cream-200 bg-white shadow-2xl">
                 <div className="sticky top-0 flex items-center justify-between px-5 py-4 border-b border-cream-200 bg-white z-10">
-                    <h2 className="text-lg font-bold text-green-900">➕ Tạo khuyến mãi mới</h2>
+                    <h2 className="text-lg font-bold text-green-900">Tạo khuyến mãi mới</h2>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100"><X className="h-4 w-4 text-cream-400" /></button>
                 </div>
                 <div className="p-5 space-y-4">

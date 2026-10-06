@@ -1,29 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
-import {
-    AlertTriangle,
-    RefreshCw,
-    ShieldAlert,
-    AlertCircle,
-    Info,
-    Package,
-    ChevronDown,
-    ChevronUp,
-    ExternalLink,
-    Clock,
-    Wine,
-    Thermometer,
-    TrendingDown,
-    Filter,
-    Bell,
-    BellOff,
-    CheckCircle2,
-    BarChart3,
-    Activity,
-    Eye,
-    Search,
-} from "lucide-react"
+import { RefreshCw, ShieldAlert, AlertCircle, Info, ChevronDown, ChevronUp, Filter, Bell, BellOff, Eye, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -58,11 +36,11 @@ const SEVERITY_CONFIG: Record<AlertSeverity, { label: string; color: string; bgC
 }
 
 const ALERT_TYPE_LABELS: Record<string, { label: string; icon: string }> = {
-    OUT_OF_STOCK: { label: "Hết hàng", icon: "🔴" },
-    LOW_STOCK: { label: "Tồn kho thấp", icon: "🟠" },
-    OXIDATION_RISK: { label: "Nguy cơ oxy hóa", icon: "🍷" },
-    LOW_GLASSES: { label: "Còn ít ly", icon: "🥂" },
-    EXPIRY_APPROACHING: { label: "Sắp hết hạn", icon: "⏰" },
+    OUT_OF_STOCK: { label: "Hết hàng", icon: "" },
+    LOW_STOCK: { label: "Tồn kho thấp", icon: "" },
+    OXIDATION_RISK: { label: "Nguy cơ oxy hóa", icon: "" },
+    LOW_GLASSES: { label: "Còn ít ly", icon: "" },
+    EXPIRY_APPROACHING: { label: "Sắp hết hạn", icon: "" },
 }
 
 export default function AlertsClient({ initial }: { initial: InventoryAlert[] }) {
@@ -163,7 +141,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900 flex items-center gap-2">
-                        <AlertTriangle className="h-6 w-6 text-amber-600" />
                         Trung tâm Cảnh báo
                     </h1>
                     <p className="text-sm text-cream-500 mt-0.5">
@@ -172,7 +149,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cream-50 border border-cream-200">
-                        <Activity className="h-3.5 w-3.5 text-green-600 animate-pulse" />
                         <span className="text-[11px] text-cream-500">
                             Live · {lastRefresh.toLocaleTimeString("vi-VN")}
                         </span>
@@ -197,7 +173,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                         <ShieldAlert className="h-16 w-16 text-red-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <ShieldAlert className="h-4 w-4 text-red-600" />
                         <span className="text-xs font-bold uppercase text-red-700">Quan trọng</span>
                     </div>
                     <p className="mt-2 font-mono text-3xl font-bold text-red-800">{criticalAlerts.length}</p>
@@ -208,7 +183,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                         <AlertCircle className="h-16 w-16 text-amber-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-amber-600" />
                         <span className="text-xs font-bold uppercase text-amber-700">Cảnh báo</span>
                     </div>
                     <p className="mt-2 font-mono text-3xl font-bold text-amber-800">{warningAlerts.length}</p>
@@ -219,7 +193,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                         <Info className="h-16 w-16 text-blue-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Info className="h-4 w-4 text-blue-600" />
                         <span className="text-xs font-bold uppercase text-blue-700">Thông tin</span>
                     </div>
                     <p className="mt-2 font-mono text-3xl font-bold text-blue-800">{infoAlerts.length}</p>
@@ -230,7 +203,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                         <Bell className="h-16 w-16 text-green-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Bell className="h-4 w-4 text-green-600" />
                         <span className="text-xs font-bold uppercase text-green-700">Đang hoạt động</span>
                     </div>
                     <p className="mt-2 font-mono text-3xl font-bold text-green-800">{activeAlerts}</p>
@@ -241,7 +213,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                         <BellOff className="h-16 w-16 text-cream-400" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <BellOff className="h-4 w-4 text-cream-400" />
                         <span className="text-xs font-bold uppercase text-cream-500">Đã xem</span>
                     </div>
                     <p className="mt-2 font-mono text-3xl font-bold text-cream-600">{dismissedAlerts.size}</p>
@@ -266,7 +237,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                             />
                         </div>
                         <div className="flex items-center gap-1.5 flex-wrap">
-                            <Filter className="h-3.5 w-3.5 text-cream-400" />
                             <button
                                 onClick={() => setActiveFilter("ALL")}
                                 className={cn(
@@ -289,7 +259,7 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                                             : "bg-cream-100 text-cream-500 hover:bg-cream-200"
                                     )}
                                 >
-                                    {ALERT_TYPE_LABELS[t]?.icon} {ALERT_TYPE_LABELS[t]?.label ?? t} ({alerts.filter((a) => a.type === t).length})
+                                    {ALERT_TYPE_LABELS[t]?.label ?? t} ({alerts.filter((a) => a.type === t).length})
                                 </button>
                             ))}
                         </div>
@@ -335,7 +305,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                                                     key={alert.id}
                                                     className="flex items-start gap-3 rounded-lg bg-white/90 border border-cream-200 px-4 py-3 hover:shadow-md transition-all group"
                                                 >
-                                                    <span className="text-lg mt-0.5">{alert.icon}</span>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2 flex-wrap">
                                                             <h4 className="text-xs font-bold text-green-900">
@@ -357,7 +326,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                                                         </p>
                                                         {alert.action && (
                                                             <p className="mt-1.5 text-[10px] text-green-700 font-medium flex items-center gap-1">
-                                                                <ExternalLink className="h-2.5 w-2.5" />
                                                                 {alert.action}
                                                             </p>
                                                         )}
@@ -386,8 +354,7 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
 
                                     {isExpanded && items.length === 0 && (
                                         <div className="border-t px-5 py-6 text-center" style={{ borderColor: "inherit" }}>
-                                            <CheckCircle2 className={cn("h-8 w-8 mx-auto mb-2 opacity-30", config.color)} />
-                                            <p className="text-xs text-cream-400">✅ Không có cảnh báo nào</p>
+                                            <p className="text-xs text-cream-400">Không có cảnh báo nào</p>
                                         </div>
                                     )}
                                 </div>
@@ -401,7 +368,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                     {/* Alert Type Distribution */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <BarChart3 className="h-4 w-4 text-green-700" />
                             Phân bố Loại cảnh báo
                         </h3>
                         {alertTypeDistribution.length > 0 ? (
@@ -413,7 +379,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                                         <div key={item.type}>
                                             <div className="flex items-center justify-between mb-1">
                                                 <span className="text-[11px] text-cream-600 flex items-center gap-1.5">
-                                                    <span>{ALERT_TYPE_LABELS[item.type]?.icon ?? "📦"}</span>
                                                     {item.label}
                                                 </span>
                                                 <span className="text-[11px] font-mono font-bold text-green-900">{item.count}</span>
@@ -436,7 +401,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                     {/* Top Affected Products */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <Wine className="h-4 w-4 text-wine-600" />
                             Sản phẩm bị ảnh hưởng nhiều nhất
                         </h3>
                         {topAffectedProducts.length > 0 ? (
@@ -482,13 +446,11 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                     {/* Quick Actions */}
                     <div className="rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100/30 p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <Activity className="h-4 w-4 text-green-700" />
                             Hành động nhanh
                         </h3>
                         <div className="space-y-2">
                             {criticalAlerts.length > 0 && (
                                 <div className="flex items-start gap-2 p-2.5 rounded-lg bg-red-50 border border-red-200">
-                                    <ShieldAlert className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
                                     <div>
                                         <p className="text-[11px] font-bold text-red-800">
                                             {criticalAlerts.length} cảnh báo cần xử lý ngay
@@ -502,7 +464,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                             )}
                             {warningAlerts.filter((a) => a.type === "EXPIRY_APPROACHING").length > 0 && (
                                 <div className="flex items-start gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
-                                    <Clock className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                                     <div>
                                         <p className="text-[11px] font-bold text-amber-800">
                                             {warningAlerts.filter((a) => a.type === "EXPIRY_APPROACHING").length} nguyên liệu sắp hết hạn
@@ -513,7 +474,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                             )}
                             {warningAlerts.filter((a) => a.type === "LOW_STOCK").length > 0 && (
                                 <div className="flex items-start gap-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200">
-                                    <TrendingDown className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
                                     <div>
                                         <p className="text-[11px] font-bold text-blue-800">
                                             {warningAlerts.filter((a) => a.type === "LOW_STOCK").length} sản phẩm tồn thấp
@@ -524,9 +484,8 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                             )}
                             {alerts.length === 0 && (
                                 <div className="flex items-center gap-2 p-3 rounded-lg bg-green-100 border border-green-200">
-                                    <CheckCircle2 className="h-5 w-5 text-green-700" />
                                     <p className="text-xs font-bold text-green-800">
-                                        Tuyệt! Tất cả đều ổn 🎉
+                                        Tuyệt! Tất cả đều ổn
                                     </p>
                                 </div>
                             )}
@@ -536,7 +495,6 @@ export default function AlertsClient({ initial }: { initial: InventoryAlert[] })
                     {/* System Status */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-3">
-                            <Thermometer className="h-4 w-4 text-green-700" />
                             Tình trạng hệ thống
                         </h3>
                         <div className="space-y-3">

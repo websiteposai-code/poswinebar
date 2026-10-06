@@ -1,14 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-    MessageCircle,
-    Star,
-    RefreshCw,
-    TrendingUp,
-    ThumbsUp,
-    ThumbsDown,
-} from "lucide-react"
+import { Star, RefreshCw, ThumbsUp, ThumbsDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -41,7 +34,6 @@ export default function FeedbackClient({ initial }: { initial: FeedbackData }) {
             <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
                 <div>
                     <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900 flex items-center gap-2">
-                        <MessageCircle className="h-6 w-6 text-wine-600" />
                         Feedback Khách hàng
                     </h1>
                     <p className="text-sm text-cream-500 mt-0.5">
@@ -94,7 +86,6 @@ export default function FeedbackClient({ initial }: { initial: FeedbackData }) {
             {/* Rating Distribution */}
             <div className="rounded-xl border border-cream-200 bg-white p-4 mb-6">
                 <h3 className="text-xs font-bold text-green-900 mb-3 flex items-center gap-1.5">
-                    <TrendingUp className="h-3.5 w-3.5 text-green-700" />
                     Phân bố đánh giá
                 </h3>
                 <div className="space-y-1.5">
@@ -181,17 +172,17 @@ export default function FeedbackClient({ initial }: { initial: FeedbackData }) {
                                     <span className={cn("flex items-center gap-0.5",
                                         session.serviceRating >= 4 ? "text-green-600" : session.serviceRating >= 3 ? "text-amber-600" : "text-red-500"
                                     )}>
-                                        👨‍🍳 {session.serviceRating}
+                                        {session.serviceRating}
                                     </span>
                                     <span className={cn("flex items-center gap-0.5",
                                         session.visitRating >= 4 ? "text-green-600" : session.visitRating >= 3 ? "text-amber-600" : "text-red-500"
                                     )}>
-                                        🍷 {session.visitRating}
+                                        {session.visitRating}
                                     </span>
                                     <span className={cn("flex items-center gap-0.5",
                                         session.ambienceRating >= 4 ? "text-green-600" : session.ambienceRating >= 3 ? "text-amber-600" : "text-red-500"
                                     )}>
-                                        🎶 {session.ambienceRating}
+                                        {session.ambienceRating}
                                     </span>
                                 </div>
 
@@ -210,7 +201,7 @@ export default function FeedbackClient({ initial }: { initial: FeedbackData }) {
                                                             : "bg-red-50 text-red-700 border-red-200"
                                                 )}
                                             >
-                                                {item.productName} · {"⭐".repeat(item.rating)}
+                                                {item.productName} · {"★".repeat(item.rating)}
                                                 {item.comment && ` · ${item.comment}`}
                                             </Badge>
                                         ))}
@@ -220,7 +211,7 @@ export default function FeedbackClient({ initial }: { initial: FeedbackData }) {
                                 {/* Alert for low ratings */}
                                 {session.overallRating <= 2 && (
                                     <div className="mt-2 rounded-lg bg-red-50 border border-red-200 px-3 py-1.5 text-[10px] text-red-700">
-                                        ⚠️ Đánh giá thấp — cần follow-up với khách
+                                        Đánh giá thấp — cần follow-up với khách
                                     </div>
                                 )}
                             </div>

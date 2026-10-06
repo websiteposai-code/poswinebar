@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "quality-gate": "npm run typecheck && npm run test && npm run lint",
     "postinstall": "prisma generate",
     "test": "vitest run",
     "test:watch": "vitest",

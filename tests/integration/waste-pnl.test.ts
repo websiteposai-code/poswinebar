@@ -29,7 +29,8 @@ describe('IT-11: Waste → P&L Impact', () => {
     })
 
     it('Step 2: Verify waste record created today', async () => {
-        const today = new Date().toISOString().split('T')[0]
+        const now = new Date()
+        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
         const records = await getWasteRecords({ dateFrom: today, dateTo: today })
         const testRecord = records.find(r => r.reason?.includes('Integration test'))
         expect(testRecord).toBeDefined()

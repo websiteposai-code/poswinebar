@@ -1,33 +1,7 @@
 "use client"
 
 import { useState, useCallback, useMemo } from "react"
-import {
-    Trash2,
-    RefreshCw,
-    Plus,
-    Wine,
-    AlertTriangle,
-    Package,
-    Layers,
-    X,
-    TrendingDown,
-    BarChart3,
-    DollarSign,
-    Calendar,
-    Users,
-    Search,
-    Filter,
-    ArrowDownRight,
-    PieChart,
-    Target,
-    Clock,
-    Percent,
-    FileWarning,
-    Activity,
-    ShieldCheck,
-    Droplets,
-    Sparkles,
-} from "lucide-react"
+import { Trash2, RefreshCw, Plus, Wine, AlertTriangle, Package, Layers, X, TrendingDown, DollarSign, Search, Filter, ArrowDownRight, Target, Clock, Percent, FileWarning, ShieldCheck, Droplets, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -268,7 +242,6 @@ export default function WasteClient({
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900 flex items-center gap-2">
-                        <Trash2 className="h-6 w-6 text-red-600" />
                         Quản lý Hao hụt & Hư hỏng
                     </h1>
                     <p className="text-sm text-cream-500 mt-0.5">
@@ -304,7 +277,6 @@ export default function WasteClient({
                         <DollarSign className="h-14 w-14 text-red-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-red-600" />
                         <span className="text-[10px] font-bold uppercase text-red-700">Tổng giá trị</span>
                     </div>
                     <p className="mt-2 font-mono text-2xl font-bold text-red-800">
@@ -317,7 +289,6 @@ export default function WasteClient({
                         <Layers className="h-14 w-14 text-amber-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Layers className="h-4 w-4 text-amber-600" />
                         <span className="text-[10px] font-bold uppercase text-amber-700">Tổng sự cố</span>
                     </div>
                     <p className="mt-2 font-mono text-2xl font-bold text-amber-800">
@@ -330,7 +301,6 @@ export default function WasteClient({
                         <Percent className="h-14 w-14 text-orange-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Percent className="h-4 w-4 text-orange-600" />
                         <span className="text-[10px] font-bold uppercase text-orange-700">% Doanh thu</span>
                     </div>
                     <p className={cn("mt-2 font-mono text-2xl font-bold",
@@ -346,7 +316,6 @@ export default function WasteClient({
                         <Target className="h-14 w-14 text-blue-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Target className="h-4 w-4 text-blue-600" />
                         <span className="text-[10px] font-bold uppercase text-blue-700">TB / sự cố</span>
                     </div>
                     <p className="mt-2 font-mono text-2xl font-bold text-blue-800">
@@ -359,7 +328,6 @@ export default function WasteClient({
                         <TrendingDown className="h-14 w-14 text-cream-400" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-cream-500" />
                         <span className="text-[10px] font-bold uppercase text-cream-600">7 ngày qua</span>
                     </div>
                     <p className="mt-2 font-mono text-2xl font-bold text-cream-700">
@@ -376,7 +344,6 @@ export default function WasteClient({
                         <FileWarning className="h-14 w-14 text-green-600" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <FileWarning className="h-4 w-4 text-green-600" />
                         <span className="text-[10px] font-bold uppercase text-green-700">Benchmark</span>
                     </div>
                     <p className={cn("mt-2 font-mono text-2xl font-bold",
@@ -397,9 +364,6 @@ export default function WasteClient({
                         <div key={t.type} className={cn("rounded-xl border px-4 py-3", config.bgColor, config.borderColor)}>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="p-2 rounded-lg bg-white/80 border border-current/10 shadow-2xs">
-                                        <config.icon className={cn("h-4 w-4", config.color)} />
-                                    </div>
                                     <div>
                                         <span className={cn("text-xs font-bold", config.color)}>{config.label}</span>
                                         <p className={cn("font-mono text-lg font-bold", config.color)}>
@@ -478,7 +442,6 @@ export default function WasteClient({
                             <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/60 flex items-center justify-between">
                                 <div>
                                     <h3 className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                                        <Wine className="h-4 w-4 text-amber-800" />
                                         Giám sát Chai vang đang mở bán ly (By-the-glass)
                                     </h3>
                                     <p className="text-[11px] text-amber-800/80 mt-0.5">
@@ -489,7 +452,6 @@ export default function WasteClient({
 
                             {openWines.length === 0 ? (
                                 <div className="rounded-xl border border-cream-200 bg-white p-8 text-center text-stone-400">
-                                    <Wine className="h-8 w-8 mx-auto mb-2 opacity-30 text-amber-700" />
                                     <p className="text-xs font-medium">Hiện không có chai vang nào đang mở ly trong quầy bar</p>
                                 </div>
                             ) : (
@@ -517,7 +479,7 @@ export default function WasteClient({
                                                 </div>
                                                 {bottle.isOxidizedWarning ? (
                                                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-200 flex items-center gap-1">
-                                                        <AlertTriangle className="h-3 w-3" /> Quá {bottle.hoursOpened}h
+                                                        Quá {bottle.hoursOpened}h
                                                     </span>
                                                 ) : (
                                                     <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-800 border border-green-200">
@@ -571,7 +533,6 @@ export default function WasteClient({
                         <div className="space-y-3">
                             <div className="p-3.5 rounded-xl border border-blue-200 bg-blue-50/60">
                                 <h3 className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
-                                    <ShieldCheck className="h-4 w-4 text-blue-700" />
                                     Danh mục Vang hỏng chờ Nhà cung cấp đổi bù (Supplier Claims)
                                 </h3>
                                 <p className="text-[11px] text-blue-800/80 mt-0.5">
@@ -581,7 +542,6 @@ export default function WasteClient({
 
                             {report.records.filter((r) => r.isPendingSupplierClaim).length === 0 ? (
                                 <div className="rounded-xl border border-cream-200 bg-white p-8 text-center text-stone-400">
-                                    <ShieldCheck className="h-8 w-8 mx-auto mb-2 opacity-30 text-blue-600" />
                                     <p className="text-xs font-medium">Hiện không có yêu cầu đổi bù nào đang chờ xử lý</p>
                                 </div>
                             ) : (
@@ -600,11 +560,11 @@ export default function WasteClient({
                                                         </span>
                                                         {r.isClaimSettled ? (
                                                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                                                ✅ Đã đổi bù
+                                                                Đã đổi bù
                                                             </span>
                                                         ) : (
                                                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
-                                                                🛡️ Chờ NCC đổi bù
+                                                                Chờ NCC đổi bù
                                                             </span>
                                                         )}
                                                     </div>
@@ -646,7 +606,6 @@ export default function WasteClient({
                                     />
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <Filter className="h-3.5 w-3.5 text-cream-400" />
                                     {(["ALL", "WASTE", "SPOILAGE", "BREAKAGE"] as const).map((t) => (
                                         <button
                                             key={t}
@@ -673,7 +632,6 @@ export default function WasteClient({
                                     ))}
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <Calendar className="h-3.5 w-3.5 text-cream-400" />
                                     {(["7d", "30d", "90d", "all"] as const).map((d) => (
                                         <button
                                             key={d}
@@ -708,7 +666,6 @@ export default function WasteClient({
                                         {filtered.length === 0 && (
                                             <tr>
                                                 <td colSpan={6} className="px-4 py-12 text-center text-cream-400">
-                                                    <Trash2 className="h-8 w-8 mx-auto mb-2 opacity-20" />
                                                     <p className="text-xs">
                                                         Chưa có ghi nhận nào {filterType !== "ALL" || searchQuery ? "phù hợp bộ lọc" : ""}
                                                     </p>
@@ -731,12 +688,10 @@ export default function WasteClient({
                                                     <td className="px-4 py-2.5">
                                                         <div className="flex flex-col gap-1 items-start">
                                                             <Badge className={cn("text-[10px] px-1.5 inline-flex items-center gap-1", config.bgColor, config.color, "border border-current/20")}>
-                                                                <config.icon className="h-2.5 w-2.5" />
                                                                 {config.label}
                                                             </Badge>
                                                             {reasonLabel && ReasonIcon && (
                                                                 <span className={cn("text-[9px] px-1.5 py-0.5 rounded border font-medium inline-flex items-center gap-1", reasonLabel.badge)}>
-                                                                    <ReasonIcon className="h-2.5 w-2.5 shrink-0" />
                                                                     {reasonLabel.label}
                                                                 </span>
                                                             )}
@@ -749,7 +704,6 @@ export default function WasteClient({
                                                                             : "bg-blue-50 text-blue-800 border-blue-200"
                                                                     )}
                                                                 >
-                                                                    <ShieldCheck className="h-2.5 w-2.5 shrink-0" />
                                                                     {r.isClaimSettled ? "Đã đổi bù" : "Chờ NCC bù"}
                                                                 </span>
                                                             )}
@@ -804,7 +758,6 @@ export default function WasteClient({
                     {report.summary.byMonth.length > 0 && (
                         <div className="rounded-xl border border-cream-200 bg-white p-5">
                             <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                                <BarChart3 className="h-4 w-4" />
                                 Xu hướng Theo tháng
                             </h3>
                             <div className="flex items-end gap-3 h-40">
@@ -839,7 +792,6 @@ export default function WasteClient({
                     {/* Top Offenders */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <AlertTriangle className="h-4 w-4 text-red-600" />
                             Top Hao hụt Nhiều nhất
                         </h3>
                         {topOffenders.length > 0 ? (
@@ -883,7 +835,6 @@ export default function WasteClient({
                     {/* Staff Breakdown */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <Users className="h-4 w-4 text-blue-600" />
                             Theo Nhân viên
                         </h3>
                         {staffBreakdown.length > 0 ? (
@@ -917,7 +868,6 @@ export default function WasteClient({
                     {/* Week over Week */}
                     <div className="rounded-xl border border-cream-200 bg-gradient-to-br from-cream-50 to-cream-100/30 p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <Clock className="h-4 w-4 text-cream-500" />
                             So sánh Tuần
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
@@ -949,7 +899,6 @@ export default function WasteClient({
                     {/* Benchmark Info */}
                     <div className="rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100/30 p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-3">
-                            <Target className="h-4 w-4 text-green-700" />
                             Tiêu chuẩn Ngành F&B
                         </h3>
                         <div className="space-y-2.5 text-[11px] text-cream-600">
@@ -1233,7 +1182,7 @@ export default function WasteClient({
                     <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-cream-200 p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="font-display text-base font-bold text-green-900 flex items-center gap-1.5">
-                                🛡️ Đối soát Đổi bù Nhà cung cấp
+                                Đối soát Đổi bù Nhà cung cấp
                             </h2>
                             <button onClick={() => setSettleRecord(null)} className="text-stone-400 hover:text-stone-600">
                                 <X className="h-5 w-5" />

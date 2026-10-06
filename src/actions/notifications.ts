@@ -31,7 +31,7 @@ async function generateLiveNotifications(): Promise<Notification[]> {
         const bottleCount = await prisma.wineBottle.count({ where: { productId: p.id, status: "IN_STOCK" } })
         if (bottleCount <= p.lowStockAlert && bottleCount >= 0 && ["WINE_BOTTLE", "WINE_GLASS", "WINE_TASTING"].includes(p.type)) {
             notifications.push({
-                id: `low-${p.id}`, title: `⚠️ Tồn kho thấp — ${p.name}`,
+                id: `low-${p.id}`, title: `Tồn kho thấp — ${p.name}`,
                 message: `Chỉ còn ${bottleCount} chai. Ngưỡng cảnh báo: ${p.lowStockAlert}.`,
                 priority: bottleCount === 0 ? "CRITICAL" : "WARNING", category: "INVENTORY",
                 isRead: false, actionUrl: "/dashboard/inventory", actionLabel: "Xem kho", createdAt: now,
@@ -45,7 +45,7 @@ async function generateLiveNotifications(): Promise<Notification[]> {
         const hours = (now.getTime() - s.openedAt.getTime()) / 3600000
         if (hours > 6) {
             notifications.push({
-                id: `shift-${s.id}`, title: `⏰ Ca mở > ${Math.floor(hours)} giờ`,
+                id: `shift-${s.id}`, title: `Ca mở > ${Math.floor(hours)} giờ`,
                 message: `Ca của ${s.staff.fullName} mở từ ${s.openedAt.toLocaleTimeString("vi-VN")}. Nhắc đóng ca.`,
                 priority: "WARNING", category: "SHIFT",
                 isRead: false, actionUrl: "/pos", actionLabel: "Xem ca", createdAt: now,
@@ -58,7 +58,7 @@ async function generateLiveNotifications(): Promise<Notification[]> {
     const pendingReservations = await prisma.reservation.count({ where: { date: today, status: "PENDING" } })
     if (pendingReservations > 0) {
         notifications.push({
-            id: `rsv-pending`, title: `📅 ${pendingReservations} đặt bàn chờ xác nhận`,
+            id: `rsv-pending`, title: `${pendingReservations} đặt bàn chờ xác nhận`,
             message: `Có ${pendingReservations} reservation hôm nay chưa được xác nhận.`,
             priority: "INFO", category: "CUSTOMER",
             isRead: false, actionUrl: "/dashboard/reservations", actionLabel: "Xem", createdAt: now,

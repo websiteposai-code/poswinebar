@@ -26,13 +26,13 @@ export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
         const count = await prisma.wineBottle.count({ where: { productId: p.id, status: { in: ["IN_STOCK", "OPENED"] } } })
         if (count === 0) {
             alerts.push({
-                id: `oos-${p.id.slice(0, 8)}`, severity: "CRITICAL", type: "OUT_OF_STOCK", icon: "🔴",
+                id: `oos-${p.id.slice(0, 8)}`, severity: "CRITICAL", type: "OUT_OF_STOCK", icon: "",
                 title: "Hết hàng", description: `${p.name} — 0 chai trong kho`,
                 productName: p.name, productSku: p.sku ?? undefined, action: "Đặt hàng NCC ngay",
             })
         } else if (count <= p.lowStockAlert) {
             alerts.push({
-                id: `low-${p.id.slice(0, 8)}`, severity: "WARNING", type: "LOW_STOCK", icon: "🟠",
+                id: `low-${p.id.slice(0, 8)}`, severity: "WARNING", type: "LOW_STOCK", icon: "",
                 title: "Tồn kho thấp", description: `${p.name} — còn ${count} chai (ngưỡng: ${p.lowStockAlert})`,
                 productName: p.name, productSku: p.sku ?? undefined, value: `${count} / min ${p.lowStockAlert}`, action: "Lên PO bổ sung",
             })
@@ -49,7 +49,7 @@ export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
         const threshold = b.product.oxidationHours ?? 48
         if (hoursOpened >= threshold) {
             alerts.push({
-                id: `oxi-${b.id.slice(0, 8)}`, severity: "CRITICAL", type: "OXIDATION_RISK", icon: "🍷",
+                id: `oxi-${b.id.slice(0, 8)}`, severity: "CRITICAL", type: "OXIDATION_RISK", icon: "",
                 title: "Nguy cơ oxy hóa",
                 description: `${b.product.name} — mở ${hoursOpened} giờ trước (ngưỡng: ${threshold}h)`,
                 productName: b.product.name, productSku: b.product.sku ?? undefined,
@@ -57,7 +57,7 @@ export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
             })
         } else if ((b.glassesRemaining ?? 0) <= 2 && (b.glassesRemaining ?? 0) > 0) {
             alerts.push({
-                id: `glass-${b.id.slice(0, 8)}`, severity: "WARNING", type: "LOW_GLASSES", icon: "🥂",
+                id: `glass-${b.id.slice(0, 8)}`, severity: "WARNING", type: "LOW_GLASSES", icon: "",
                 title: "Còn ít ly",
                 description: `${b.product.name} — còn ${b.glassesRemaining}/${b.product.glassesPerBottle} ly`,
                 productName: b.product.name, value: `${b.glassesRemaining}/${b.product.glassesPerBottle} ly`, action: "Chuẩn bị chai mới",
@@ -73,7 +73,7 @@ export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
     for (const ing of expiringIngredients) {
         const daysLeft = Math.ceil((ing.expiryDate!.getTime() - now.getTime()) / 86400000)
         alerts.push({
-            id: `exp-${ing.id.slice(0, 8)}`, severity: "WARNING", type: "EXPIRY_APPROACHING", icon: "⏰",
+            id: `exp-${ing.id.slice(0, 8)}`, severity: "WARNING", type: "EXPIRY_APPROACHING", icon: "",
             title: "Sắp hết hạn", description: `${ing.name} — hết hạn trong ${daysLeft} ngày`,
             productName: ing.name, value: `${daysLeft} ngày còn lại`, action: "Sử dụng trước / Ghi waste",
         })
@@ -85,7 +85,7 @@ export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
     for (const ing of lowIngredients) {
         if (Number(ing.currentStock) <= Number(ing.minStock)) {
             alerts.push({
-                id: `low-ing-${ing.id.slice(0, 8)}`, severity: "WARNING", type: "LOW_STOCK", icon: "🟠",
+                id: `low-ing-${ing.id.slice(0, 8)}`, severity: "WARNING", type: "LOW_STOCK", icon: "",
                 title: "Nguyên liệu thấp",
                 description: `${ing.name} — còn ${ing.currentStock} ${ing.unit} (tối thiểu: ${ing.minStock})`,
                 productName: ing.name, value: `${ing.currentStock} / min ${ing.minStock}`, action: "Nhập thêm nguyên liệu",

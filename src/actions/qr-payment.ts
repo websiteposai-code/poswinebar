@@ -21,7 +21,7 @@ export type QRPaymentRequest = {
 }
 
 const DEFAULT_BANK: QRPaymentConfig = {
-    bankId: "970422", bankName: "MB Bank", bankLogo: "🏦",
+    bankId: "970422", bankName: "MB Bank", bankLogo: "",
     accountNumber: "0388899999", accountName: "NOON AND NOIR CO LTD", template: "compact2",
 }
 

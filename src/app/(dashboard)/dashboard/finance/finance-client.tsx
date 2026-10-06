@@ -1,20 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-    DollarSign,
-    TrendingUp,
-    TrendingDown,
-    BarChart3,
-    PieChart,
-    ArrowUpRight,
-    ArrowDownRight,
-    Layers,
-    Package,
-    RefreshCcw,
-    Award,
-    AlertTriangle,
-} from "lucide-react"
+import { DollarSign, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Layers, Package, RefreshCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -107,9 +94,6 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-wine-100">
-                        <DollarSign className="h-5 w-5 text-wine-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Tài chính</h1>
                         <p className="text-sm text-cream-500">Giá vốn COGS, P&L & phân tích biên lợi nhuận — dữ liệu thực</p>
@@ -139,9 +123,9 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
             {/* Tab Switch */}
             <div className="flex gap-1 rounded-lg bg-cream-200 p-0.5 w-fit">
                 {([
-                    { key: "overview" as TabType, label: "📊 Tổng quan P&L" },
-                    { key: "cogs" as TabType, label: "💰 Chi tiết COGS" },
-                    { key: "products" as TabType, label: "🍷 Biên LN sản phẩm" },
+                    { key: "overview" as TabType, label: "Tổng quan P&L" },
+                    { key: "cogs" as TabType, label: "Chi tiết COGS" },
+                    { key: "products" as TabType, label: "Biên LN sản phẩm" },
                 ]).map((t) => (
                     <button
                         key={t.key}
@@ -159,7 +143,6 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                     {/* P&L Statement */}
                     <div className="col-span-3 rounded-xl border border-cream-200 bg-white p-5 shadow-sm">
                         <h3 className="text-sm font-bold text-green-900 mb-4 flex items-center gap-2">
-                            <BarChart3 className="h-4 w-4 text-green-700" />
                             Báo cáo Lãi / Lỗ — {monthLabel}
                         </h3>
                         <div className="space-y-0.5">
@@ -229,7 +212,7 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                     {/* Daily Revenue Chart */}
                     <div className="col-span-5 rounded-xl border border-cream-200 bg-white p-5 shadow-sm">
                         <h3 className="text-sm font-bold text-green-900 mb-4 flex items-center gap-2">
-                            <BarChart3 className="h-4 w-4 text-blue-600" /> Doanh thu 30 ngày gần nhất
+                            Doanh thu 30 ngày gần nhất
                         </h3>
                         {dailyChart.length > 0 ? (
                             <div className="relative">
@@ -271,7 +254,7 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                     {/* Expense Breakdown */}
                     <div className="col-span-2 rounded-xl border border-cream-200 bg-white p-5 shadow-sm">
                         <h3 className="text-sm font-bold text-green-900 mb-4 flex items-center gap-2">
-                            <PieChart className="h-4 w-4 text-wine-600" /> Cơ cấu chi phí
+                            Cơ cấu chi phí
                         </h3>
                         {expenses.length > 0 ? (
                             <div className="space-y-2.5 mb-4">
@@ -295,11 +278,9 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                             <div className="border-t border-cream-200 pt-3 space-y-2">
                                 <h4 className="text-[10px] font-bold text-cream-400 uppercase">COGS Insights</h4>
                                 <div className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2">
-                                    <Award className="h-3.5 w-3.5 text-green-600 shrink-0" />
                                     <div><p className="text-[9px] text-cream-400">Biên cao nhất</p><p className="text-[11px] font-bold text-green-700">{cogsSummary.topMarginProduct}</p></div>
                                 </div>
                                 <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2">
-                                    <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
                                     <div><p className="text-[9px] text-cream-400">Biên thấp nhất</p><p className="text-[11px] font-bold text-amber-700">{cogsSummary.lowestMarginProduct}</p></div>
                                 </div>
                                 <div className="rounded-lg bg-cream-50 border border-cream-200 px-3 py-2 mt-2">
@@ -318,7 +299,7 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                         {/* Top Products Revenue */}
                         {topProducts.length > 0 && (
                             <div className="border-t border-cream-200 pt-3 mt-3">
-                                <h4 className="text-[10px] font-bold text-cream-400 uppercase mb-2">🏆 Top sản phẩm tháng này</h4>
+                                <h4 className="text-[10px] font-bold text-cream-400 uppercase mb-2">Top sản phẩm tháng này</h4>
                                 <div className="space-y-1.5">
                                     {topProducts.slice(0, 5).map((p, i) => (
                                         <div key={i} className="flex items-center justify-between text-[11px]">
@@ -384,7 +365,6 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                         </table>
                     ) : (
                         <div className="py-12 text-center">
-                            <Package className="h-8 w-8 text-cream-300 mx-auto mb-2" />
                             <p className="text-sm text-cream-400">Chưa có dữ liệu COGS</p>
                             <p className="text-xs text-cream-300 mt-1">Tạo công thức cho sản phẩm, sau đó thanh toán đơn hàng để thấy giá vốn thực</p>
                         </div>
@@ -435,7 +415,6 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                         </table>
                     ) : (
                         <div className="py-12 text-center">
-                            <Package className="h-8 w-8 text-cream-300 mx-auto mb-2" />
                             <p className="text-sm text-cream-400">Chưa có dữ liệu biên lợi nhuận sản phẩm</p>
                             <p className="text-xs text-cream-300 mt-1">Tạo công thức → bán hàng → thanh toán để thấy biên LN từng sản phẩm</p>
                         </div>

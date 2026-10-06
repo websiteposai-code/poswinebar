@@ -32,12 +32,12 @@ export type KpiOverview = {
 // ─── Metrics CRUD ─────────────────────────────────────────────
 
 const DEFAULT_METRICS = [
-    { code: "revenue", name: "Doanh thu", unit: "₫", icon: "💰" },
-    { code: "orders", name: "Số đơn hàng", unit: "đơn", icon: "📋" },
-    { code: "customers", name: "Số khách", unit: "khách", icon: "👥" },
-    { code: "avg_ticket", name: "TB/đơn", unit: "₫", icon: "🎫" },
-    { code: "wine_bottles", name: "Chai wine bán", unit: "chai", icon: "🍷" },
-    { code: "wine_glasses", name: "Ly wine bán", unit: "ly", icon: "🥂" },
+    { code: "revenue", name: "Doanh thu", unit: "₫", icon: "" },
+    { code: "orders", name: "Số đơn hàng", unit: "đơn", icon: "" },
+    { code: "customers", name: "Số khách", unit: "khách", icon: "" },
+    { code: "avg_ticket", name: "TB/đơn", unit: "₫", icon: "" },
+    { code: "wine_bottles", name: "Chai wine bán", unit: "chai", icon: "" },
+    { code: "wine_glasses", name: "Ly wine bán", unit: "ly", icon: "" },
 ]
 
 export async function ensureDefaultMetrics(): Promise<void> {

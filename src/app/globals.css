@@ -37,11 +37,12 @@
   --color-wine-800: #5C2028;
   --color-wine-900: #4A1219;
 
-  /* Fonts */
+  /* Fonts — `mono` is kept as a token name for numerals but uses DM Sans
+     tabular figures (no slashed zero); `script` is Playfair italic. */
   --font-display: 'Playfair Display', Georgia, serif;
-  --font-script: 'Caveat', 'Dancing Script', cursive;
+  --font-script: 'Playfair Display', Georgia, serif;
   --font-sans: 'DM Sans', 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', Consolas, monospace;
+  --font-mono: 'DM Sans', 'Inter', system-ui, sans-serif;
 
   /* Spacing */
   --radius-sm: 6px;
@@ -165,14 +166,20 @@ body {
   font-family: var(--font-display);
 }
 
-/* Handwritten / Script accent */
+/* Brand accent — refined serif italic */
 .font-script {
-  font-family: var(--font-script);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.06em;
 }
 
-/* Monospace for prices */
+/* Numerals — aligned columns, plain zero */
 .font-mono {
-  font-family: var(--font-mono);
+  font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1, "zero" 0;
+  letter-spacing: 0;
 }
 
 /* ===== Brand Pattern — Checkered ===== */
@@ -213,22 +220,23 @@ body {
 
 /* Glass indicator */
 .glass-indicator {
-  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 12px;
   font-weight: 600;
 }
 
 /* Price display */
 .price {
-  font-family: var(--font-mono);
-  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
   color: var(--color-green-900);
 }
 
 .price-large {
-  font-family: var(--font-mono);
-  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
   font-size: 24px;
+  letter-spacing: -0.01em;
 }
 
 /* ===== Premium Animation System ===== */

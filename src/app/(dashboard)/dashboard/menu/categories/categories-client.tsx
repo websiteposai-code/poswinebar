@@ -3,21 +3,7 @@
 import { useState, useCallback } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-    Plus,
-    Pencil,
-    Trash2,
-    GripVertical,
-    ChevronUp,
-    ChevronDown,
-    Check,
-    X,
-    Loader2,
-    FolderOpen,
-    UtensilsCrossed,
-    LayoutGrid,
-    ChefHat,
-} from "lucide-react"
+import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, Check, X, Loader2, FolderOpen, LayoutGrid, ChefHat } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -39,8 +25,6 @@ import {
     reorderCategories,
 } from "@/actions/menu"
 import type { Category, CategoryFormData } from "@/types"
-
-const CATEGORY_ICONS = ["🍸", "🍷", "🥂", "🍺", "🍽️", "🍰", "☕", "🧀", "🥩", "🍹", "🫒", "🧁"]
 
 function MenuTabNav() {
     const pathname = usePathname()
@@ -88,7 +72,6 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
     // Form state
     const [formName, setFormName] = useState("")
     const [formNameVi, setFormNameVi] = useState("")
-    const [formIcon, setFormIcon] = useState("🍷")
 
     const loadCategories = useCallback(async () => {
         const data = await getCategories()
@@ -99,7 +82,6 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
         setEditingCat(null)
         setFormName("")
         setFormNameVi("")
-        setFormIcon("🍷")
         setDialogOpen(true)
     }
 
@@ -107,7 +89,6 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
         setEditingCat(cat)
         setFormName(cat.name)
         setFormNameVi(cat.nameVi ?? "")
-        setFormIcon(cat.icon ?? "🍷")
         setDialogOpen(true)
     }
 
@@ -121,7 +102,7 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
         const data: CategoryFormData = {
             name: formName.trim(),
             nameVi: formNameVi.trim() || undefined,
-            icon: formIcon,
+            icon: editingCat?.icon ?? undefined,
         }
 
         if (editingCat) {
@@ -175,9 +156,6 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
             {/* Page Header */}
             <div className="border-b border-cream-300 bg-cream-50 px-6 py-5">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                        <UtensilsCrossed className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">
                             Menu & Sản phẩm
@@ -214,7 +192,6 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
                 {/* Categories Grid */}
                 {categories.length === 0 ? (
                     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-cream-300 bg-cream-100 py-20">
-                        <FolderOpen className="h-12 w-12 text-cream-400 mb-3" />
                         <p className="text-cream-500">Chưa có danh mục nào</p>
                         <Button
                             onClick={openCreateDialog}
@@ -244,7 +221,6 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
                                     >
                                         <ChevronUp className="h-3.5 w-3.5" />
                                     </button>
-                                    <GripVertical className="h-4 w-4 text-cream-400" />
                                     <button
                                         onClick={() => moveCategory(idx, "down")}
                                         disabled={idx === categories.length - 1}
@@ -254,9 +230,9 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
                                     </button>
                                 </div>
 
-                                {/* Icon */}
-                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cream-200 text-2xl">
-                                    {cat.icon || "📁"}
+                                {/* Monogram */}
+                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cream-200 font-display text-xl italic text-green-800">
+                                    {cat.name.trim().charAt(0).toUpperCase()}
                                 </div>
 
                                 {/* Info */}
@@ -358,28 +334,6 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
                             />
                         </div>
 
-                        {/* Icon Picker */}
-                        <div className="space-y-1.5">
-                            <Label className="text-sm font-medium text-green-900">
-                                Icon
-                            </Label>
-                            <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
-                                {CATEGORY_ICONS.map((icon) => (
-                                    <button
-                                        key={icon}
-                                        onClick={() => setFormIcon(icon)}
-                                        className={cn(
-                                            "flex h-10 w-10 items-center justify-center rounded-lg text-xl transition-all",
-                                            formIcon === icon
-                                                ? "bg-green-100 border-2 border-green-700 scale-110"
-                                                : "bg-cream-200 border border-cream-300 hover:bg-cream-300"
-                                        )}
-                                    >
-                                        {icon}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
                     </div>
 
                     <DialogFooter className="gap-2 sm:gap-0">

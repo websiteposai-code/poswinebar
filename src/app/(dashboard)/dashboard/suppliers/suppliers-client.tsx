@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Plus, Handshake, Phone, Mail, MapPin, Edit2, Trash2, X, Check, Building2 } from "lucide-react"
+import { Search, Plus, Edit2, Trash2, X, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -118,7 +118,7 @@ export default function SuppliersClient({ initial }: Props) {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                     <h1 className="font-display text-xl font-bold text-green-900 flex items-center gap-2">
-                        <Handshake className="h-5 w-5" /> Nhà cung cấp
+                        Nhà cung cấp
                     </h1>
                     <p className="text-xs text-cream-500 mt-0.5">{filtered.length} nhà cung cấp hoạt động</p>
                 </div>
@@ -205,9 +205,6 @@ export default function SuppliersClient({ initial }: Props) {
                     >
                         <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2.5">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-700">
-                                    <Building2 className="h-4 w-4" />
-                                </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-green-900">{s.name}</h3>
                                     {s.contactPerson && (
@@ -233,17 +230,17 @@ export default function SuppliersClient({ initial }: Props) {
                         <div className="space-y-1 text-[11px] text-cream-500">
                             {s.phone && (
                                 <p className="flex items-center gap-1.5">
-                                    <Phone className="h-3 w-3 text-cream-400" /> {s.phone}
+                                    {s.phone}
                                 </p>
                             )}
                             {s.email && (
                                 <p className="flex items-center gap-1.5">
-                                    <Mail className="h-3 w-3 text-cream-400" /> {s.email}
+                                    {s.email}
                                 </p>
                             )}
                             {s.address && (
                                 <p className="flex items-center gap-1.5">
-                                    <MapPin className="h-3 w-3 text-cream-400" /> {s.address}
+                                    {s.address}
                                 </p>
                             )}
                         </div>
@@ -259,7 +256,6 @@ export default function SuppliersClient({ initial }: Props) {
 
             {filtered.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16">
-                    <Handshake className="h-10 w-10 text-cream-300 mb-2" />
                     <p className="text-sm text-cream-400">Chưa có nhà cung cấp nào</p>
                     <p className="text-xs text-cream-400 mt-1">Nhấn "Thêm NCC" để bắt đầu</p>
                 </div>

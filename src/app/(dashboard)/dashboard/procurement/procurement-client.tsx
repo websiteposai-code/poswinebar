@@ -1,31 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-    Truck,
-    Search,
-    Plus,
-    FileText,
-    CheckCircle2,
-    Clock,
-    AlertTriangle,
-    XCircle,
-    ChevronDown,
-    ChevronUp,
-    Building2,
-    RefreshCcw,
-    Send,
-    Download,
-    X,
-    Layers,
-    Trash2,
-    Wine,
-    Handshake,
-    RotateCcw,
-    DollarSign,
-    CircleCheck,
-    Ban,
-} from "lucide-react"
+import { Truck, Search, Plus, FileText, CheckCircle2, Clock, XCircle, ChevronDown, ChevronUp, Building2, RefreshCcw, Send, Download, X, Layers, Trash2, Wine, Handshake, RotateCcw, DollarSign, CircleCheck, Ban } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -91,7 +67,6 @@ function StatCard({ label, value, color, icon: Icon }: { label: string; value: s
     return (
         <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
             <div className="flex items-center gap-1.5 mb-1.5">
-                <Icon className="h-3.5 w-3.5 text-cream-400" />
                 <span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">{label}</span>
             </div>
             <p className={cn("font-mono text-xl font-bold leading-none", color)}>{value}</p>
@@ -212,9 +187,6 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
-                        <Truck className="h-5 w-5 text-blue-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Mua hàng</h1>
                         <p className="text-sm text-cream-500">Đơn hàng nhập, nhà cung cấp, phiếu nhận & FIFO</p>
@@ -245,13 +217,13 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
             <div className="flex items-center gap-3 flex-wrap">
                 <div className="flex gap-1 rounded-lg bg-cream-200 p-0.5 overflow-x-auto scroll-hide-bar">
                     {([
-                        { key: "purchase" as TabType, label: "📥 Nhập hàng", count: purchaseReceipts.length },
-                        { key: "orders" as TabType, label: "📦 Đơn nhập", count: orders.length },
-                        { key: "suppliers" as TabType, label: "🏢 NCC", count: suppliers.length },
-                        { key: "receipts" as TabType, label: "📋 Phiếu nhận", count: receipts.length },
-                        { key: "fifo" as TabType, label: "📊 FIFO", count: fifoBatches.length },
-                        { key: "consignment" as TabType, label: "🤝 Ký gửi", count: consignments.length },
-                        { key: "settlement" as TabType, label: "💰 Quyết toán", count: settlements.length },
+                        { key: "purchase" as TabType, label: "Nhập hàng", count: purchaseReceipts.length },
+                        { key: "orders" as TabType, label: "Đơn nhập", count: orders.length },
+                        { key: "suppliers" as TabType, label: "NCC", count: suppliers.length },
+                        { key: "receipts" as TabType, label: "Phiếu nhận", count: receipts.length },
+                        { key: "fifo" as TabType, label: "FIFO", count: fifoBatches.length },
+                        { key: "consignment" as TabType, label: "Ký gửi", count: consignments.length },
+                        { key: "settlement" as TabType, label: "Quyết toán", count: settlements.length },
                     ]).map((t) => (
                         <button
                             key={t.key}
@@ -283,7 +255,7 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
                     {/* Create Receipt Form */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5 shadow-sm">
                         <h3 className="text-sm font-bold text-green-900 mb-4 flex items-center gap-2">
-                            <Plus className="h-4 w-4" /> Tạo phiếu nhập hàng
+                            Tạo phiếu nhập hàng
                         </h3>
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 mb-4">
                             <div>
@@ -381,7 +353,7 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
                             <div className="flex items-center gap-3">
                                 <span className="text-xs text-cream-500">Tổng: <span className="font-mono font-bold text-green-900">₫{fmt(Math.round(prItems.reduce((s, i) => s + (Number(i.quantity) || 0) * (Number(i.unitCost) || 0), 0)))}</span></span>
                                 <Button onClick={handlePurchaseReceipt} disabled={prSubmitting} size="sm" className="bg-green-900 text-white hover:bg-green-800">
-                                    {prSubmitting ? "Đang xử lý..." : "📥 Nhập hàng"}
+                                    {prSubmitting ? "Đang xử lý..." : "Nhập hàng"}
                                 </Button>
                             </div>
                         </div>
@@ -541,7 +513,7 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
                                                                     <span className="font-mono text-wine-700">₫{fmt(po.totalAmount)}</span>
                                                                 </div>
                                                             </div>
-                                                            {po.notes && <p className="mt-2 text-[10px] text-cream-400 italic">📝 {po.notes}</p>}
+                                                            {po.notes && <p className="mt-2 text-[10px] text-cream-400 italic">{po.notes}</p>}
 
                                                             <div className="flex flex-wrap gap-2 mt-3">
                                                                 {po.status === "DRAFT" && (
@@ -873,7 +845,7 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
                                                             <span className="font-mono text-wine-700">₫{fmt(soldRevenue - Math.round(soldRevenue * csm.commissionRate / 100))}</span>
                                                         </div>
                                                     </div>
-                                                    {csm.notes && <p className="mt-2 text-[10px] text-cream-400 italic">📝 {csm.notes}</p>}
+                                                    {csm.notes && <p className="mt-2 text-[10px] text-cream-400 italic">{csm.notes}</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -961,7 +933,6 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
                                             )}
                                             {stl.status === "PAID" && (
                                                 <span className="text-[10px] text-green-600 font-medium flex items-center gap-1">
-                                                    <CheckCircle2 className="h-3 w-3" />
                                                     {stl.paidAt ? new Date(stl.paidAt).toLocaleDateString("vi-VN") : "Đã trả"}
                                                 </span>
                                             )}
@@ -989,7 +960,7 @@ export function ProcurementClient({ initial }: { initial: ProcurementInitialData
             {showCreateSupplier && (
                 <CreateSupplierModal
                     onClose={() => setShowCreateSupplier(false)}
-                    onCreated={() => { setShowCreateSupplier(false); loadData(); toast.success("✅ Thêm nhà cung cấp thành công!") }}
+                    onCreated={() => { setShowCreateSupplier(false); loadData(); toast.success("Thêm nhà cung cấp thành công!") }}
                 />
             )}
         </div>
@@ -1240,7 +1211,7 @@ function CreateSupplierModal({ onClose, onCreated }: { onClose: () => void; onCr
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-cream-200">
                     <div>
-                        <h2 className="text-lg font-bold text-green-900">🏢 Thêm nhà cung cấp mới</h2>
+                        <h2 className="text-lg font-bold text-green-900">Thêm nhà cung cấp mới</h2>
                         <p className="text-xs text-cream-500">Điền thông tin nhà cung cấp</p>
                     </div>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100 transition-all"><X className="h-4 w-4 text-cream-400" /></button>

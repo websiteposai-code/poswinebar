@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Sparkles, TrendingUp, AlertTriangle, ShieldCheck, Check, Loader2, ArrowRight } from "lucide-react"
+import { Check, Loader2, ArrowRight } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -78,9 +78,6 @@ export function SmartPricingCard({
             {/* Header: Current Status */}
             <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-cream-100">
                 <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-800">
-                        <Sparkles className="h-4 w-4" />
-                    </div>
                     <div>
                         <h4 className="text-xs font-bold uppercase tracking-wider text-green-900">
                             Định Giá Thông Minh & Kiểm Soát Cost
@@ -95,19 +92,16 @@ export function SmartPricingCard({
                 <div className="flex items-center gap-1.5">
                     {currentEval.status === "OPTIMAL" && (
                         <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold bg-green-50 text-green-800 border border-green-200">
-                            <ShieldCheck className="h-3.5 w-3.5 text-green-700" />
                             Cost {currentEval.costPct}% (Mục tiêu ≤{currentEval.targetCostPct}%)
                         </span>
                     )}
                     {currentEval.status === "WARNING" && (
                         <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                            <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
                             Cận biên {currentEval.costPct}% (Mục tiêu ≤{currentEval.targetCostPct}%)
                         </span>
                     )}
                     {currentEval.status === "OVER_BUDGET" && (
                         <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold bg-red-50 text-red-800 border border-red-200 animate-pulse">
-                            <AlertTriangle className="h-3.5 w-3.5 text-red-600" />
                             Vượt trần {currentEval.costPct}% (+{currentEval.diffPct}%)
                         </span>
                     )}
@@ -143,7 +137,6 @@ export function SmartPricingCard({
             <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
                     <span className="font-medium text-green-900 flex items-center gap-1">
-                        <TrendingUp className="h-3.5 w-3.5 text-green-700" />
                         Chọn Biên Lợi Nhuận Mục Tiêu (Target Margin):
                     </span>
                     <span className="font-mono font-bold text-green-800">{targetMargin}% Margin</span>

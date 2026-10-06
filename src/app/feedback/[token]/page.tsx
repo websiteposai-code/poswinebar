@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, use } from "react"
-import { Star, Wine, Send, Heart, CheckCircle2, UtensilsCrossed, Music, HeartHandshake, MessageSquare, Sparkles } from "lucide-react"
+import { Star, Wine, Send, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -94,7 +94,6 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
         return (
             <div className="min-h-screen bg-cream-50 flex items-center justify-center">
                 <div className="animate-pulse text-center">
-                    <Wine className="h-8 w-8 text-green-700 mx-auto mb-2 animate-bounce" />
                     <p className="text-xs text-cream-500">Đang tải...</p>
                 </div>
             </div>
@@ -105,7 +104,6 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
         return (
             <div className="min-h-screen bg-cream-50 flex items-center justify-center">
                 <div className="text-center px-6">
-                    <Wine className="h-10 w-10 text-cream-400 mx-auto mb-3" />
                     <p className="text-sm text-cream-500">Liên kết đánh giá không hợp lệ hoặc đã hết hạn.</p>
                 </div>
             </div>
@@ -116,7 +114,6 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
         return (
             <div className="min-h-screen bg-green-900 flex items-center justify-center px-6">
                 <div className="text-center max-w-sm">
-                    <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto mb-4" />
                     <h1 className="font-display text-2xl font-bold text-cream-50 mb-2">
                         Cảm ơn bạn!
                     </h1>
@@ -147,7 +144,6 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
             {/* Header */}
             <div className="bg-green-900 px-6 py-6 text-center">
                 <div className="flex items-center justify-center gap-2 mb-1">
-                    <Wine className="h-6 w-6 text-cream-50" />
                     <span className="font-display text-lg font-bold text-cream-50">Noon & Noir</span>
                 </div>
                 <p className="font-script text-cream-400 text-sm">Wine Alley</p>
@@ -160,7 +156,6 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
                 {/* Per-item feedback */}
                 <div>
                     <h2 className="text-xs font-bold uppercase tracking-wider text-green-900 mb-3 flex items-center gap-1.5">
-                        <UtensilsCrossed className="h-4 w-4 text-green-800" />
                         Đánh giá từng món
                     </h2>
                     <div className="space-y-3">
@@ -198,27 +193,23 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
                 {/* Overall Ratings */}
                 <div className="space-y-3">
                     <h2 className="text-xs font-bold uppercase tracking-wider text-green-900 flex items-center gap-1.5">
-                        <Sparkles className="h-4 w-4 text-amber-600" />
                         Cảm nhận tổng thể
                     </h2>
                     <div className="rounded-xl border border-cream-200 bg-white p-4 space-y-3 shadow-2xs">
                         <div className="flex items-center justify-between">
                             <span className="text-xs text-stone-700 flex items-center gap-1.5 font-medium">
-                                <Music className="h-3.5 w-3.5 text-stone-500" />
                                 Không gian & Âm nhạc
                             </span>
                             <StarRating value={ambienceRating} onChange={setAmbienceRating} />
                         </div>
                         <div className="flex items-center justify-between">
                             <span className="text-xs text-stone-700 flex items-center gap-1.5 font-medium">
-                                <HeartHandshake className="h-3.5 w-3.5 text-stone-500" />
                                 Tốc độ & Thái độ phục vụ
                             </span>
                             <StarRating value={serviceRating} onChange={setServiceRating} />
                         </div>
                         <div className="flex items-center justify-between">
                             <span className="text-xs text-stone-700 flex items-center gap-1.5 font-medium">
-                                <Wine className="h-3.5 w-3.5 text-wine-700" />
                                 Trải nghiệm Rượu vang & Ẩm thực
                             </span>
                             <StarRating value={visitRating} onChange={setVisitRating} />
@@ -233,7 +224,6 @@ export default function FeedbackPage({ params }: { params: Promise<{ token: stri
                 {/* Comment */}
                 <div>
                     <label className="text-xs font-bold uppercase tracking-wider text-green-900 mb-1.5 flex items-center gap-1.5">
-                        <MessageSquare className="h-3.5 w-3.5 text-green-800" />
                         Góp ý thêm cho Noon & Noir
                     </label>
                     <textarea

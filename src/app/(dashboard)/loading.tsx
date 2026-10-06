@@ -1,4 +1,4 @@
-import { Wine, Loader2 } from "lucide-react"
+import { Wine } from "lucide-react"
 
 export default function DashboardLayoutLoading() {
     return (
@@ -7,9 +7,6 @@ export default function DashboardLayoutLoading() {
             <aside className="hidden lg:flex fixed left-0 top-0 z-40 h-screen w-[220px] flex-col bg-green-900 animate-fade-in">
                 {/* Logo */}
                 <div className="flex items-center gap-3 px-4 py-5 border-b border-green-800">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-800">
-                        <Wine className="h-5 w-5 text-cream-50 animate-pulse" />
-                    </div>
                     <div>
                         <p className="font-display text-sm font-bold text-cream-50">Noon & Noir</p>
                         <p className="font-script text-xs text-green-300">Wine Alley</p>
@@ -34,7 +31,6 @@ export default function DashboardLayoutLoading() {
             {/* Content skeleton */}
             <main className="lg:ml-[220px] flex-1 min-h-screen bg-cream-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="h-6 w-6 animate-spin text-green-600" />
                     <span className="text-xs text-cream-400 animate-pulse">Đang tải...</span>
                 </div>
             </main>

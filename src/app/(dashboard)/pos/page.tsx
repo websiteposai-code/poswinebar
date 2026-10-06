@@ -1,55 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react"
-import {
-    Search,
-    Plus,
-    Minus,
-    Trash2,
-    Wine,
-    ShoppingCart,
-    Receipt,
-    CreditCard,
-    Banknote,
-    QrCode,
-    X,
-    MessageSquare,
-    Armchair,
-    Hash,
-    Loader2,
-    CheckCircle2,
-    CreditCard as TabIcon,
-    User,
-    AlertTriangle,
-    Clock,
-    UserPlus,
-    Star,
-    Timer,
-    DollarSign,
-    CircleMinus,
-    Bell,
-    Pause,
-    Play,
-    ArrowRightLeft,
-    ShieldCheck,
-    Percent,
-    Copy,
-    CalendarDays,
-    MoreVertical,
-    Thermometer,
-    GlassWater,
-    Grape,
-    MapPin,
-    Info,
-    ChevronRight,
-    BookOpen,
-    ChevronDown,
-    ChevronUp,
-    Utensils,
-    Sparkles,
-    LayoutDashboard,
-    Menu as MenuIcon,
-} from "lucide-react"
+import { Search, Plus, Minus, Trash2, Wine, ShoppingCart, Receipt, CreditCard, Banknote, QrCode, X, MessageSquare, Armchair, Hash, Loader2, CheckCircle2, CreditCard as TabIcon, User, Clock, UserPlus, Star, Timer, CircleMinus, Bell, Pause, Play, ShieldCheck, Percent, Thermometer, GlassWater, Grape, MapPin, Info, ChevronRight, BookOpen, ChevronDown, ChevronUp, Utensils, Sparkles, Menu as MenuIcon } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -315,7 +267,7 @@ function TableSelector({
                                 <div key={item.id} className="flex items-center justify-between rounded-lg bg-cream-50 border border-cream-200 px-2.5 py-2">
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[11px] font-medium text-green-900 truncate">{item.productName}</p>
-                                        {item.notes && <p className="text-[9px] text-amber-600 italic">💬 {item.notes}</p>}
+                                        {item.notes && <p className="text-[9px] text-amber-600 italic">{item.notes}</p>}
                                     </div>
                                     <div className="text-right ml-2 shrink-0">
                                         <span className="text-[10px] text-cream-500">×{item.quantity}</span>
@@ -701,7 +653,7 @@ export default function POSPage() {
             return
         }
         if (product86Ids.includes(product.id)) {
-            toast.error(`❌ 86: ${product.name} đã hết`, { description: "Sản phẩm không còn phục vụ", duration: 3000 })
+            toast.error(`86: ${product.name} đã hết`, { description: "Sản phẩm không còn phục vụ", duration: 3000 })
             return
         }
         // Stock check for wine products
@@ -710,7 +662,7 @@ export default function POSPage() {
             const stock = stockMap.get(product.id) ?? 0
             const inCart = cart.items.find(i => i.product.id === product.id)?.quantity ?? 0
             if (stock <= inCart && product.type === "WINE_BOTTLE") {
-                toast.error(`📦 Hết tồn kho: ${product.name}`, {
+                toast.error(`Hết tồn kho: ${product.name}`, {
                     description: `Chỉ còn ${stock} chai. Xem gợi ý thay thế ↓`,
                     duration: 5000,
                 })
@@ -755,7 +707,7 @@ export default function POSPage() {
         if (is86) {
             await unmark86(product.id)
             setProduct86Ids((prev) => prev.filter((id) => id !== product.id))
-            toast.success(`✅ ${product.name} — đã mở lại`, { duration: 2000 })
+            toast.success(`${product.name} — đã mở lại`, { duration: 2000 })
         } else {
             await markProduct86({
                 productId: product.id,
@@ -765,7 +717,7 @@ export default function POSPage() {
                 staffName: staff?.fullName ?? "Staff",
             })
             setProduct86Ids((prev) => [...prev, product.id])
-            toast.warning(`🚫 86: ${product.name} — đã đánh dấu hết`, { duration: 2000 })
+            toast.warning(`86: ${product.name} — đã đánh dấu hết`, { duration: 2000 })
         }
     }
 
@@ -789,7 +741,7 @@ export default function POSPage() {
             label: cart.selectedTable?.tableNumber ?? `Hold #${heldOrders.length + 1}`,
         })
         if (result.success) {
-            toast.success(`⏸️ Đã giữ đơn: ${result.heldOrder?.label}`, { duration: 3000 })
+            toast.success(`Đã giữ đơn: ${result.heldOrder?.label}`, { duration: 3000 })
             cart.clearCart()
             refreshHeld()
         } else {
@@ -853,7 +805,7 @@ export default function POSPage() {
                         total: result.order.total,
                     })
                     toast.success(
-                        `✅ Đã thêm ${cart.items.length} món vào ${result.order.orderNumber}`,
+                        `Đã thêm ${cart.items.length} món vào ${result.order.orderNumber}`,
                         {
                             description: `${cart.selectedTable?.tableNumber} · Tổng mới: ₫${formatPrice(result.order.total)}`,
                             duration: 4000,
@@ -885,7 +837,7 @@ export default function POSPage() {
                         total: result.order.total,
                     })
                     toast.success(
-                        `🍳 Gửi bếp: ${result.order.orderNumber}`,
+                        `Gửi bếp: ${result.order.orderNumber}`,
                         {
                             description: `${cart.selectedTable?.tableNumber ?? "Takeaway"} · ₫${formatPrice(result.order.total)} · ${cart.items.length} món`,
                             duration: 4000,
@@ -940,12 +892,12 @@ export default function POSPage() {
                     : ""
                 const paidOrder = result.order
                 toast.success(
-                    `✅ ${result.order.orderNumber}`,
+                    `${result.order.orderNumber}`,
                     {
                         description: `${cart.selectedTable?.tableNumber ?? "Takeaway"} · ₫${formatPrice(result.order.total)} · ${paymentMethod}${deductionInfo}`,
                         duration: 8000,
                         action: {
-                            label: "🖨️ In bill",
+                            label: "In bill",
                             onClick: () => setReceiptOrder(paidOrder),
                         },
                     }
@@ -954,7 +906,7 @@ export default function POSPage() {
                 // Stock warnings
                 if (cogsResult.stockWarnings.length > 0) {
                     for (const warning of cogsResult.stockWarnings) {
-                        toast.warning(`⚠️ ${warning}`, {
+                        toast.warning(`${warning}`, {
                             duration: 6000,
                         })
                     }
@@ -963,7 +915,7 @@ export default function POSPage() {
                 // Deduction errors (not enough stock)
                 if (cogsResult.errors.length > 0) {
                     for (const err of cogsResult.errors) {
-                        toast.error(`❌ NPL: ${err}`, { duration: 6000 })
+                        toast.error(`NPL: ${err}`, { duration: 6000 })
                     }
                 }
 
@@ -977,18 +929,18 @@ export default function POSPage() {
                         })
                         if (wineResult.success) {
                             if (wineResult.bottlesConsumed.length > 0) {
-                                toast.info(`🍷 Chai hết: ${wineResult.bottlesConsumed.join(", ")}`, {
+                                toast.info(`Chai hết: ${wineResult.bottlesConsumed.join(", ")}`, {
                                     duration: 5000,
                                 })
                             }
                             if (wineResult.newBottleOpened) {
-                                toast.info(`🔓 Mở chai mới: ${wineResult.newBottleOpened.batchCode}`, {
+                                toast.info(`Mở chai mới: ${wineResult.newBottleOpened.batchCode}`, {
                                     description: `${wineResult.currentStatus?.glassesRemaining ?? 0} ly còn lại`,
                                     duration: 5000,
                                 })
                             }
                         } else if (wineResult.error) {
-                            toast.error(`🍷 ${wineResult.error}`, { duration: 6000 })
+                            toast.error(`${wineResult.error}`, { duration: 6000 })
                         }
                     } else if (item.product.type === "WINE_BOTTLE") {
                         const bottleResult = await sellWineBottle({
@@ -996,11 +948,11 @@ export default function POSPage() {
                             quantity: item.quantity,
                         })
                         if (bottleResult.success) {
-                            toast.info(`🍷 Bán chai: ${bottleResult.bottlesSold.join(", ")}`, {
+                            toast.info(`Bán chai: ${bottleResult.bottlesSold.join(", ")}`, {
                                 duration: 4000,
                             })
                         } else if (bottleResult.error) {
-                            toast.warning(`🍷 ${bottleResult.error}`, { duration: 6000 })
+                            toast.warning(`${bottleResult.error}`, { duration: 6000 })
                         }
                     }
                 }
@@ -1011,7 +963,7 @@ export default function POSPage() {
                 // PAY_FIRST: auto-send to kitchen after payment
                 if (paymentMode === "PAY_FIRST") {
                     await sendToKitchenAction(result.order.id)
-                    toast.info("🍳 Đã gửi bếp tự động (thanh toán trước)", { duration: 3000 })
+                    toast.info("Đã gửi bếp tự động (thanh toán trước)", { duration: 3000 })
                 }
 
                 cart.clearCart()
@@ -1031,7 +983,7 @@ export default function POSPage() {
             if (index < allCategoryIds.length) {
                 setActiveCategory(allCategoryIds[index])
                 const catName = index === 0 ? "Tất cả" : dbCategories.find((c) => c.id === allCategoryIds[index])?.name
-                toast.success(`📁 ${catName ?? "Category"}`, { duration: 1000 })
+                toast.success(`${catName ?? "Category"}`, { duration: 1000 })
             }
         },
         onFocusSearch: () => searchInputRef.current?.focus(),
@@ -1053,7 +1005,7 @@ export default function POSPage() {
         onClearCart: () => {
             if (cart.items.length > 0) {
                 cart.clearCart()
-                toast.success("🗑️ Đã xóa giỏ hàng", { duration: 1500 })
+                toast.success("Đã xóa giỏ hàng", { duration: 1500 })
             }
         },
     })
@@ -1080,7 +1032,7 @@ export default function POSPage() {
         })
 
         if (result.success && result.data) {
-            toast.success(`✅ Đã thêm ${cart.items.length} món vào tab`, {
+            toast.success(`Đã thêm ${cart.items.length} món vào tab`, {
                 description: `${result.data.customer.fullName} · ₫${formatPrice(result.data.currentTotal)} / ₫${formatPrice(result.data.tabLimit)}`,
             })
             cart.clearCart()
@@ -1088,7 +1040,7 @@ export default function POSPage() {
 
             // Warn at 80%
             if (result.data.currentTotal > result.data.tabLimit * 0.8) {
-                toast.warning(`⚠️ Tab gần đạt giới hạn`, {
+                toast.warning(`Tab gần đạt giới hạn`, {
                     description: `${result.data.customer.fullName}: ${Math.round((result.data.currentTotal / result.data.tabLimit) * 100)}%`,
                     duration: 6000,
                 })
@@ -1158,7 +1110,7 @@ export default function POSPage() {
                             ? "bg-amber-100 text-amber-700 border border-amber-200"
                             : "bg-green-50 text-green-600 border border-green-200"
                     )}>
-                        {paymentMode === "PAY_FIRST" ? "☕ TT Trước" : "🍷 TT Sau"}
+                        {paymentMode === "PAY_FIRST" ? "TT Trước" : "TT Sau"}
                     </div>
 
                     {/* Table indicator */}
@@ -1258,7 +1210,7 @@ export default function POSPage() {
                         {notifOpen && (
                             <div className="absolute right-0 top-10 z-50 w-72 lg:w-80 rounded-xl border border-cream-200 bg-white shadow-xl">
                                 <div className="flex items-center justify-between px-4 py-2.5 border-b border-cream-200">
-                                    <span className="text-xs font-bold text-green-900">🔔 Thông báo</span>
+                                    <span className="text-xs font-bold text-green-900">Thông báo</span>
                                     {notifications.length > 0 && (
                                         <button
                                             onClick={async () => { await markAllAsRead(); refreshNotifications(); toast.success("Đã đọc tất cả") }}
@@ -1327,7 +1279,6 @@ export default function POSPage() {
                                     : "bg-cream-200 text-cream-500 hover:bg-cream-300 hover:text-green-900"
                             )}
                         >
-                            <span>{cat.icon}</span>
                             {cat.name}
                         </button>
                     ))}
@@ -1337,7 +1288,6 @@ export default function POSPage() {
                 <div className="flex-1 overflow-y-auto p-4">
                     {filteredProducts.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20">
-                            <Wine className="h-10 w-10 text-cream-300 mb-2" />
                             <p className="text-sm text-cream-400">Không có sản phẩm</p>
                         </div>
                     ) : (
@@ -1379,11 +1329,12 @@ export default function POSPage() {
 
                                         {/* Type badge */}
                                         <div className="mb-2 flex items-center gap-1.5">
-                                            <span className="text-lg">
-                                                {product.type === "WINE_BOTTLE" ? "🍷" :
-                                                    product.type === "WINE_GLASS" ? "🥂" :
-                                                        product.type === "FOOD" ? "🍽️" :
-                                                            product.type === "DRINK" ? "🍸" : "📦"}
+                                            <span className="text-[9px] font-medium uppercase tracking-[0.14em] text-cream-500">
+                                                {product.type === "WINE_BOTTLE" ? "Chai" :
+                                                    product.type === "WINE_GLASS" ? "Ly" :
+                                                        product.type === "WINE_TASTING" ? "Tasting" :
+                                                            product.type === "FOOD" ? "Món ăn" :
+                                                                product.type === "DRINK" ? "Đồ uống" : "Khác"}
                                             </span>
                                             {product.isByGlass && gs && (
                                                 <Badge className={cn(
@@ -1430,7 +1381,7 @@ export default function POSPage() {
                                         {/* Wine info inline subtitle — hidden on mobile for compact view */}
                                         {(product.type === "WINE_BOTTLE" || product.type === "WINE_GLASS" || product.type === "WINE_TASTING") && (
                                             <p className="hidden lg:block mt-0.5 text-[10px] text-wine-600 line-clamp-1">
-                                                {product.alcoholPct && <span>🍷 {product.alcoholPct}%</span>}
+                                                {product.alcoholPct && <span>{product.alcoholPct}%</span>}
                                                 {product.alcoholPct && (product.region || product.country) && <span> · </span>}
                                                 {product.region && <span>{product.region}</span>}
                                                 {product.region && product.country && <span>, </span>}
@@ -1543,7 +1494,6 @@ export default function POSPage() {
                                 <ChevronDown className="h-5 w-5" />
                             </button>
                         )}
-                        <Receipt className="h-4 w-4 text-green-700" />
                         <h2 className="font-display text-sm font-bold text-green-900">
                             Đơn hàng
                         </h2>
@@ -1573,7 +1523,6 @@ export default function POSPage() {
                         <div className="bg-cream-50 border-b-2 border-wine-200">
                             <div className="px-4 py-2 bg-wine-50 border-b border-wine-100 flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
-                                    <Receipt className="h-3 w-3 text-wine-600" />
                                     <span className="text-[10px] font-bold text-wine-700">Đã order · {existingOrderData.orderNumber}</span>
                                 </div>
                                 <span className="font-mono text-[10px] font-bold text-wine-700">₫{formatPrice(existingOrderData.total)}</span>
@@ -1596,8 +1545,9 @@ export default function POSPage() {
                                 <button
                                     onClick={() => setReceiptOrder(existingOrderData)}
                                     className="rounded-lg border border-wine-200 bg-wine-50 py-1.5 px-3 text-[10px] font-bold text-wine-700 hover:bg-wine-100 transition-all flex items-center gap-1"
+                                    aria-label="In hoá đơn"
                                 >
-                                    🖨️
+                                    In bill
                                 </button>
                                 <button
                                     onClick={() => setPayingOrder(existingOrderData)}
@@ -1613,20 +1563,17 @@ export default function POSPage() {
                     {/* New items label when adding to existing order */}
                     {existingOrderData && activeOrderId && cart.items.length > 0 && (
                         <div className="px-4 py-1.5 bg-green-50 border-b border-green-100 flex items-center gap-1.5">
-                            <Plus className="h-3 w-3 text-green-600" />
                             <span className="text-[10px] font-bold text-green-700">Món mới ({cart.itemCount()})</span>
                         </div>
                     )}
 
                     {cart.items.length === 0 && !existingOrderData ? (
                         <div className="flex flex-col items-center justify-center h-full text-cream-400">
-                            <ShoppingCart className="h-8 w-8 mb-2" />
                             <p className="text-xs">Chưa có sản phẩm</p>
                             <p className="text-[10px] mt-1">Chọn sản phẩm bên trái</p>
                         </div>
                     ) : cart.items.length === 0 && existingOrderData ? (
                         <div className="flex flex-col items-center justify-center py-8 text-cream-400">
-                            <Plus className="h-6 w-6 mb-1" />
                             <p className="text-[10px]">Chọn món mới để thêm vào đơn</p>
                         </div>
                     ) : (
@@ -1658,7 +1605,7 @@ export default function POSPage() {
                                             </p>
                                             {item.notes && (
                                                 <p className="mt-0.5 text-[10px] text-wine-600 italic">
-                                                    📝 {item.notes}
+                                                    {item.notes}
                                                 </p>
                                             )}
                                         </div>
@@ -1760,7 +1707,7 @@ export default function POSPage() {
                             {/* Applied Promotions */}
                             {appliedPromos.map((promo) => (
                                 <div key={promo.id} className="flex justify-between text-xs text-wine-600">
-                                    <span className="flex items-center gap-1">🎁 {promo.name}</span>
+                                    <span className="flex items-center gap-1">{promo.name}</span>
                                     <span className="font-mono">-₫{formatPrice(promo.discountAmount)}</span>
                                 </div>
                             ))}
@@ -1901,7 +1848,7 @@ export default function POSPage() {
                         {activeOrderId && cart.selectedTable && (
                             <div className="mx-4 mb-2 rounded-lg bg-wine-50 border border-wine-200 px-3 py-2 flex items-center justify-between">
                                 <div>
-                                    <p className="text-[10px] font-bold text-wine-700">🍽 Thêm món vào bàn {cart.selectedTable.tableNumber}</p>
+                                    <p className="text-[10px] font-bold text-wine-700">Thêm món vào bàn {cart.selectedTable.tableNumber}</p>
                                     <p className="text-[9px] text-wine-500">Các món mới sẽ được thêm vào đơn hiện tại</p>
                                 </div>
                                 <button onClick={() => { setActiveOrderId(null); setExistingOrderData(null); cart.clearCart() }} className="text-[10px] text-wine-400 hover:text-wine-700 font-medium">Hủy</button>
@@ -1925,7 +1872,7 @@ export default function POSPage() {
                                     )}
                                     {isSubmitting
                                         ? "Đang xử lý..."
-                                        : `💳 Thanh toán · ₫${formatPrice(cart.subtotal())}`}
+                                        : `Thanh toán · ₫${formatPrice(cart.subtotal())}`}
                                 </Button>
                             ) : (
                                 /* PAY_AFTER: Button = Gửi bếp (pay later) */
@@ -1948,8 +1895,8 @@ export default function POSPage() {
                                     {isSubmitting
                                         ? "Đang gửi..."
                                         : activeOrderId
-                                            ? `➕ Thêm ${cart.itemCount()} món · ₫${formatPrice(cart.subtotal())}`
-                                            : `🍳 Gửi bếp · ₫${formatPrice(cart.subtotal())}`}
+                                            ? `Thêm ${cart.itemCount()} món · ₫${formatPrice(cart.subtotal())}`
+                                            : `Gửi bếp · ₫${formatPrice(cart.subtotal())}`}
                                 </Button>
                             )}
                         </div>
@@ -1969,7 +1916,7 @@ export default function POSPage() {
                 >
                     {pushSidebarOpen ? (
                         <div className="flex items-center gap-1.5 px-2">
-                            <span className="text-xs font-bold">🔥 Push Sale</span>
+                            <span className="text-xs font-bold">Push Sale</span>
                             {pushSaleItems.length > 0 && (
                                 <Badge className="bg-wine-700 text-white text-[9px] px-1.5 py-0">
                                     {pushSaleItems.length}
@@ -1979,7 +1926,7 @@ export default function POSPage() {
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-1">
-                            <span className="text-base">🔥</span>
+                            <span className="text-[9px] font-semibold uppercase tracking-[0.18em] [writing-mode:vertical-rl]">Push</span>
                             {pushSaleItems.length > 0 && (
                                 <Badge className="bg-wine-700 text-white text-[8px] px-1 py-0">
                                     {pushSaleItems.length}
@@ -1994,7 +1941,6 @@ export default function POSPage() {
                     <div className="flex-1 overflow-y-auto">
                         {pushSaleItems.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-cream-400 px-4">
-                                <CheckCircle2 className="h-8 w-8 mb-2 text-green-400" />
                                 <p className="text-xs text-center">Không có hàng cần push sale</p>
                             </div>
                         ) : (
@@ -2022,11 +1968,6 @@ export default function POSPage() {
                                             )}
                                         >
                                             <div className="flex items-start gap-2">
-                                                <span className="text-sm mt-0.5">
-                                                    {item.reasonType === "OXIDATION" ? "🍷" :
-                                                        item.reasonType === "LOW_GLASSES" ? "🥂" :
-                                                            item.reasonType === "SLOW_MOVING" ? "🐌" : "⏰"}
-                                                </span>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-[11px] font-bold text-green-900 truncate">
                                                         {item.productName}
@@ -2125,9 +2066,9 @@ export default function POSPage() {
                             )}
                         >
                             {product86Ids.includes(contextMenu.product.id) ? (
-                                <><span>✅</span> Mở lại — bỏ 86</>
+                                <>Mở lại — bỏ 86</>
                             ) : (
-                                <><span>🚫</span> Đánh dấu 86 — Hết</>
+                                <>Đánh dấu 86 — Hết</>
                             )}
                         </button>
                     </div>
@@ -2145,7 +2086,7 @@ export default function POSPage() {
                     cart.selectTable(table)
                     setActiveOrderId(order.id)
                     setExistingOrderData(order)
-                    toast.info(`🍽 Bàn ${table.tableNumber} — thêm món vào đơn ${order.orderNumber}`)
+                    toast.info(`Bàn ${table.tableNumber} — thêm món vào đơn ${order.orderNumber}`)
                 }}
                 onPayOrder={(order) => setPayingOrder(order)}
             />
@@ -2161,10 +2102,10 @@ export default function POSPage() {
                         setExistingOrderData(null)
                         setActiveOrderId(null)
                         refreshFloorData()
-                        toast.success(`✅ Đã thanh toán đơn ${paidOrd.orderNumber}`, {
+                        toast.success(`Đã thanh toán đơn ${paidOrd.orderNumber}`, {
                             duration: 8000,
                             action: {
-                                label: "🖨️ In bill",
+                                label: "In bill",
                                 onClick: () => setReceiptOrder(paidOrd),
                             },
                         })
@@ -2217,7 +2158,6 @@ export default function POSPage() {
             {lastOrder && (
                 <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right fade-in duration-300">
                     <div className="flex items-center gap-3 rounded-xl border border-green-300 bg-green-50 px-4 py-3 shadow-lg">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
                         <div>
                             <p className="text-sm font-bold text-green-900">{lastOrder.orderNumber}</p>
                             <p className="font-mono text-xs text-green-600">₫{formatPrice(lastOrder.total)}</p>
@@ -2233,7 +2173,6 @@ export default function POSPage() {
                         {/* Header */}
                         <div className="bg-green-900 text-cream-50 px-5 py-4 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <QrCode className="h-5 w-5" />
                                 <span className="font-display text-sm font-bold">Thanh toán QR</span>
                             </div>
                             <button
@@ -2252,7 +2191,6 @@ export default function POSPage() {
                         {qrBankConfig && (
                             <div className="px-5 py-3 border-b border-cream-200 bg-cream-50">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-lg">{qrBankConfig.bankLogo}</span>
                                     <span className="text-xs font-bold text-green-900">{qrBankConfig.bankName}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-1 text-[10px] text-cream-500">
@@ -2278,7 +2216,6 @@ export default function POSPage() {
                                 <p className="text-[10px] text-cream-400 mt-1">Nội dung: <span className="font-mono font-bold">{qrPayment.description}</span></p>
                             </div>
                             <div className="mt-2 text-[9px] text-cream-400 flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
                                 Hết hạn: {new Date(qrPayment.expiresAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
                             </div>
                         </div>
@@ -2325,7 +2262,7 @@ export default function POSPage() {
                     onAuthorized={(pct: number) => {
                         setDiscountPct(pct)
                         setDiscountModalOpen(false)
-                        toast.success(`✅ Giảm giá ${pct}% đã được duyệt`)
+                        toast.success(`Giảm giá ${pct}% đã được duyệt`)
                     }}
                 />
             )}
@@ -2335,7 +2272,6 @@ export default function POSPage() {
                 <div className="fixed bottom-4 left-4 z-40">
                     <div className="rounded-xl border border-blue-200 bg-blue-50 shadow-lg px-4 py-2.5 max-w-xs">
                         <div className="flex items-center gap-2 mb-1.5">
-                            <CalendarDays className="h-3.5 w-3.5 text-blue-600" />
                             <span className="text-[10px] font-bold uppercase text-blue-700">Đặt bàn sắp tới</span>
                             <Badge className="bg-blue-600 text-white text-[8px] px-1 py-0">{upcomingReservations.length}</Badge>
                         </div>
@@ -2344,7 +2280,7 @@ export default function POSPage() {
                                 <div key={r.id} className="flex items-center gap-2 text-[10px]">
                                     <span className="font-mono font-bold text-blue-800">{r.time}</span>
                                     <span className="text-blue-600 truncate">{r.customerName}</span>
-                                    <span className="text-blue-400">{r.guestCount}👤</span>
+                                    <span className="text-blue-400">{r.guestCount} khách</span>
                                     {r.tableNumber && <span className="font-bold text-blue-700">{r.tableNumber}</span>}
                                 </div>
                             ))}
@@ -2436,7 +2372,7 @@ export default function POSPage() {
                                     <div className="h-px bg-cream-200 my-2" />
                                     <div className="flex items-center justify-between">
                                         <span className={cn("text-sm font-bold", cashReceived >= finalTotal ? "text-green-700" : "text-red-600")}>
-                                            {cashReceived >= finalTotal ? "💰 Tiền trả lại:" : "⚠️ Còn thiếu:"}
+                                            {cashReceived >= finalTotal ? "Tiền trả lại:" : "Còn thiếu:"}
                                         </span>
                                         <span className={cn(
                                             "font-mono text-xl font-bold",
@@ -2522,8 +2458,8 @@ export default function POSPage() {
                                                         })
                                                         if (result.success) {
                                                             cart.addItem(bottleSelectorProduct!)
-                                                            toast.success(`🍷 Rót 1 ly từ ${bottle.batchCode}`, {
-                                                                description: result.bottleFinished ? "⚠️ Chai đã hết!" : `Còn ${bottle.glassesRemaining - 1} ly`,
+                                                            toast.success(`Rót 1 ly từ ${bottle.batchCode}`, {
+                                                                description: result.bottleFinished ? "Chai đã hết!" : `Còn ${bottle.glassesRemaining - 1} ly`,
                                                                 duration: 2000,
                                                             })
                                                             setShowBottleSelector(false)
@@ -2584,7 +2520,7 @@ export default function POSPage() {
                                                             </p>
                                                             <p className="text-[9px] text-cream-500">ly còn lại</p>
                                                             <p className="text-[9px] text-wine-600 font-medium mt-1">
-                                                                ⚡ {bottle.sellSpeedPerHour} ly/giờ
+                                                                {bottle.sellSpeedPerHour} ly/giờ
                                                             </p>
                                                         </div>
                                                     </div>
@@ -2599,7 +2535,7 @@ export default function POSPage() {
                             {inStockBottles.length > 0 && (
                                 <div>
                                     <h4 className="text-xs font-bold text-cream-600 uppercase mb-2 flex items-center gap-1.5">
-                                        📦 Chai chưa mở ({inStockBottles.length} chai)
+                                        Chai chưa mở ({inStockBottles.length} chai)
                                     </h4>
                                     <div className="space-y-2">
                                         {inStockBottles.map((bottle) => (
@@ -2616,7 +2552,7 @@ export default function POSPage() {
                                                         })
                                                         if (pourResult.success) {
                                                             cart.addItem(bottleSelectorProduct!)
-                                                            toast.success(`🍾 Mở chai mới & rót 1 ly`, {
+                                                            toast.success(`Mở chai mới & rót 1 ly`, {
                                                                 description: `${bottle.batchCode} — ${(bottleSelectorProduct?.glassesPerBottle ?? 8) - 1} ly còn lại`,
                                                                 duration: 3000,
                                                             })
@@ -2686,7 +2622,7 @@ export default function POSPage() {
                         <div className="flex items-center justify-between px-6 py-4 border-b border-cream-200">
                             <div>
                                 <h3 className="text-base font-bold text-green-900 flex items-center gap-2">
-                                    <span className="text-lg">🍷</span> Gợi ý thay thế
+                                    Gợi ý thay thế
                                 </h3>
                                 <p className="text-xs text-cream-500 mt-0.5">
                                     Rượu tương tự <span className="font-semibold text-wine-600">{recoSourceName}</span>
@@ -2759,7 +2695,7 @@ export default function POSPage() {
                                             "text-[9px] font-bold",
                                             rec.inStock > 0 ? "text-green-600" : "text-red-600"
                                         )}>
-                                            {rec.inStock > 0 ? `📦 ${rec.inStock} chai` : "❌ Hết hàng"}
+                                            {rec.inStock > 0 ? `${rec.inStock} chai` : "Hết hàng"}
                                         </p>
                                     </div>
                                 </button>
@@ -2872,7 +2808,7 @@ function OpenTabModal({
             notes: notes || undefined,
         })
         if (result.success) {
-            toast.success(`🍷 Mở tab: ${selectedCustomer.fullName}`, {
+            toast.success(`Mở tab: ${selectedCustomer.fullName}`, {
                 description: `Limit: ₫${formatPrice(result.data!.tabLimit)}`,
             })
             onTabOpened()
@@ -3150,7 +3086,7 @@ function TabDetailModal({
         setClosing(true)
         const result = await closeTab({ tabId, paymentMethod: method })
         if (result.success) {
-            toast.success(`✅ Đã đóng tab: ₫${formatPrice(result.data!.currentTotal)}`, {
+            toast.success(`Đã đóng tab: ₫${formatPrice(result.data!.currentTotal)}`, {
                 description: `${result.data!.customer.fullName} · ${method}`,
             })
             onClose()
@@ -3163,9 +3099,6 @@ function TabDetailModal({
     if (loading) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-                <div className="rounded-xl bg-cream-50 p-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-green-700" />
-                </div>
             </div>
         )
     }
@@ -3223,7 +3156,6 @@ function TabDetailModal({
                 <div className="flex-1 overflow-y-auto">
                     {tab.items.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 text-cream-400">
-                            <ShoppingCart className="h-8 w-8 mb-2" />
                             <p className="text-xs">Tab chưa có item nào</p>
                             <p className="text-[10px] mt-1">Thêm từ giỏ hàng POS</p>
                         </div>
@@ -3289,7 +3221,6 @@ function TabDetailModal({
 
                 {tab.status === "CLOSED" && (
                     <div className="border-t border-green-200 bg-green-50 px-5 py-3 text-center">
-                        <CheckCircle2 className="h-5 w-5 text-green-600 mx-auto mb-1" />
                         <p className="text-xs font-semibold text-green-700">Tab đã đóng</p>
                         <p className="text-[10px] text-green-600">
                             {tab.closedAt?.toLocaleString("vi-VN")}
@@ -3365,7 +3296,7 @@ function ShiftModal({
         })
         setLoading(false)
         if (result.success) {
-            toast.success(`✅ Mở ca thành công — Quỹ: ₫${formatPrice(parseInt(openingCash))}`)
+            toast.success(`Mở ca thành công — Quỹ: ₫${formatPrice(parseInt(openingCash))}`)
             onShiftChange()
         } else {
             toast.error(result.error ?? "Không thể mở ca")
@@ -3385,11 +3316,11 @@ function ShiftModal({
         if (result.success && result.data) {
             const diff = result.data.cashDifference ?? 0
             if (Math.abs(diff) <= 10000) {
-                toast.success("✅ Đóng ca thành công — Không chênh lệch!")
+                toast.success("Đóng ca thành công — Không chênh lệch!")
             } else if (diff > 0) {
-                toast.warning(`⚠️ Đóng ca — Thừa ₫${formatPrice(diff)}`)
+                toast.warning(`Đóng ca — Thừa ₫${formatPrice(diff)}`)
             } else {
-                toast.error(`❌ Đóng ca — Thiếu ₫${formatPrice(Math.abs(diff))}`)
+                toast.error(`Đóng ca — Thiếu ₫${formatPrice(Math.abs(diff))}`)
             }
             onShiftChange()
         }
@@ -3403,7 +3334,7 @@ function ShiftModal({
             amount: parseInt(expenseAmount),
             staffName,
         })
-        toast.success(`📝 Ghi nhận chi phí: ₫${formatPrice(parseInt(expenseAmount))}`)
+        toast.success(`Ghi nhận chi phí: ₫${formatPrice(parseInt(expenseAmount))}`)
         setExpenseDesc("")
         setExpenseAmount("")
         onShiftChange()
@@ -3418,7 +3349,7 @@ function ShiftModal({
                 <div className="flex items-center justify-between px-6 py-4 border-b border-cream-200">
                     <div>
                         <h2 className="text-lg font-bold text-green-900">
-                            {currentShift ? `⏱ Ca ${currentShift.shiftNumber}` : "🔓 Mở ca mới"}
+                            {currentShift ? `Ca ${currentShift.shiftNumber}` : "Mở ca mới"}
                         </h2>
                         <p className="text-xs text-cream-500">
                             {currentShift
@@ -3496,7 +3427,7 @@ function ShiftModal({
                         {targetSuggestion && (
                             <div className="rounded-lg border border-green-200 bg-green-50 p-3 space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <p className="text-[9px] font-bold uppercase text-green-700">🎯 CHỈ TIÊU CA</p>
+                                    <p className="text-[9px] font-bold uppercase text-green-700">CHỈ TIÊU CA</p>
                                     {targetApproved ? (
                                         <Badge className="bg-green-700 text-white text-[8px] px-1.5 py-0">✓ Đã duyệt</Badge>
                                     ) : (
@@ -3549,7 +3480,7 @@ function ShiftModal({
                                 {/* Push products */}
                                 {targetSuggestion.pushProducts.length > 0 && (
                                     <div className="border-t border-green-200 pt-2">
-                                        <p className="text-[8px] font-bold text-green-600 mb-1">🔥 SẢN PHẨM CẦN PUSH</p>
+                                        <p className="text-[8px] font-bold text-green-600 mb-1">SẢN PHẨM CẦN PUSH</p>
                                         {targetSuggestion.pushProducts.map((pp) => (
                                             <div key={pp.productId} className="flex items-center gap-1.5 text-[10px] text-green-800">
                                                 <span>•</span>
@@ -3563,7 +3494,7 @@ function ShiftModal({
                                     <Button
                                         onClick={() => {
                                             setTargetApproved(true)
-                                            toast.success("✅ Chỉ tiêu ca đã được duyệt!")
+                                            toast.success("Chỉ tiêu ca đã được duyệt!")
                                         }}
                                         size="sm"
                                         className="w-full h-7 bg-green-700 text-white hover:bg-green-800 text-[11px] font-bold"
@@ -3578,9 +3509,9 @@ function ShiftModal({
                         {/* Payment breakdown */}
                         <div className="rounded-lg border border-cream-200 bg-white p-3 space-y-1.5">
                             <p className="text-[9px] font-bold uppercase text-cream-400">PHƯƠNG THỨC THANH TOÁN</p>
-                            <div className="flex justify-between text-xs"><span className="flex items-center gap-1.5"><Banknote className="h-3 w-3 text-green-600" /> Tiền mặt</span><span className="font-mono font-bold text-green-700">₫{fmt(currentShift.totalCash)}</span></div>
-                            <div className="flex justify-between text-xs"><span className="flex items-center gap-1.5"><CreditCard className="h-3 w-3 text-blue-600" /> Thẻ</span><span className="font-mono font-bold text-blue-700">₫{fmt(currentShift.totalCard)}</span></div>
-                            <div className="flex justify-between text-xs"><span className="flex items-center gap-1.5"><QrCode className="h-3 w-3 text-wine-600" /> QR Pay</span><span className="font-mono font-bold text-wine-700">₫{fmt(currentShift.totalQR)}</span></div>
+                            <div className="flex justify-between text-xs"><span className="flex items-center gap-1.5">Tiền mặt</span><span className="font-mono font-bold text-green-700">₫{fmt(currentShift.totalCash)}</span></div>
+                            <div className="flex justify-between text-xs"><span className="flex items-center gap-1.5">Thẻ</span><span className="font-mono font-bold text-blue-700">₫{fmt(currentShift.totalCard)}</span></div>
+                            <div className="flex justify-between text-xs"><span className="flex items-center gap-1.5">QR Pay</span><span className="font-mono font-bold text-wine-700">₫{fmt(currentShift.totalQR)}</span></div>
                             <div className="border-t border-cream-200 pt-1.5 flex justify-between text-xs font-bold">
                                 <span>Quỹ hiện tại (expected)</span>
                                 <span className="font-mono text-green-900">₫{fmt(currentShift.expectedCash)}</span>
@@ -3662,7 +3593,7 @@ function ShiftModal({
                         {/* V2: Shift Target Evaluation */}
                         {targetSuggestion && (
                             <div className="rounded-lg border border-green-200 bg-green-50 p-3 space-y-2">
-                                <p className="text-[9px] font-bold uppercase text-green-700">📊 TỔNG KẾT CHỈ TIÊU CA</p>
+                                <p className="text-[9px] font-bold uppercase text-green-700">TỔNG KẾT CHỈ TIÊU CA</p>
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                                     {[
                                         { label: "Doanh thu", actual: currentShift.totalSales, target: parseInt(editRevTarget || "1") },
@@ -3672,12 +3603,11 @@ function ShiftModal({
                                         const pct = Math.round((item.actual / item.target) * 100)
                                         const color = pct >= 100 ? "text-green-700" : pct >= 80 ? "text-amber-700" : "text-red-700"
                                         const bg = pct >= 100 ? "bg-green-100" : pct >= 80 ? "bg-amber-100" : "bg-red-100"
-                                        const icon = pct >= 100 ? "🟢" : pct >= 80 ? "🟡" : "🔴"
                                         return (
                                             <div key={item.label} className={cn("rounded-lg p-2 text-center", bg)}>
                                                 <p className="text-[8px] text-cream-500 mb-0.5">{item.label}</p>
                                                 <p className={cn("font-mono text-sm font-bold", color)}>
-                                                    {icon} {pct}%
+                                                    {pct}%
                                                 </p>
                                                 <p className="text-[8px] text-cream-400">
                                                     {item.label === "Doanh thu" ? `₫${fmt(item.actual)}` : item.actual} / {item.label === "Doanh thu" ? `₫${fmt(item.target)}` : item.target}
@@ -3699,7 +3629,7 @@ function ShiftModal({
                         )}
 
                         <div className="rounded-lg border border-amber-300 bg-amber-50 p-3">
-                            <p className="text-sm font-bold text-amber-800 mb-1">⚠️ Đối soát tiền mặt cuối ca</p>
+                            <p className="text-sm font-bold text-amber-800 mb-1">Đối soát tiền mặt cuối ca</p>
                             <p className="text-[11px] text-amber-700">
                                 Quỹ kỳ vọng: <span className="font-mono font-bold">₫{fmt(currentShift.expectedCash)}</span>
                             </p>
@@ -3738,7 +3668,7 @@ function ShiftModal({
                                     return (
                                         <div className="flex justify-between items-center">
                                             <span className="text-xs font-bold">
-                                                {isOk ? "✅ Khớp" : diff > 0 ? "⚠️ Thừa" : "❌ Thiếu"}
+                                                {isOk ? "Khớp" : diff > 0 ? "Thừa" : "Thiếu"}
                                             </span>
                                             <span className={cn(
                                                 "font-mono text-lg font-bold",
@@ -3852,7 +3782,7 @@ function DiscountAuthModal({
             <div className="w-full max-w-[360px] rounded-2xl border border-cream-200 bg-white shadow-2xl overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-cream-200">
                     <div>
-                        <h2 className="text-lg font-bold text-green-900">🏷️ Giảm giá</h2>
+                        <h2 className="text-lg font-bold text-green-900">Giảm giá</h2>
                         <p className="text-xs text-cream-500">
                             {needsPin ? "Cần xác nhận Manager/Owner" : "Chọn mức giảm giá"}
                         </p>
@@ -3917,7 +3847,7 @@ function DiscountAuthModal({
 
                         {activePct > 10 && (
                             <p className="text-[10px] text-amber-600 bg-amber-50 rounded-lg px-3 py-2 border border-amber-200">
-                                ⚠️ Giảm giá &gt; 10% cần xác nhận Manager PIN
+                                Giảm giá &gt; 10% cần xác nhận Manager PIN
                             </p>
                         )}
 
@@ -3962,7 +3892,7 @@ function DiscountAuthModal({
 
                         {error && (
                             <p className="text-[11px] text-red-600 bg-red-50 rounded-lg px-3 py-2 border border-red-200">
-                                ❌ {error}
+                                {error}
                             </p>
                         )}
 
@@ -4008,7 +3938,7 @@ function WineGuideModal({
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
                             <p className="text-[10px] uppercase tracking-wider text-cream-400">
-                                {product.type === "WINE_BOTTLE" ? "🍷 Wine by Bottle" : product.type === "WINE_GLASS" ? "🥂 Wine by Glass" : "🍷 Wine Tasting"}
+                                {product.type === "WINE_BOTTLE" ? "Wine by Bottle" : product.type === "WINE_GLASS" ? "Wine by Glass" : "Wine Tasting"}
                             </p>
                             <h3 className="font-display text-xl font-bold text-cream-50 mt-1">
                                 {product.name}
@@ -4183,7 +4113,6 @@ function PairingSection({ productId, isWine }: { productId: string; isWine: bool
             <div className="space-y-1">
                 {pairings.map(p => (
                     <div key={p.id} className="flex items-center gap-2 rounded-lg bg-cream-100 border border-cream-200 px-3 py-2">
-                        <span className="text-sm">{isWine ? "🍽️" : "🍷"}</span>
                         <span className="text-xs font-semibold text-green-900 flex-1">{p.name}</span>
                         <span className="text-[10px] font-mono text-cream-500">₫{new Intl.NumberFormat("vi-VN").format(p.sellPrice)}</span>
                     </div>
@@ -4214,7 +4143,7 @@ function FoodPairingPopup({
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
                             <p className="text-[10px] uppercase tracking-wider text-cream-400">
-                                🍽️ {product.type === "FOOD" ? "Món ăn" : product.type === "DRINK" ? "Đồ uống" : "Sản phẩm"}
+                                {product.type === "FOOD" ? "Món ăn" : product.type === "DRINK" ? "Đồ uống" : "Sản phẩm"}
                             </p>
                             <h3 className="font-display text-lg font-bold text-cream-50 mt-0.5">
                                 {product.name}
@@ -4268,7 +4197,7 @@ function PayExistingOrderModal({
             if (result.success) {
                 if (result.stockWarnings.length > 0) {
                     for (const w of result.stockWarnings) {
-                        toast.warning(`⚠️ ${w}`, { duration: 5000 })
+                        toast.warning(`${w}`, { duration: 5000 })
                     }
                 }
                 onPaid()
@@ -4303,7 +4232,7 @@ function PayExistingOrderModal({
                         <div key={item.id} className="flex items-center justify-between rounded-lg bg-cream-50 border border-cream-200 px-3 py-2">
                             <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium text-green-900 truncate">{item.productName}</p>
-                                {item.notes && <p className="text-[9px] text-amber-600 italic">💬 {item.notes}</p>}
+                                {item.notes && <p className="text-[9px] text-amber-600 italic">{item.notes}</p>}
                             </div>
                             <div className="text-right ml-2 shrink-0">
                                 <span className="text-[10px] text-cream-500">×{item.quantity}</span>
@@ -4351,7 +4280,6 @@ function PayExistingOrderModal({
 
                 {paying && (
                     <div className="flex items-center justify-center gap-2 py-3 bg-cream-50 border-t border-cream-200">
-                        <Loader2 className="h-4 w-4 animate-spin text-green-700" />
                         <span className="text-xs text-cream-500">Đang xử lý thanh toán...</span>
                     </div>
                 )}
@@ -4515,34 +4443,34 @@ function WineGuidePopup({ onClose }: { onClose: () => void }) {
                                                     <div className="rounded-lg bg-white border border-cream-200 p-2.5 space-y-2">
                                                         <div className="flex justify-between text-xs">
                                                             <span className="text-cream-500 flex items-center gap-1.5">
-                                                                <Thermometer className="h-3 w-3" /> Nhiệt độ
+                                                                Nhiệt độ
                                                             </span>
                                                             <span className="font-bold text-blue-700">{note.servingTemp}</span>
                                                         </div>
                                                         <div className="flex justify-between text-xs">
                                                             <span className="text-cream-500 flex items-center gap-1.5">
-                                                                <GlassWater className="h-3 w-3" /> Ly
+                                                                Ly
                                                             </span>
                                                             <span className="font-medium">{note.glassType}</span>
                                                         </div>
                                                         {note.decantTime && (
                                                             <div className="flex justify-between text-xs">
                                                                 <span className="text-cream-500 flex items-center gap-1.5">
-                                                                    <Clock className="h-3 w-3" /> Decant
+                                                                    Decant
                                                                 </span>
                                                                 <span className="font-bold text-amber-700">{note.decantTime}</span>
                                                             </div>
                                                         )}
                                                         <div className="flex justify-between text-xs">
                                                             <span className="text-cream-500 flex items-center gap-1.5">
-                                                                <MapPin className="h-3 w-3" /> Vùng
+                                                                Vùng
                                                             </span>
                                                             <span className="font-medium text-right max-w-[140px]">{note.region}</span>
                                                         </div>
                                                         {note.grape && (
                                                             <div className="flex justify-between text-xs">
                                                                 <span className="text-cream-500 flex items-center gap-1.5">
-                                                                    <Grape className="h-3 w-3" /> Nho
+                                                                    Nho
                                                                 </span>
                                                                 <span className="font-medium text-right max-w-[140px]">{note.grape}</span>
                                                             </div>
@@ -4553,7 +4481,7 @@ function WineGuidePopup({ onClose }: { onClose: () => void }) {
                                                     {note.staffNotes && (
                                                         <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5">
                                                             <p className="text-[8px] font-bold uppercase text-amber-500 mb-1 flex items-center gap-1">
-                                                                <MessageSquare className="h-2.5 w-2.5" /> GHI CHÚ
+                                                                GHI CHÚ
                                                             </p>
                                                             <p className="text-[10px] text-amber-800 leading-relaxed">{note.staffNotes}</p>
                                                         </div>
@@ -4566,7 +4494,7 @@ function WineGuidePopup({ onClose }: { onClose: () => void }) {
                                                     <div className="rounded-lg bg-white border border-cream-200 p-2.5 space-y-2.5">
                                                         {note.tastingNotes.nose.length > 0 && (
                                                             <div>
-                                                                <p className="text-[8px] font-bold uppercase text-wine-400 mb-1">👃 Nose (Hương)</p>
+                                                                <p className="text-[8px] font-bold uppercase text-wine-400 mb-1">Nose (Hương)</p>
                                                                 <div className="flex flex-wrap gap-1">
                                                                     {note.tastingNotes.nose.map((n) => (
                                                                         <span key={n} className="rounded-full bg-wine-50 border border-wine-200 px-2 py-0.5 text-[8px] font-medium text-wine-700">
@@ -4578,7 +4506,7 @@ function WineGuidePopup({ onClose }: { onClose: () => void }) {
                                                         )}
                                                         {note.tastingNotes.palate.length > 0 && (
                                                             <div>
-                                                                <p className="text-[8px] font-bold uppercase text-green-500 mb-1">👅 Palate (Vị)</p>
+                                                                <p className="text-[8px] font-bold uppercase text-green-500 mb-1">Palate (Vị)</p>
                                                                 <div className="flex flex-wrap gap-1">
                                                                     {note.tastingNotes.palate.map((p) => (
                                                                         <span key={p} className="rounded-full bg-green-50 border border-green-200 px-2 py-0.5 text-[8px] font-medium text-green-700">
@@ -4590,7 +4518,7 @@ function WineGuidePopup({ onClose }: { onClose: () => void }) {
                                                         )}
                                                         {note.tastingNotes.finish && (
                                                             <div>
-                                                                <p className="text-[8px] font-bold uppercase text-amber-500 mb-1">✨ Finish (Kết thúc)</p>
+                                                                <p className="text-[8px] font-bold uppercase text-amber-500 mb-1">Finish (Kết thúc)</p>
                                                                 <p className="text-[10px] text-cream-600 italic">{note.tastingNotes.finish}</p>
                                                             </div>
                                                         )}
@@ -4600,7 +4528,7 @@ function WineGuidePopup({ onClose }: { onClose: () => void }) {
                                                 {/* Right: Food Pairings */}
                                                 <div className="space-y-2.5">
                                                     <h4 className="text-[9px] font-bold uppercase text-cream-400 flex items-center gap-1">
-                                                        <Utensils className="h-2.5 w-2.5" /> FOOD PAIRING
+                                                        FOOD PAIRING
                                                     </h4>
                                                     {note.pairings.length > 0 ? (
                                                         <div className="rounded-lg bg-white border border-cream-200 p-2.5">
@@ -4624,7 +4552,7 @@ function WineGuidePopup({ onClose }: { onClose: () => void }) {
                                                     {/* Upsell suggestion */}
                                                     {note.pairings.length > 0 && (
                                                         <div className="rounded-lg bg-green-50 border border-green-200 p-2.5">
-                                                            <p className="text-[8px] font-bold uppercase text-green-500 mb-0.5">💡 GỢI Ý UPSELL</p>
+                                                            <p className="text-[8px] font-bold uppercase text-green-500 mb-0.5">GỢI Ý UPSELL</p>
                                                             <p className="text-[9px] text-green-700 leading-relaxed">
                                                                 {note.pairings.length > 2
                                                                     ? `Đề xuất kèm "${note.pairings[0]}" hoặc "${note.pairings[1]}" để tăng ticket size.`

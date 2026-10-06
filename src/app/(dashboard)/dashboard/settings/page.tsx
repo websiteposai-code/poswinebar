@@ -1,34 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-    Settings,
-    Store,
-    Printer,
-    Bell,
-    Shield,
-    Palette,
-    Receipt,
-    Save,
-    Check,
-    Plus,
-    Pencil,
-    Trash2,
-    X,
-    BadgePercent,
-    FileText,
-    Star,
-    Banknote,
-    HandCoins,
-    SlidersHorizontal,
-    Users,
-    Clock,
-    Calendar,
-    Wallet,
-    Briefcase,
-    CreditCard,
-    AlertTriangle,
-} from "lucide-react"
+import { Settings, Store, Printer, Bell, Shield, Palette, Receipt, Save, Check, Plus, Pencil, Trash2, X, BadgePercent, FileText, Star, Banknote, HandCoins, SlidersHorizontal, Users, Clock, Calendar, Wallet, Briefcase, CreditCard, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -114,9 +87,6 @@ export default function SettingsPage() {
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                        <Settings className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Cài đặt</h1>
                         <p className="text-sm text-cream-500">Tuỳ chỉnh hệ thống POS — tự động lưu khi thay đổi</p>
@@ -422,7 +392,7 @@ function TaxSettings() {
 
                             {/* Info Card */}
                             <div className="mt-4 rounded-lg bg-amber-50 border border-amber-200 p-3">
-                                <p className="text-[10px] font-semibold text-amber-800 mb-1">📌 Lưu ý nghiệp vụ</p>
+                                <p className="text-[10px] font-semibold text-amber-800 mb-1">Lưu ý nghiệp vụ</p>
                                 <ul className="text-[10px] text-amber-700 space-y-0.5 list-disc list-inside">
                                     <li><strong>Thuế đầu ra</strong>: VAT tính trên giá bán cho khách (theo thuế suất gán cho sản phẩm)</li>
                                     <li><strong>Thuế đầu vào</strong>: VAT trên hoá đơn mua hàng (ghi nhận khi nhập kho/PO)</li>
@@ -1044,7 +1014,7 @@ function ServiceChargeSettings() {
             </SettingGroup>
 
             <div className="rounded-lg bg-blue-50 border border-blue-200 p-3">
-                <p className="text-[10px] font-semibold text-blue-800 mb-1">💡 Hướng dẫn</p>
+                <p className="text-[10px] font-semibold text-blue-800 mb-1">Hướng dẫn</p>
                 <p className="text-[10px] text-blue-700">Phí dịch vụ sẽ tự động tính vào tổng đơn tại POS. Khách hàng sẽ thấy dòng “Phí dịch vụ X%” trên hoá đơn.</p>
             </div>
         </>
@@ -1097,7 +1067,7 @@ function PaymentSettings() {
             </SettingGroup>
 
             <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
-                <p className="text-[10px] font-semibold text-amber-800 mb-1">🏦 Lưu ý</p>
+                <p className="text-[10px] font-semibold text-amber-800 mb-1">Lưu ý</p>
                 <p className="text-[10px] text-amber-700">Thông tin này sẽ được dùng để tạo mã QR VietQR khi khách chọn thanh toán chuyển khoản tại POS.</p>
             </div>
         </>
@@ -1259,7 +1229,7 @@ function HrSettings() {
                     </SettingGroup>
 
                     <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 mt-4">
-                        <p className="text-[10px] font-semibold text-amber-800 mb-1">📌 Lưu ý</p>
+                        <p className="text-[10px] font-semibold text-amber-800 mb-1">Lưu ý</p>
                         <p className="text-[10px] text-amber-700">Thay đổi thời gian ca sẽ áp dụng cho các lịch ca mới. Lịch ca đã gán trước đó sẽ không bị ảnh hưởng.</p>
                     </div>
                 </>
@@ -1751,7 +1721,7 @@ function OperationalSettings() {
                 {kpiEnabled && (
                     <div className="rounded-lg bg-green-50 border border-green-200 p-3">
                         <p className="text-[10px] text-green-700">
-                            ✅ KPI đang bật — Chủ quán có thể đặt chỉ tiêu tháng/tuần tại <strong>Dashboard → Chỉ tiêu KPI</strong>.
+                            KPI đang bật — Chủ quán có thể đặt chỉ tiêu tháng/tuần tại <strong>Dashboard → Chỉ tiêu KPI</strong>.
                             Quản lý ca set chỉ tiêu đầu ca. Hệ thống tự cascade: Tháng → Tuần → Ca.
                         </p>
                     </div>
@@ -1811,7 +1781,7 @@ function SetupSettings() {
         const res = await updatePosConfig({ paymentMode: mode })
         setSaving(false)
         if (res.success) {
-            toast.success(mode === "PAY_FIRST" ? "✅ Đã chuyển sang Thanh toán trước" : "✅ Đã chuyển sang Thanh toán sau")
+            toast.success(mode === "PAY_FIRST" ? "Đã chuyển sang Thanh toán trước" : "Đã chuyển sang Thanh toán sau")
         } else {
             toast.error("Lỗi khi lưu cài đặt")
         }
@@ -1821,15 +1791,14 @@ function SetupSettings() {
 
     return (
         <>
-            <SettingGroup title="🏪 Chế độ thanh toán POS">
+            <SettingGroup title="Chế độ thanh toán POS">
                 <p className="text-[10px] text-cream-500 mb-4">Chọn quy trình thanh toán phù hợp với mô hình kinh doanh. Thay đổi sẽ áp dụng cho các đơn hàng mới.</p>
 
                 {/* Warning banner */}
                 <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 mb-4">
                     <div className="flex items-start gap-2">
-                        <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                         <div>
-                            <p className="text-[10px] font-semibold text-amber-800">⚠️ Cài đặt quan trọng</p>
+                            <p className="text-[10px] font-semibold text-amber-800">Cài đặt quan trọng</p>
                             <p className="text-[10px] text-amber-700 mt-0.5">Đây là cài đặt cấu hình ban đầu. Việc thay đổi giữa chừng có thể gây nhầm lẫn cho nhân viên và ảnh hưởng đến quy trình vận hành.</p>
                         </div>
                     </div>
@@ -1932,7 +1901,7 @@ function SetupSettings() {
                 paymentMode === "PAY_FIRST" ? "bg-amber-50 border-amber-200" : "bg-green-50 border-green-200"
             )}>
                 <p className={cn("text-xs font-bold mb-1", paymentMode === "PAY_FIRST" ? "text-amber-800" : "text-green-800")}>
-                    {paymentMode === "PAY_FIRST" ? "☕ Chế độ: Thanh toán trước" : "🍷 Chế độ: Thanh toán sau"}
+                    {paymentMode === "PAY_FIRST" ? "Chế độ: Thanh toán trước" : "Chế độ: Thanh toán sau"}
                 </p>
                 <ul className="text-[10px] space-y-0.5 list-disc list-inside">
                     {paymentMode === "PAY_FIRST" ? (
@@ -2050,7 +2019,6 @@ function RbacSettings() {
     if (!isOwner) {
         return (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Shield className="h-12 w-12 text-cream-300 mb-3" />
                 <h3 className="font-display text-sm font-bold text-green-900 mb-1">Không có quyền truy cập</h3>
                 <p className="text-xs text-cream-400">Chỉ Chủ quán (Owner) mới được cấu hình phân quyền.</p>
             </div>
@@ -2065,7 +2033,6 @@ function RbacSettings() {
             <div className="flex items-center justify-between flex-wrap gap-2 mb-5">
                 <div>
                     <h2 className="font-display text-base font-bold text-green-900 flex items-center gap-2">
-                        <Shield className="h-4 w-4" />
                         Phân quyền (RBAC)
                     </h2>
                     <p className="text-[10px] text-cream-400 mt-0.5">
@@ -2106,7 +2073,7 @@ function RbacSettings() {
                     <span className={cn("inline-flex px-1.5 py-0.5 rounded-full text-[9px] font-bold", ROLE_COLORS_MAP[selectedRole])}>
                         {ROLE_LABELS_MAP[selectedRole]}
                     </span>
-                    {" "}— Tick ✅ để bật, bỏ tick để tắt quyền.
+                    {" "}— Tick để bật, bỏ tick để tắt quyền.
                 </p>
             </div>
 

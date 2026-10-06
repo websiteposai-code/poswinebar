@@ -1,20 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import {
-    ClipboardList,
-    Search,
-    Clock,
-    ChefHat,
-    CheckCircle2,
-    XCircle,
-    Banknote,
-    CreditCard,
-    QrCode,
-    Receipt,
-    RefreshCcw,
-    X,
-} from "lucide-react"
+import { Search, Clock, ChefHat, CheckCircle2, XCircle, Banknote, CreditCard, QrCode, Receipt, RefreshCcw, X } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -104,9 +91,6 @@ export default function OrdersClient({ initialOrders }: OrdersClientProps) {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-cream-300 bg-cream-100 px-3 lg:px-5 py-2.5 lg:py-3">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-100">
-                        <ClipboardList className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg font-bold text-green-900">
                             Đơn hàng
@@ -199,7 +183,6 @@ export default function OrdersClient({ initialOrders }: OrdersClientProps) {
                     {filteredOrders.length === 0 ? (
                         <div className="flex h-full items-center justify-center">
                             <div className="text-center">
-                                <ClipboardList className="mx-auto h-12 w-12 text-cream-300 mb-3" />
                                 <p className="text-sm font-medium text-cream-400">
                                     {orders.length === 0
                                         ? "Chưa có đơn hàng nào"
@@ -326,7 +309,6 @@ export default function OrdersClient({ initialOrders }: OrdersClientProps) {
                             <div className="flex items-center justify-center">
                                 {(() => {
                                     const cfg = STATUS_CONFIG[selectedOrder.status]
-                                    const Icon = cfg.icon
                                     return (
                                         <span
                                             className={cn(
@@ -334,7 +316,6 @@ export default function OrdersClient({ initialOrders }: OrdersClientProps) {
                                                 cfg.color
                                             )}
                                         >
-                                            <Icon className="h-3.5 w-3.5" />
                                             {cfg.label}
                                         </span>
                                     )
@@ -359,7 +340,7 @@ export default function OrdersClient({ initialOrders }: OrdersClientProps) {
                                                     </p>
                                                     {item.notes && (
                                                         <p className="text-[9px] text-wine-600 italic truncate">
-                                                            📝 {item.notes}
+                                                            {item.notes}
                                                         </p>
                                                     )}
                                                 </div>
@@ -397,7 +378,7 @@ export default function OrdersClient({ initialOrders }: OrdersClientProps) {
                                 onClick={() => setReceiptOrder(selectedOrder)}
                                 className="w-full rounded-xl border border-green-300 bg-green-50 py-2.5 text-xs font-bold text-green-700 hover:bg-green-100 transition-all flex items-center justify-center gap-1.5"
                             >
-                                🖨️ In hoá đơn
+                                In hoá đơn
                             </button>
                         </div>
                     </div>

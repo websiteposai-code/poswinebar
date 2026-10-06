@@ -17,9 +17,13 @@ vi.mock('next/cache', () => ({
 // Mock next/headers — used in some actions
 vi.mock('next/headers', () => ({
     cookies: vi.fn(() => ({
-        get: vi.fn(),
+        get: vi.fn((name: string) => {
+            if (name === 'pos_auth') return { name: 'pos_auth', value: 'true' }
+            return undefined
+        }),
         set: vi.fn(),
         delete: vi.fn(),
     })),
     headers: vi.fn(() => new Map()),
 }))
+

@@ -1,11 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import {
-    Target, Plus, TrendingUp, TrendingDown, ArrowRight,
-    Settings2, Check, Loader2, Trophy, BarChart3,
-    ChevronDown, ChevronUp, X, Zap,
-} from "lucide-react"
+import { Target, Plus, TrendingUp, TrendingDown, Settings2, Check, Loader2, Trophy, BarChart3, X, Zap } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -84,7 +80,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
     const [newCode, setNewCode] = useState("")
     const [newName, setNewName] = useState("")
     const [newUnit, setNewUnit] = useState("")
-    const [newIcon, setNewIcon] = useState("📊")
 
     const refreshData = useCallback(async () => {
         setLoading(true)
@@ -145,11 +140,11 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
     const handleCreateMetric = async () => {
         if (!newCode.trim() || !newName.trim()) { toast.error("Thiếu mã hoặc tên"); return }
         setLoading(true)
-        const result = await createKpiMetric({ code: newCode.trim(), name: newName.trim(), unit: newUnit.trim(), icon: newIcon })
+        const result = await createKpiMetric({ code: newCode.trim(), name: newName.trim(), unit: newUnit.trim(), icon: "" })
         if (result.success) {
             toast.success(`Đã tạo chỉ số "${newName}"`)
             setNewMetricOpen(false)
-            setNewCode(""); setNewName(""); setNewUnit(""); setNewIcon("📊")
+            setNewCode(""); setNewName(""); setNewUnit("")
             await refreshData()
         } else {
             toast.error(result.error)
@@ -163,9 +158,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
             <div className="min-h-screen">
                 <div className="border-b border-cream-300 bg-cream-50 px-6 py-5">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-                            <Target className="h-5 w-5 text-amber-700" />
-                        </div>
                         <div>
                             <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Chỉ tiêu KPI</h1>
                             <p className="text-sm text-cream-500">Quản lý chỉ tiêu doanh thu, đơn hàng, và các KPI khác</p>
@@ -173,9 +165,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
                     </div>
                 </div>
                 <div className="flex flex-col items-center justify-center py-32 px-6">
-                    <div className="w-20 h-20 rounded-2xl bg-cream-200 flex items-center justify-center mb-6">
-                        <Target className="h-10 w-10 text-cream-400" />
-                    </div>
                     <h2 className="text-xl font-bold text-green-900 mb-2">Tính năng KPI chưa được bật</h2>
                     <p className="text-sm text-cream-500 text-center max-w-md mb-6">
                         Bật tính năng chỉ tiêu KPI để theo dõi doanh thu, số đơn, số khách và nhiều chỉ số khác theo tháng, tuần và ca.
@@ -195,9 +184,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
             <div className="border-b border-cream-300 bg-cream-50 px-6 py-5">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-                            <Target className="h-5 w-5 text-amber-700" />
-                        </div>
                         <div>
                             <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Chỉ tiêu KPI</h1>
                             <p className="text-sm text-cream-500">
@@ -278,7 +264,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
                                     >
                                         <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-xl">{o.metric.icon}</span>
                                                 <div>
                                                     <p className="text-sm font-bold text-green-900">{o.metric.name}</p>
                                                     <p className="text-[10px] text-cream-500">Tháng {month}</p>
@@ -361,7 +346,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
 
                         {overview.filter(o => o.monthly).length === 0 && (
                             <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed border-cream-300 bg-cream-100">
-                                <Target className="h-12 w-12 text-cream-400 mb-3" />
                                 <p className="text-cream-500 font-medium">Chưa có chỉ tiêu nào cho tháng {month}</p>
                                 <Button onClick={() => setActiveTab("set_targets")} variant="outline" className="mt-3">
                                     <Plus className="mr-1 h-4 w-4" />
@@ -394,7 +378,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
                                 const currentTarget = existing?.monthly?.target ?? 0
                                 return (
                                     <div key={m.id} className="flex items-center gap-4 px-5 py-4">
-                                        <span className="text-xl w-8 text-center">{m.icon}</span>
                                         <div className="flex-1">
                                             <p className="text-sm font-bold text-green-900">{m.name}</p>
                                             {currentTarget > 0 && (
@@ -429,7 +412,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
                         {/* Cascade explanation */}
                         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
                             <div className="flex items-start gap-3">
-                                <ArrowRight className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
                                 <div>
                                     <p className="text-sm font-bold text-blue-800">Cascade tự động</p>
                                     <p className="text-xs text-blue-600 mt-1">
@@ -438,9 +420,7 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
                                     </p>
                                     <div className="flex items-center gap-2 mt-2 text-blue-700">
                                         <Badge className="bg-blue-100 text-blue-700 text-[9px]">Tháng</Badge>
-                                        <ArrowRight className="h-3 w-3" />
                                         <Badge className="bg-blue-100 text-blue-700 text-[9px]">Tuần (÷4~5)</Badge>
-                                        <ArrowRight className="h-3 w-3" />
                                         <Badge className="bg-blue-100 text-blue-700 text-[9px]">Ca (gợi ý)</Badge>
                                     </div>
                                 </div>
@@ -472,7 +452,6 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
                         <div className="rounded-xl border border-cream-300 bg-cream-50 divide-y divide-cream-200">
                             {metrics.map(m => (
                                 <div key={m.id} className="flex items-center gap-4 px-5 py-3.5 group">
-                                    <span className="text-xl w-8 text-center">{m.icon}</span>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2">
                                             <p className="text-sm font-bold text-green-900">{m.name}</p>
@@ -525,25 +504,9 @@ export default function KpiClient({ initialEnabled, initialMetrics, initialOverv
                             <Label className="text-sm font-medium text-green-900">Tên hiển thị <span className="text-red-500">*</span></Label>
                             <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. Khách mới" className="border-cream-300 bg-cream-100" />
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                                <Label className="text-sm font-medium text-green-900">Đơn vị</Label>
-                                <Input value={newUnit} onChange={e => setNewUnit(e.target.value)} placeholder="e.g. khách" className="border-cream-300 bg-cream-100" />
-                            </div>
-                            <div className="space-y-1.5">
-                                <Label className="text-sm font-medium text-green-900">Icon</Label>
-                                <div className="grid grid-cols-3 lg:grid-cols-6 gap-1">
-                                    {["📊", "💰", "📋", "👥", "🍷", "🥂", "🎫", "🏅", "📈", "🛒", "⭐", "🎯"].map(icon => (
-                                        <button
-                                            key={icon}
-                                            onClick={() => setNewIcon(icon)}
-                                            className={cn("flex items-center justify-center h-8 w-8 rounded-lg text-base transition-all",
-                                                newIcon === icon ? "bg-green-100 border-2 border-green-700 scale-110" : "bg-cream-200 border border-cream-300 hover:bg-cream-300"
-                                            )}
-                                        >{icon}</button>
-                                    ))}
-                                </div>
-                            </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-sm font-medium text-green-900">Đơn vị</Label>
+                            <Input value={newUnit} onChange={e => setNewUnit(e.target.value)} placeholder="e.g. khách" className="border-cream-300 bg-cream-100" />
                         </div>
                     </div>
                     <DialogFooter>

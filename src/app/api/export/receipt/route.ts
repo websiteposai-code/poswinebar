@@ -122,7 +122,7 @@ function generateTextReceipt(r: ReturnType<typeof formatReceipt>): string {
     for (const item of r.items) {
         lines.push(item.name)
         lines.push(row(`  ${item.quantity} x ${fmt(item.unitPrice)}`, fmt(item.subtotal)))
-        if (item.notes) lines.push(`  📝 ${item.notes}`)
+        if (item.notes) lines.push(`${item.notes}`)
     }
 
     lines.push(line)
@@ -146,7 +146,7 @@ function generateTextReceipt(r: ReturnType<typeof formatReceipt>): string {
 
     lines.push(line)
     lines.push(center("Cảm ơn quý khách!"))
-    lines.push(center("Hẹn gặp lại ♥"))
+    lines.push(center("Hẹn gặp lại"))
     lines.push("")
 
     return lines.join("\n")

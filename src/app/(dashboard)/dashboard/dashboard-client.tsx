@@ -1,24 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-    Wine,
-    ShoppingCart,
-    Users,
-    TrendingUp,
-    ArrowUpRight,
-    ArrowDownRight,
-    Clock,
-    Armchair,
-    ChefHat,
-    BarChart3,
-    UtensilsCrossed,
-    AlertCircle,
-    CheckCircle2,
-    Banknote,
-    ExternalLink,
-    ClipboardList,
-} from "lucide-react"
+import { Wine, ShoppingCart, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, Armchair, ChefHat, BarChart3, UtensilsCrossed, AlertCircle, CheckCircle2, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/stores/auth-store"
@@ -71,7 +54,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between animate-fade-in-up">
                 <div>
                     <h1 className="font-display text-xl lg:text-2xl font-bold text-green-900">
-                        {greeting}, {staff?.fullName?.split(" ").pop()} 👋
+                        {greeting}, {staff?.fullName?.split(" ").pop()}
                     </h1>
                     <p className="text-xs lg:text-sm text-cream-500">
                         {new Date().toLocaleDateString("vi-VN", {
@@ -133,7 +116,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
                 <div className="lg:col-span-2 rounded-xl border border-cream-300 bg-cream-100 p-4 lg:p-5">
                     <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
                         <h3 className="font-display text-sm font-bold text-green-900">
-                            📈 Doanh thu 7 ngày
+                            Doanh thu 7 ngày
                         </h3>
                         <Link href="/dashboard/reports" className="text-[10px] text-cream-400 hover:text-green-700 flex items-center gap-0.5 transition-all">
                             Chi tiết <ExternalLink className="h-2.5 w-2.5" />
@@ -167,7 +150,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
                 {/* Table Overview */}
                 <div className="rounded-xl border border-cream-300 bg-cream-100 p-4 lg:p-5">
                     <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-                        <h3 className="font-display text-sm font-bold text-green-900">🪑 Bàn</h3>
+                        <h3 className="font-display text-sm font-bold text-green-900">Bàn</h3>
                         <Link href="/dashboard/tables" className="text-[10px] text-cream-400 hover:text-green-700 flex items-center gap-0.5 transition-all">
                             Quản lý <ExternalLink className="h-2.5 w-2.5" />
                         </Link>
@@ -204,7 +187,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
             <div className="rounded-xl border border-cream-300 bg-cream-100 p-4 lg:p-5">
                 <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
                     <h3 className="font-display text-sm font-bold text-green-900">
-                        🍷 Đơn hàng gần đây
+                        Đơn hàng gần đây
                     </h3>
                     <Link href="/pos/orders" className="text-[10px] text-cream-400 hover:text-green-700 flex items-center gap-0.5 transition-all">
                         Xem tất cả <ExternalLink className="h-2.5 w-2.5" />
@@ -212,9 +195,6 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
                 </div>
                 {recentOrders.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 gap-3">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cream-200/60">
-                            <ClipboardList className="h-7 w-7 text-cream-400" />
-                        </div>
                         <p className="text-xs text-cream-400">Chưa có đơn hàng hôm nay</p>
                         <Link href="/pos" className="text-[10px] font-medium text-green-700 hover:underline">Mở POS để bắt đầu →</Link>
                     </div>
@@ -236,7 +216,6 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
                                     key={order.id}
                                     className="flex items-center gap-3 rounded-lg bg-cream-50 px-3 py-2.5"
                                 >
-                                    <StatusIcon className={cn("h-4 w-4 shrink-0", statusColor)} />
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span className="font-mono text-[10px] text-cream-400">{order.orderNumber}</span>

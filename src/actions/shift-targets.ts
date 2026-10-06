@@ -91,10 +91,10 @@ export async function evaluateShift(
     const avgPct = Math.round((revenuePct + orderPct + customerPct) / 3)
 
     let overallGrade: ShiftEvaluation["overallGrade"], gradeLabel: string, gradeColor: string
-    if (avgPct >= 100) { overallGrade = "EXCELLENT"; gradeLabel = "🌟 Xuất sắc"; gradeColor = "text-green-700" }
-    else if (avgPct >= 80) { overallGrade = "GOOD"; gradeLabel = "👍 Tốt"; gradeColor = "text-blue-700" }
-    else if (avgPct >= 60) { overallGrade = "NEEDS_IMPROVEMENT"; gradeLabel = "⚠️ Cần cải thiện"; gradeColor = "text-amber-700" }
-    else { overallGrade = "POOR"; gradeLabel = "🔴 Chưa đạt"; gradeColor = "text-red-700" }
+    if (avgPct >= 100) { overallGrade = "EXCELLENT"; gradeLabel = "Xuất sắc"; gradeColor = "text-green-700" }
+    else if (avgPct >= 80) { overallGrade = "GOOD"; gradeLabel = "Tốt"; gradeColor = "text-blue-700" }
+    else if (avgPct >= 60) { overallGrade = "NEEDS_IMPROVEMENT"; gradeLabel = "Cần cải thiện"; gradeColor = "text-amber-700" }
+    else { overallGrade = "POOR"; gradeLabel = "Chưa đạt"; gradeColor = "text-red-700" }
 
     if (target) {
         await prisma.shiftTarget.update({

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { DM_Sans, Playfair_Display, Caveat, JetBrains_Mono } from "next/font/google"
+import { DM_Sans, Playfair_Display } from "next/font/google"
 import { Toaster } from "sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from "@/components/theme-switcher"
@@ -14,24 +14,11 @@ const dmSans = DM_Sans({
   display: "swap",
 })
 
-// Display font
+// Display font (upright for headings, italic for brand accents)
 const playfair = Playfair_Display({
   variable: "--font-display",
-  subsets: ["latin"],
-  display: "swap",
-})
-
-// Script font
-const caveat = Caveat({
-  variable: "--font-script",
-  subsets: ["latin"],
-  display: "swap",
-})
-
-// Mono font
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
+  style: ["normal", "italic"],
   display: "swap",
 })
 
@@ -68,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body
-        className={`${dmSans.variable} ${playfair.variable} ${caveat.variable} ${jetbrainsMono.variable} font-sans antialiased bg-cream-50 text-green-900`}
+        className={`${dmSans.variable} ${playfair.variable} font-sans antialiased bg-cream-50 text-green-900`}
       >
         <TooltipProvider>
           <ThemeProvider>

@@ -6,9 +6,6 @@ export default function POSLoading() {
             <div className="flex flex-col items-center gap-5 animate-fade-in">
                 {/* Pulsing Wine icon with ring */}
                 <div className="relative">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-green-900 shadow-xl">
-                        <Wine className="h-10 w-10 text-cream-50" />
-                    </div>
                     {/* Animated ring */}
                     <div className="absolute inset-0 rounded-2xl border-2 border-green-500/30 animate-pulse-ring" />
                     <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-wine-500 shadow-lg" style={{ animation: "fadeInScale 400ms var(--ease-out-back) forwards" }} />

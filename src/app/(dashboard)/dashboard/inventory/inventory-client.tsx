@@ -1,27 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-    Package,
-    Search,
-    AlertTriangle,
-    CheckCircle2,
-    XCircle,
-    ArrowDownToLine,
-    ArrowUpFromLine,
-    RotateCcw,
-    Trash2,
-    X,
-    Calendar,
-    RefreshCcw,
-    Archive,
-    Clock,
-    Wrench,
-    Beaker,
-    CookingPot,
-    TrendingDown,
-    Shield,
-} from "lucide-react"
+import { Package, Search, AlertTriangle, CheckCircle2, XCircle, ArrowDownToLine, ArrowUpFromLine, RotateCcw, Trash2, X, Calendar, RefreshCcw, Archive, Clock, Wrench, Beaker, CookingPot, TrendingDown, Shield } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -86,7 +66,6 @@ function StatCard({ label, value, color, icon: Icon }: { label: string; value: s
     return (
         <div className="rounded-xl border border-cream-200 bg-white p-3.5 shadow-sm">
             <div className="flex items-center gap-1.5 mb-1.5">
-                <Icon className="h-3.5 w-3.5 text-cream-400" />
                 <span className="text-[10px] font-medium uppercase tracking-wider text-cream-400">{label}</span>
             </div>
             <p className={cn("font-mono text-xl font-bold leading-none", color)}>{value}</p>
@@ -179,9 +158,6 @@ export function InventoryClient({ initialData }: { initialData: InventoryInitial
             {/* ── Header ── */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                        <Package className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Kho hàng</h1>
                         <p className="text-sm text-cream-500">Hàng bán, Nguyên liệu & Công cụ dụng cụ</p>
@@ -195,9 +171,9 @@ export function InventoryClient({ initialData }: { initialData: InventoryInitial
             {/* ── Main Tab Switch ── */}
             <div className="flex gap-1 rounded-lg bg-cream-200 p-0.5 w-fit">
                 {([
-                    { key: "inventory" as MainTab, label: "📦 Hàng bán", count: items.length },
-                    { key: "npl" as MainTab, label: "🧪 Nguyên liệu", count: materials.length },
-                    { key: "ccdc" as MainTab, label: "🔧 CCDC", count: equipment.length },
+                    { key: "inventory" as MainTab, label: "Hàng bán", count: items.length },
+                    { key: "npl" as MainTab, label: "Nguyên liệu", count: materials.length },
+                    { key: "ccdc" as MainTab, label: "CCDC", count: equipment.length },
                 ] as const).map((t) => (
                     <button
                         key={t.key}
@@ -373,8 +349,8 @@ export function InventoryClient({ initialData }: { initialData: InventoryInitial
 
                     <div className="flex items-center gap-3 flex-wrap">
                         <div className="flex gap-1 rounded-lg bg-cream-200 p-0.5 overflow-x-auto scroll-hide-bar">
-                            <button onClick={() => setNplSubTab("materials")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", nplSubTab === "materials" ? "bg-green-900 text-cream-50" : "text-cream-500")}>🧪 Nguyên liệu</button>
-                            <button onClick={() => setNplSubTab("recipes")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", nplSubTab === "recipes" ? "bg-green-900 text-cream-50" : "text-cream-500")}>🍳 Công thức ({recipes.length})</button>
+                            <button onClick={() => setNplSubTab("materials")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", nplSubTab === "materials" ? "bg-green-900 text-cream-50" : "text-cream-500")}>Nguyên liệu</button>
+                            <button onClick={() => setNplSubTab("recipes")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", nplSubTab === "recipes" ? "bg-green-900 text-cream-50" : "text-cream-500")}>Công thức ({recipes.length})</button>
                         </div>
                         {nplSubTab === "materials" && (
                             <>
@@ -451,7 +427,6 @@ export function InventoryClient({ initialData }: { initialData: InventoryInitial
                                 <div key={recipe.id} className="rounded-xl border border-cream-200 bg-white p-4 shadow-sm">
                                     <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
                                         <div className="flex items-center gap-2">
-                                            <CookingPot className="h-4 w-4 text-green-700" />
                                             <h3 className="text-sm font-bold text-green-900">{recipe.productName}</h3>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -479,7 +454,7 @@ export function InventoryClient({ initialData }: { initialData: InventoryInitial
                                             ))}
                                         </tbody>
                                     </table>
-                                    {recipe.notes && <p className="mt-2 text-[10px] text-cream-400 italic">📝 {recipe.notes}</p>}
+                                    {recipe.notes && <p className="mt-2 text-[10px] text-cream-400 italic">{recipe.notes}</p>}
                                 </div>
                             ))}
                         </div>
@@ -535,21 +510,21 @@ export function InventoryClient({ initialData }: { initialData: InventoryInitial
 
                     <div className="flex items-center justify-between">
                         <div className="flex gap-1 rounded-lg bg-cream-200 p-0.5 w-fit">
-                            <button onClick={() => setCcdcSubTab("list")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", ccdcSubTab === "list" ? "bg-green-900 text-cream-50" : "text-cream-500")}>🔧 Danh mục CCDC</button>
-                            <button onClick={() => setCcdcSubTab("depreciation")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", ccdcSubTab === "depreciation" ? "bg-green-900 text-cream-50" : "text-cream-500")}>📉 Lịch sử khấu hao ({depHistory.length})</button>
+                            <button onClick={() => setCcdcSubTab("list")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", ccdcSubTab === "list" ? "bg-green-900 text-cream-50" : "text-cream-500")}>Danh mục CCDC</button>
+                            <button onClick={() => setCcdcSubTab("depreciation")} className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition-all", ccdcSubTab === "depreciation" ? "bg-green-900 text-cream-50" : "text-cream-500")}>Lịch sử khấu hao ({depHistory.length})</button>
                         </div>
                         <Button
                             onClick={async () => {
                                 setIsRunningDep(true)
                                 const result = await runMonthlyDepreciation()
                                 if (result.success) {
-                                    toast.success(`✅ Khấu hao tháng ${result.month}`, {
+                                    toast.success(`Khấu hao tháng ${result.month}`, {
                                         description: `${result.entriesCreated} CCDC · Tổng: ₫${fmtK(result.totalDepreciation)}`,
                                         duration: 6000,
                                     })
                                     for (const e of result.entries) {
                                         if (e.fullyDepreciated) {
-                                            toast.warning(`📌 ${e.equipmentName} đã hết khấu hao`, {
+                                            toast.warning(`${e.equipmentName} đã hết khấu hao`, {
                                                 description: "Tự động chuyển trạng thái → Thanh lý",
                                                 duration: 8000,
                                             })
@@ -558,7 +533,7 @@ export function InventoryClient({ initialData }: { initialData: InventoryInitial
                                     setCcdcSubTab("depreciation")
                                     loadData()
                                 } else {
-                                    toast.error(`⚠️ ${result.skipped[0]?.reason ?? "Lỗi không xác định"}`, { duration: 5000 })
+                                    toast.error(`${result.skipped[0]?.reason ?? "Lỗi không xác định"}`, { duration: 5000 })
                                 }
                                 setIsRunningDep(false)
                             }}

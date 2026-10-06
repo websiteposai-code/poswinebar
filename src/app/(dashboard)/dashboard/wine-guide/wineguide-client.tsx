@@ -1,25 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import {
-    Wine,
-    Search,
-    Thermometer,
-    Clock,
-    GlassWater,
-    Utensils,
-    MessageSquare,
-    ChevronDown,
-    ChevronUp,
-    Grape,
-    MapPin,
-    Save,
-    X,
-    Plus,
-    Trash2,
-    Edit3,
-    CheckCircle2,
-} from "lucide-react"
+import { Wine, Search, Thermometer, Clock, GlassWater, Utensils, ChevronDown, ChevronUp, Grape, MapPin, Save, X, Plus, Trash2, Edit3 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
@@ -117,7 +99,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
         }
         setSaving(false)
         if (result.success) {
-            toast.success("✅ Đã lưu Wine Guide thành công!")
+            toast.success("Đã lưu Wine Guide thành công!")
             setEditingId(null)
             loadData()
         } else {
@@ -143,9 +125,6 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-wine-100">
-                        <Wine className="h-5 w-5 text-wine-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Wine Guide Setup</h1>
                         <p className="text-sm text-cream-500">Quản lý hướng dẫn phục vụ, tasting notes, food pairing cho nhân viên</p>
@@ -164,7 +143,6 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
 
             {/* Info banner */}
             <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 flex items-center gap-3">
-                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
                 <p className="text-xs text-green-800">
                     <strong>Manager/Owner:</strong> Ấn nút <strong>Chỉnh sửa</strong> trên mỗi rượu để setup tasting notes, food pairing,
                     nhiệt độ phục vụ, và ghi chú cho nhân viên. Thông tin này sẽ hiển thị trên POS khi nhân viên bán hàng.
@@ -235,7 +213,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                     {/* Edit toggle button */}
                                     <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
                                         <h3 className="text-xs font-bold text-green-900">
-                                            {isEditing ? "📝 Đang chỉnh sửa Wine Guide" : "📋 Thông tin Wine Guide"}
+                                            {isEditing ? "Đang chỉnh sửa Wine Guide" : "Thông tin Wine Guide"}
                                         </h3>
                                         {!isEditing ? (
                                             <Button
@@ -277,7 +255,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                             <div className="rounded-lg bg-white border border-cream-200 p-3 space-y-2.5">
                                                 {/* Serving Temp */}
                                                 <div className="flex justify-between items-center text-xs">
-                                                    <span className="text-cream-500 flex items-center gap-1.5"><Thermometer className="h-3 w-3" /> Nhiệt độ</span>
+                                                    <span className="text-cream-500 flex items-center gap-1.5">Nhiệt độ</span>
                                                     {isEditing ? (
                                                         <Input
                                                             value={editServingTemp}
@@ -291,7 +269,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                                 </div>
                                                 {/* Glass Type */}
                                                 <div className="flex justify-between items-center text-xs">
-                                                    <span className="text-cream-500 flex items-center gap-1.5"><GlassWater className="h-3 w-3" /> Ly</span>
+                                                    <span className="text-cream-500 flex items-center gap-1.5">Ly</span>
                                                     {isEditing ? (
                                                         <Input
                                                             value={editGlassType}
@@ -305,7 +283,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                                 </div>
                                                 {/* Decant Time */}
                                                 <div className="flex justify-between items-center text-xs">
-                                                    <span className="text-cream-500 flex items-center gap-1.5"><Clock className="h-3 w-3" /> Decant</span>
+                                                    <span className="text-cream-500 flex items-center gap-1.5">Decant</span>
                                                     {isEditing ? (
                                                         <Input
                                                             value={editDecantTime}
@@ -319,13 +297,13 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                                 </div>
                                                 {/* Region (read-only) */}
                                                 <div className="flex justify-between text-xs">
-                                                    <span className="text-cream-500 flex items-center gap-1.5"><MapPin className="h-3 w-3" /> Vùng</span>
+                                                    <span className="text-cream-500 flex items-center gap-1.5">Vùng</span>
                                                     <span className="font-medium">{note.region}</span>
                                                 </div>
                                                 {/* Grape (read-only) */}
                                                 {note.grape && (
                                                     <div className="flex justify-between text-xs">
-                                                        <span className="text-cream-500 flex items-center gap-1.5"><Grape className="h-3 w-3" /> Nho</span>
+                                                        <span className="text-cream-500 flex items-center gap-1.5">Nho</span>
                                                         <span className="font-medium text-right max-w-[140px]">{note.grape}</span>
                                                     </div>
                                                 )}
@@ -333,7 +311,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
 
                                             {/* Staff notes */}
                                             <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
-                                                <p className="text-[9px] font-bold uppercase text-amber-500 mb-1.5 flex items-center gap-1"><MessageSquare className="h-3 w-3" /> GHI CHÚ NHÂN VIÊN</p>
+                                                <p className="text-[9px] font-bold uppercase text-amber-500 mb-1.5 flex items-center gap-1">GHI CHÚ NHÂN VIÊN</p>
                                                 {isEditing ? (
                                                     <textarea
                                                         value={editStaffNotes}
@@ -357,7 +335,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                             <div className="rounded-lg bg-white border border-cream-200 p-3 space-y-3">
                                                 {/* Nose */}
                                                 <div>
-                                                    <p className="text-[9px] font-bold uppercase text-wine-400 mb-1.5">👃 Nose (Hương)</p>
+                                                    <p className="text-[9px] font-bold uppercase text-wine-400 mb-1.5">Nose (Hương)</p>
                                                     <div className="flex flex-wrap gap-1">
                                                         {(isEditing ? editNose : note.tastingNotes.nose).map((n, i) => (
                                                             <span key={`${n}-${i}`} className="rounded-full bg-wine-50 border border-wine-200 px-2 py-0.5 text-[9px] font-medium text-wine-700 flex items-center gap-1">
@@ -393,7 +371,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                                 </div>
                                                 {/* Palate */}
                                                 <div>
-                                                    <p className="text-[9px] font-bold uppercase text-green-500 mb-1.5">👅 Palate (Vị)</p>
+                                                    <p className="text-[9px] font-bold uppercase text-green-500 mb-1.5">Palate (Vị)</p>
                                                     <div className="flex flex-wrap gap-1">
                                                         {(isEditing ? editPalate : note.tastingNotes.palate).map((p, i) => (
                                                             <span key={`${p}-${i}`} className="rounded-full bg-green-50 border border-green-200 px-2 py-0.5 text-[9px] font-medium text-green-700 flex items-center gap-1">
@@ -429,7 +407,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                                 </div>
                                                 {/* Finish */}
                                                 <div>
-                                                    <p className="text-[9px] font-bold uppercase text-amber-500 mb-1.5">✨ Finish (Kết thúc)</p>
+                                                    <p className="text-[9px] font-bold uppercase text-amber-500 mb-1.5">Finish (Kết thúc)</p>
                                                     {isEditing ? (
                                                         <Input
                                                             value={editFinish}
@@ -448,7 +426,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
 
                                         {/* Right: Food Pairings */}
                                         <div className="space-y-3">
-                                            <h4 className="text-[10px] font-bold uppercase text-cream-400 flex items-center gap-1"><Utensils className="h-3 w-3" /> FOOD PAIRING</h4>
+                                            <h4 className="text-[10px] font-bold uppercase text-cream-400 flex items-center gap-1">FOOD PAIRING</h4>
                                             <div className="rounded-lg bg-white border border-cream-200 p-3">
                                                 <div className="space-y-1.5">
                                                     {(() => {
@@ -498,7 +476,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                                         <Input
                                                             value={pairingSearch}
                                                             onChange={(e) => setPairingSearch(e.target.value)}
-                                                            placeholder="🔍 Tìm món ăn trong menu..."
+                                                            placeholder="Tìm món ăn trong menu..."
                                                             className="h-7 text-[10px] border-cream-300 mb-2"
                                                         />
                                                         <div className="max-h-[160px] overflow-y-auto space-y-0.5 rounded-lg border border-cream-200 bg-cream-50 p-1">
@@ -537,7 +515,7 @@ export default function WineGuideClient({ initial }: { initial: WineGuideInitial
                                             {/* Upsell suggestion */}
                                             {(isEditing ? editPairedIds : note.pairings).length > 0 && (
                                                 <div className="rounded-lg bg-green-50 border border-green-200 p-3">
-                                                    <p className="text-[9px] font-bold uppercase text-green-500 mb-1">💡 GỢI Ý UPSELL (tự động)</p>
+                                                    <p className="text-[9px] font-bold uppercase text-green-500 mb-1">GỢI Ý UPSELL (tự động)</p>
                                                     <p className="text-[10px] text-green-700 leading-relaxed">
                                                         {(() => {
                                                             const pairings = isEditing ? editPairings : note.pairings

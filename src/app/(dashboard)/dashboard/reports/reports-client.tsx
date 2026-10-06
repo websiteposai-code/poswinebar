@@ -3,28 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 import { usePrefetchStore } from "@/stores/prefetch-store"
-import {
-    TrendingUp,
-    TrendingDown,
-    DollarSign,
-    ShoppingCart,
-    Banknote,
-    CreditCard,
-    QrCode,
-    BarChart3,
-    ChevronLeft,
-    ChevronRight,
-    AlertTriangle,
-    Package,
-    Clock,
-    Minus,
-    PieChart,
-    ArrowUpRight,
-    ArrowDownRight,
-    Layers,
-    RefreshCcw,
-    Award,
-} from "lucide-react"
+import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Banknote, CreditCard, QrCode, ChevronLeft, ChevronRight, AlertTriangle, Package, ArrowUpRight, ArrowDownRight, Layers } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -74,9 +53,6 @@ export function ReportsClient({
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                        <BarChart3 className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Lãi Lỗ (P&L)</h1>
                         <p className="text-sm text-cream-500">Báo cáo lãi lỗ & phân tích tài chính</p>
@@ -87,8 +63,8 @@ export function ReportsClient({
             {/* Main Tab Switch */}
             <div className="flex gap-1 rounded-lg bg-cream-200 p-0.5 w-fit">
                 {([
-                    { key: "pnl" as MainTab, label: "📊 P&L hàng ngày", desc: "Lãi lỗ theo ngày" },
-                    { key: "finance" as MainTab, label: "💰 Giá vốn & Chi phí", desc: "COGS, biên LN" },
+                    { key: "pnl" as MainTab, label: "P&L hàng ngày", desc: "Lãi lỗ theo ngày" },
+                    { key: "finance" as MainTab, label: "Giá vốn & Chi phí", desc: "COGS, biên LN" },
                 ]).map((t) => (
                     <button
                         key={t.key}
@@ -146,7 +122,7 @@ function DailyPnLView({ initialData }: { initialData: ReportsPnlData }) {
                         <ChevronLeft className="h-4 w-4" />
                     </button>
                     <div className="text-center min-w-[200px]">
-                        <p className="text-sm font-bold text-green-900">{isToday ? "📅 Hôm nay" : dateStr}</p>
+                        <p className="text-sm font-bold text-green-900">{isToday ? "Hôm nay" : dateStr}</p>
                         <p className="text-[10px] text-cream-400">{day.date}</p>
                     </div>
                     <button onClick={() => setSelectedDay(Math.max(selectedDay - 1, 0))} disabled={selectedDay === 0} className="p-1.5 rounded-lg hover:bg-cream-200 text-cream-500 transition-all disabled:opacity-30">
@@ -196,7 +172,7 @@ function DailyPnLView({ initialData }: { initialData: ReportsPnlData }) {
                 {/* LEFT: P&L Breakdown */}
                 <div className="col-span-2 rounded-xl border border-cream-200 bg-white shadow-sm">
                     <div className="px-5 py-3.5 border-b border-cream-200">
-                        <h2 className="text-sm font-bold text-green-900">📊 Bảng P&L — {isToday ? "Hôm nay" : new Date(day.date).toLocaleDateString("vi-VN")}</h2>
+                        <h2 className="text-sm font-bold text-green-900">Bảng P&L — {isToday ? "Hôm nay" : new Date(day.date).toLocaleDateString("vi-VN")}</h2>
                     </div>
 
                     <div className="p-5 space-y-1">
@@ -214,7 +190,7 @@ function DailyPnLView({ initialData }: { initialData: ReportsPnlData }) {
                                 <PnLRow label={group.category} value={-group.amount} accent="red" indent />
                                 {group.items.map((item, idx) => (
                                     <div key={idx} className="flex justify-between pl-10 py-0.5">
-                                        <span className="text-[10px] text-cream-400 flex items-center gap-1"><Minus className="h-2 w-2" />{item.description}</span>
+                                        <span className="text-[10px] text-cream-400 flex items-center gap-1">{item.description}</span>
                                         <span className="text-[10px] font-mono text-cream-400">-₫{fmt(item.amount)}</span>
                                     </div>
                                 ))}
@@ -227,7 +203,7 @@ function DailyPnLView({ initialData }: { initialData: ReportsPnlData }) {
                         <div className="border-t-2 border-green-300 my-2" />
 
                         <div className="flex justify-between items-center py-2 px-3 rounded-lg bg-green-50 border border-green-200">
-                            <span className="text-sm font-bold text-green-900">💰 LỢI NHUẬN RÒNG (Net Profit)</span>
+                            <span className="text-sm font-bold text-green-900">LỢI NHUẬN RÒNG (Net Profit)</span>
                             <div className="text-right">
                                 <span className={cn("font-mono text-xl font-bold", day.netProfit >= 0 ? "text-green-700" : "text-red-600")}>
                                     ₫{fmt(day.netProfit)}
@@ -276,7 +252,7 @@ function DailyPnLView({ initialData }: { initialData: ReportsPnlData }) {
 
                     {/* Weekly mini chart */}
                     <div className="rounded-xl border border-cream-200 bg-white shadow-sm p-4">
-                        <h3 className="text-[10px] font-bold uppercase text-cream-400 mb-3 flex items-center gap-1"><Clock className="h-3 w-3" /> BIỂU ĐỒ 7 NGÀY</h3>
+                        <h3 className="text-[10px] font-bold uppercase text-cream-400 mb-3 flex items-center gap-1">BIỂU ĐỒ 7 NGÀY</h3>
                         <div className="space-y-1.5">
                             {weekData.map((d, i) => {
                                 const maxRev = Math.max(...weekData.map((dd) => dd.revenue))
@@ -357,9 +333,9 @@ function FinanceView({ initialData }: { initialData: ReportsFinanceData }) {
             {/* Sub Tab Switch */}
             <div className="flex gap-1 rounded-lg bg-cream-200 p-0.5 w-fit">
                 {([
-                    { key: "overview" as FinanceTab, label: "📊 Tổng quan P&L" },
-                    { key: "cogs" as FinanceTab, label: "💰 Chi tiết COGS" },
-                    { key: "products" as FinanceTab, label: "🍷 Biên LN sản phẩm" },
+                    { key: "overview" as FinanceTab, label: "Tổng quan P&L" },
+                    { key: "cogs" as FinanceTab, label: "Chi tiết COGS" },
+                    { key: "products" as FinanceTab, label: "Biên LN sản phẩm" },
                 ]).map((t) => (
                     <button
                         key={t.key}
@@ -377,7 +353,6 @@ function FinanceView({ initialData }: { initialData: ReportsFinanceData }) {
                     {/* P&L Statement */}
                     <div className="col-span-3 rounded-xl border border-cream-200 bg-white p-5 shadow-sm">
                         <h3 className="text-sm font-bold text-green-900 mb-4 flex items-center gap-2">
-                            <BarChart3 className="h-4 w-4 text-green-700" />
                             Báo cáo Lãi / Lỗ — Tháng này
                         </h3>
                         <div className="space-y-0.5">
@@ -418,7 +393,7 @@ function FinanceView({ initialData }: { initialData: ReportsFinanceData }) {
                     {/* Expense Breakdown */}
                     <div className="col-span-2 rounded-xl border border-cream-200 bg-white p-5 shadow-sm">
                         <h3 className="text-sm font-bold text-green-900 mb-4 flex items-center gap-2">
-                            <PieChart className="h-4 w-4 text-wine-600" /> Cơ cấu chi phí
+                            Cơ cấu chi phí
                         </h3>
                         <div className="space-y-2.5 mb-4">
                             {expenses.map((exp) => (
@@ -438,11 +413,9 @@ function FinanceView({ initialData }: { initialData: ReportsFinanceData }) {
                             <div className="border-t border-cream-200 pt-3 space-y-2">
                                 <h4 className="text-[10px] font-bold text-cream-400 uppercase">COGS Insights</h4>
                                 <div className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2">
-                                    <Award className="h-3.5 w-3.5 text-green-600 shrink-0" />
                                     <div><p className="text-[9px] text-cream-400">Biên cao nhất</p><p className="text-[11px] font-bold text-green-700">{cogsSummary.topMarginProduct}</p></div>
                                 </div>
                                 <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2">
-                                    <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
                                     <div><p className="text-[9px] text-cream-400">Biên thấp nhất</p><p className="text-[11px] font-bold text-amber-700">{cogsSummary.lowestMarginProduct}</p></div>
                                 </div>
                             </div>

@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Wine, Delete, Loader2, KeyRound } from "lucide-react"
+import { Delete, Loader2 } from "lucide-react"
 import { useAuthStore } from "@/stores/auth-store"
 import { toast } from "sonner"
 import { verifyStaffPin } from "@/actions/staff"
@@ -11,37 +11,39 @@ export default function LoginPage() {
     const [pin, setPin] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [shake, setShake] = useState(false)
+    const [activeKey, setActiveKey] = useState<string | null>(null)
     const router = useRouter()
     const { login } = useAuthStore()
 
-    const handleNumber = useCallback((num: string) => {
-        if (pin.length >= 6) return
-        const newPin = pin + num
+    const pinRef = useRef("")
+    const isLoadingRef = useRef(false)
+    const activeKeyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-        setPin(newPin)
-
-        if (newPin.length >= 4) {
-            verifyAndLogin(newPin)
+    const triggerKeyFeedback = useCallback((key: string) => {
+        setActiveKey(key)
+        if (activeKeyTimeoutRef.current) {
+            clearTimeout(activeKeyTimeoutRef.current)
         }
-    }, [pin])
-
-    const handleDelete = useCallback(() => {
-        setPin((prev) => prev.slice(0, -1))
+        activeKeyTimeoutRef.current = setTimeout(() => {
+            setActiveKey(null)
+        }, 130)
     }, [])
 
-    const verifyAndLogin = async (enteredPin: string) => {
+    const verifyAndLogin = useCallback(async (enteredPin: string) => {
         setIsLoading(true)
+        isLoadingRef.current = true
 
         try {
             const result = await verifyStaffPin(enteredPin)
 
-            if (result && 'error' in result) {
-                // Rate limited
+            if (result && "error" in result) {
+                // Rate limited or error
                 setShake(true)
+                pinRef.current = ""
                 setPin("")
                 toast.error(result.error)
                 setTimeout(() => setShake(false), 500)
-            } else if (result && 'id' in result) {
+            } else if (result && "id" in result) {
                 login({
                     id: result.id,
                     fullName: result.fullName,
@@ -51,19 +53,83 @@ export default function LoginPage() {
                 router.replace("/pos")
             } else {
                 setShake(true)
+                pinRef.current = ""
                 setPin("")
                 toast.error("PIN không đúng")
                 setTimeout(() => setShake(false), 500)
             }
         } catch {
             setShake(true)
+            pinRef.current = ""
             setPin("")
             toast.error("Lỗi kết nối server")
             setTimeout(() => setShake(false), 500)
+        } finally {
+            setIsLoading(false)
+            isLoadingRef.current = false
+        }
+    }, [login, router])
+
+    const handleNumber = useCallback((num: string) => {
+        if (isLoadingRef.current) return
+        if (pinRef.current.length >= 4) return
+
+        triggerKeyFeedback(num)
+
+        const newPin = pinRef.current + num
+        pinRef.current = newPin
+        setPin(newPin)
+
+        if (newPin.length >= 4) {
+            verifyAndLogin(newPin)
+        }
+    }, [triggerKeyFeedback, verifyAndLogin])
+
+    const handleDelete = useCallback(() => {
+        if (isLoadingRef.current || pinRef.current.length === 0) return
+        triggerKeyFeedback("del")
+        const newPin = pinRef.current.slice(0, -1)
+        pinRef.current = newPin
+        setPin(newPin)
+    }, [triggerKeyFeedback])
+
+    const handleClear = useCallback(() => {
+        if (isLoadingRef.current) return
+        pinRef.current = ""
+        setPin("")
+    }, [])
+
+    // Lắng nghe sự kiện bàn phím vật lý
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Không can thiệp nếu người dùng đang dùng phím tắt hệ thống (Ctrl, Alt, Meta)
+            if (e.ctrlKey || e.altKey || e.metaKey) return
+
+            if (e.key >= "0" && e.key <= "9") {
+                e.preventDefault()
+                handleNumber(e.key)
+            } else if (e.key === "Backspace") {
+                e.preventDefault()
+                handleDelete()
+            } else if (e.key === "Escape" || e.key === "Delete") {
+                e.preventDefault()
+                handleClear()
+            } else if (e.key === "Enter") {
+                if (pinRef.current.length >= 4 && !isLoadingRef.current) {
+                    e.preventDefault()
+                    verifyAndLogin(pinRef.current)
+                }
+            }
         }
 
-        setIsLoading(false)
-    }
+        window.addEventListener("keydown", handleKeyDown)
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown)
+            if (activeKeyTimeoutRef.current) {
+                clearTimeout(activeKeyTimeoutRef.current)
+            }
+        }
+    }, [handleNumber, handleDelete, handleClear, verifyAndLogin])
 
     const numpadKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"]
 
@@ -72,11 +138,8 @@ export default function LoginPage() {
             <div className="w-full max-w-sm px-6">
                 {/* Logo */}
                 <div className="mb-8 flex flex-col items-center">
-                    <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-900">
-                        <Wine className="h-10 w-10 text-cream-50" />
-                    </div>
-                    <h1 className="font-display text-2xl font-bold text-green-900">
-                        Noon & Noir
+                    <h1 className="font-display text-2xl font-bold text-green-900 tracking-tight">
+                        Noon &amp; Noir
                     </h1>
                     <p className="font-script text-lg text-green-700">Wine Alley</p>
                 </div>
@@ -96,7 +159,7 @@ export default function LoginPage() {
 
                 {/* Status text */}
                 <p className="mb-6 text-center text-sm text-cream-500">
-                    {isLoading ? "Đang xác thực..." : "Nhập mã PIN để đăng nhập"}
+                    {isLoading ? "Đang xác thực..." : "Nhập mã PIN hoặc dùng bàn phím số"}
                 </p>
 
                 {/* Numpad */}
@@ -104,23 +167,34 @@ export default function LoginPage() {
                     {numpadKeys.map((key, idx) => {
                         if (key === "") return <div key={idx} />
                         if (key === "del") {
+                            const isDelActive = activeKey === "del"
                             return (
                                 <button
                                     key={idx}
+                                    type="button"
                                     onClick={handleDelete}
                                     disabled={isLoading || pin.length === 0}
-                                    className="flex h-16 items-center justify-center rounded-xl bg-cream-100 text-green-900 transition-all hover:bg-cream-200 active:scale-95 disabled:opacity-30"
+                                    title="Xóa một số (Backspace)"
+                                    className={`flex h-16 items-center justify-center rounded-xl transition-all duration-150 active:scale-95 disabled:opacity-30 ${isDelActive
+                                        ? "bg-cream-300 scale-95"
+                                        : "bg-cream-100 text-green-900 hover:bg-cream-200"
+                                        }`}
                                 >
                                     <Delete className="h-6 w-6" />
                                 </button>
                             )
                         }
+                        const isNumActive = activeKey === key
                         return (
                             <button
                                 key={idx}
+                                type="button"
                                 onClick={() => handleNumber(key)}
                                 disabled={isLoading}
-                                className="flex h-16 items-center justify-center rounded-xl bg-cream-100 font-sans text-2xl font-semibold text-green-900 transition-all hover:bg-green-100 active:scale-95 active:bg-green-200 disabled:opacity-50"
+                                className={`flex h-16 items-center justify-center rounded-xl font-sans text-2xl font-semibold text-green-900 transition-all duration-150 active:scale-95 disabled:opacity-50 ${isNumActive
+                                    ? "bg-green-200 scale-95"
+                                    : "bg-cream-100 hover:bg-green-100 active:bg-green-200"
+                                    }`}
                             >
                                 {isLoading && pin.length >= 4 ? (
                                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -139,12 +213,11 @@ export default function LoginPage() {
 
                 {/* Dev hint */}
                 <div className="mt-6 rounded-xl border border-cream-200/80 bg-cream-100/70 p-3 text-xs text-cream-600">
-                    <p className="font-semibold mb-1 flex items-center gap-1.5 text-stone-700">
-                        <KeyRound className="h-3.5 w-3.5 text-amber-700" />
+                    <p className="font-semibold mb-1 text-stone-700">
                         Mã PIN truy cập mẫu:
                     </p>
-                    <p className="font-mono text-[11px] text-stone-600">Owner: 1234 · Manager: 5678 · Cashier: 0000</p>
-                    <p className="font-mono text-[11px] text-stone-600">Bartender: 1111 · Waiter: 2222</p>
+                    <p className="font-sans text-[12px] text-stone-600">Owner: 1234 · Manager: 5678 · Cashier: 0000</p>
+                    <p className="font-sans text-[12px] text-stone-600">Bartender: 1111 · Waiter: 2222</p>
                 </div>
             </div>
         </div>

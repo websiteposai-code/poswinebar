@@ -1,30 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import {
-    TrendingUp,
-    RefreshCw,
-    CheckCircle2,
-    XCircle,
-    Package,
-    AlertTriangle,
-    BarChart3,
-    ArrowUpRight,
-    ArrowDownRight,
-    Target,
-    Clock,
-    ShoppingCart,
-    DollarSign,
-    Layers,
-    Gauge,
-    Activity,
-    Filter,
-    Calendar,
-    TrendingDown,
-    Zap,
-    Info,
-    Search,
-} from "lucide-react"
+import { RefreshCw, CheckCircle2, XCircle, Package, ArrowUpRight, ArrowDownRight, DollarSign, Gauge, Activity, Filter, Info, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -64,7 +41,7 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
     const handleAction = async (id: string, status: "ACCEPTED" | "DISMISSED") => {
         await updateForecastStatus(id, status)
         setItems((prev) => prev.map((i) => (i.id === id ? { ...i, status } : i)))
-        toast.success(status === "ACCEPTED" ? "✅ Đã duyệt gợi ý" : "❌ Đã bỏ qua")
+        toast.success(status === "ACCEPTED" ? "Đã duyệt gợi ý" : "Đã bỏ qua")
     }
 
     const pendingItems = items.filter((i) => i.status === "PENDING")
@@ -138,7 +115,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900 flex items-center gap-2">
-                        <TrendingUp className="h-6 w-6 text-green-700" />
                         Dự báo Đặt hàng
                     </h1>
                     <p className="text-sm text-cream-500 mt-0.5">
@@ -148,7 +124,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                 <div className="flex items-center gap-3">
                     {summary && (
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cream-50 border border-cream-200">
-                            <Calendar className="h-3.5 w-3.5 text-cream-400" />
                             <span className="text-[11px] text-cream-500">
                                 {new Date(summary.lastCalculated).toLocaleDateString("vi-VN")}
                             </span>
@@ -175,7 +150,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                             <Package className="h-16 w-16 text-green-600" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <Package className="h-4 w-4 text-green-600" />
                             <span className="text-xs font-bold uppercase text-green-700">Cần nhập</span>
                         </div>
                         <p className="mt-2 font-mono text-3xl font-bold text-green-800">
@@ -188,7 +162,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                             <DollarSign className="h-16 w-16 text-amber-600" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <DollarSign className="h-4 w-4 text-amber-600" />
                             <span className="text-xs font-bold uppercase text-amber-700">Chi phí ước tính</span>
                         </div>
                         <p className="mt-2 font-mono text-3xl font-bold text-amber-800">
@@ -201,7 +174,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                             <Gauge className="h-16 w-16 text-blue-600" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <Gauge className="h-4 w-4 text-blue-600" />
                             <span className="text-xs font-bold uppercase text-blue-700">Độ tin cậy TB</span>
                         </div>
                         <p className="mt-2 font-mono text-3xl font-bold text-blue-800">
@@ -214,7 +186,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                             <CheckCircle2 className="h-16 w-16 text-emerald-600" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                             <span className="text-xs font-bold uppercase text-emerald-700">Đã duyệt</span>
                         </div>
                         <p className="mt-2 font-mono text-3xl font-bold text-emerald-800">
@@ -229,7 +200,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                             <Activity className="h-16 w-16 text-cream-400" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-cream-400" />
                             <span className="text-xs font-bold uppercase text-cream-500">Xu hướng</span>
                         </div>
                         <p className="mt-2 font-mono text-xl font-bold text-cream-700">
@@ -259,7 +229,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                             />
                         </div>
                         <div className="flex items-center gap-1.5 flex-wrap">
-                            <Filter className="h-3.5 w-3.5 text-cream-400" />
                             <button
                                 onClick={() => setFilterCategory("ALL")}
                                 className={cn(
@@ -298,7 +267,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                     {filteredPending.length > 0 && (
                         <div>
                             <h2 className="text-sm font-bold text-green-900 mb-3 flex items-center gap-2">
-                                <AlertTriangle className="h-4 w-4 text-amber-600" />
                                 Gợi ý chờ duyệt ({filteredPending.length})
                             </h2>
                             <div className="space-y-3">
@@ -324,12 +292,12 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                                                     )}
                                                     {item.trendFactor > 1.05 && (
                                                         <Badge className="text-[9px] px-1.5 py-0 bg-green-100 text-green-700 border-green-200 flex items-center gap-0.5">
-                                                            <ArrowUpRight className="h-2.5 w-2.5" /> Trending
+                                                            Trending
                                                         </Badge>
                                                     )}
                                                     {item.trendFactor < 0.95 && (
                                                         <Badge className="text-[9px] px-1.5 py-0 bg-red-100 text-red-600 border-red-200 flex items-center gap-0.5">
-                                                            <ArrowDownRight className="h-2.5 w-2.5" /> Giảm
+                                                            Giảm
                                                         </Badge>
                                                     )}
                                                 </div>
@@ -457,7 +425,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                         <div className="rounded-xl border border-cream-200 bg-white overflow-hidden">
                             <div className="px-5 py-3 border-b border-cream-100 bg-cream-50/50">
                                 <h2 className="text-sm font-bold text-cream-600 flex items-center gap-2">
-                                    <Layers className="h-4 w-4" />
                                     Đã xử lý ({decidedItems.length})
                                 </h2>
                             </div>
@@ -483,11 +450,11 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                                             <td className="px-4 py-2.5">
                                                 {item.status === "ACCEPTED" ? (
                                                     <Badge className="text-[10px] px-1.5 py-0 bg-green-100 text-green-700 border-green-200">
-                                                        <CheckCircle2 className="h-3 w-3 mr-0.5" /> Duyệt
+                                                        Duyệt
                                                     </Badge>
                                                 ) : (
                                                     <Badge className="text-[10px] px-1.5 py-0 bg-cream-200 text-cream-500 border-cream-300">
-                                                        <XCircle className="h-3 w-3 mr-0.5" /> Bỏ qua
+                                                        Bỏ qua
                                                     </Badge>
                                                 )}
                                             </td>
@@ -509,7 +476,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                     {/* Empty state */}
                     {items.length === 0 && !loading && (
                         <div className="flex flex-col items-center justify-center py-20 text-cream-400 rounded-xl border border-cream-200 bg-white">
-                            <TrendingUp className="h-12 w-12 mb-3 opacity-30" />
                             <p className="text-sm font-medium">Chưa có dữ liệu để dự báo</p>
                             <p className="text-[11px] mt-1">Cần ít nhất 4 tuần dữ liệu bán hàng</p>
                         </div>
@@ -521,7 +487,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                     {/* Confidence Distribution */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <Gauge className="h-4 w-4 text-blue-600" />
                             Phân bố Độ tin cậy
                         </h3>
                         <div className="space-y-3">
@@ -561,7 +526,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                     {/* Top Demand */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <ShoppingCart className="h-4 w-4 text-green-700" />
                             Top Nhu cầu cao nhất
                         </h3>
                         {topDemand.length > 0 ? (
@@ -598,7 +562,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                     {/* Cost by Category */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <BarChart3 className="h-4 w-4 text-amber-600" />
                             Chi phí theo Danh mục
                         </h3>
                         {costByCategory.length > 0 ? (
@@ -630,14 +593,12 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                     {/* Trend Signals */}
                     <div className="rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-green-100/30 p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-4">
-                            <Zap className="h-4 w-4 text-green-700" />
                             Tín hiệu Xu hướng
                         </h3>
                         <div className="space-y-2">
                             {trendingUp.length > 0 && (
                                 <div className="p-2.5 rounded-lg bg-green-100/50 border border-green-200">
                                     <div className="flex items-center gap-2 mb-1.5">
-                                        <ArrowUpRight className="h-3.5 w-3.5 text-green-700" />
                                         <span className="text-[11px] font-bold text-green-800">Đang tăng ({trendingUp.length})</span>
                                     </div>
                                     <div className="space-y-1">
@@ -653,7 +614,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                             {trendingDown.length > 0 && (
                                 <div className="p-2.5 rounded-lg bg-red-50/50 border border-red-200">
                                     <div className="flex items-center gap-2 mb-1.5">
-                                        <ArrowDownRight className="h-3.5 w-3.5 text-red-600" />
                                         <span className="text-[11px] font-bold text-red-700">Đang giảm ({trendingDown.length})</span>
                                     </div>
                                     <div className="space-y-1">
@@ -675,7 +635,6 @@ export default function ForecastClient({ initial }: { initial: ForecastInitialDa
                     {/* Methodology Info */}
                     <div className="rounded-xl border border-cream-200 bg-white p-5">
                         <h3 className="text-sm font-bold text-green-900 flex items-center gap-2 mb-3">
-                            <Info className="h-4 w-4 text-blue-600" />
                             Phương pháp
                         </h3>
                         <div className="space-y-2.5 text-[11px] text-cream-500">

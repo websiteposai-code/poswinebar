@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { X, Plus, Trash2, Save, Loader2, ChefHat, Info } from "lucide-react"
+import { X, Plus, Trash2, Save, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import {
     createIngredient,
@@ -115,7 +115,6 @@ export function AddIngredientModal({
 
                     {baseUnit && baseUnit !== unit && (
                         <p className="text-xs text-green-700 bg-green-50 px-3 py-2 rounded-lg flex items-center gap-1.5 border border-green-200">
-                            <Info className="h-3.5 w-3.5 text-green-700 shrink-0" />
                             1 {unit} = {baseQuantity} {baseUnit} → Giá/{baseUnit}: {costPerBase.toLocaleString("vi-VN")}₫
                         </p>
                     )}
@@ -250,7 +249,6 @@ export function RecipeManagerModal({
                 <div className="flex items-center justify-between px-5 py-4 border-b border-cream-200">
                     <div>
                         <h3 className="font-display text-lg font-bold text-green-900">
-                            <ChefHat className="inline h-5 w-5 mr-2" />
                             Recipe: {productName}
                         </h3>
                         <p className="text-xs text-cream-400 mt-0.5">
@@ -264,7 +262,6 @@ export function RecipeManagerModal({
                     {/* Ingredient list */}
                     {ingredients.length === 0 && !addMode && (
                         <div className="text-center py-8 text-cream-400">
-                            <ChefHat className="h-12 w-12 mx-auto mb-2 opacity-30" />
                             <p>Chưa có nguyên liệu nào</p>
                         </div>
                     )}

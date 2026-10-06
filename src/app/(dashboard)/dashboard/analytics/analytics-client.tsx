@@ -1,11 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-    BarChart3, TrendingUp, TrendingDown, DollarSign, ShoppingCart,
-    Users, Flame, Clock, Download, Calendar, Award,
-    Crown, Medal, Star, MapPin, RefreshCw,
-} from "lucide-react"
+import { BarChart3, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Flame, Clock, Download, Crown, Medal, Star, MapPin, RefreshCw } from "lucide-react"
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
     ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell,
@@ -125,13 +121,9 @@ export function AnalyticsClient({ initialData }: { initialData: AnalyticsInitial
             <div className="border-b border-cream-200 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
                 <div className="px-4 lg:px-6 py-3 lg:py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-green-600 to-green-800 shadow-md">
-                            <BarChart3 className="h-5 w-5 text-cream-50" />
-                        </div>
                         <div>
                             <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Phân tích</h1>
                             <p className="text-xs text-cream-400 flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
                                 Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
                             </p>
                         </div>
@@ -223,7 +215,7 @@ function OverviewTab({
                 {/* Weekly Revenue Chart */}
                 <div className="col-span-2 rounded-xl border border-cream-200 bg-white shadow-sm p-5">
                     <h3 className="text-xs font-bold uppercase text-cream-400 mb-4 flex items-center gap-1.5">
-                        <BarChart3 className="h-3.5 w-3.5" /> Doanh thu 7 ngày gần nhất
+                        Doanh thu 7 ngày gần nhất
                     </h3>
                     <ResponsiveContainer width="100%" height={260}>
                         <BarChart data={weeklyRev} barCategoryGap="20%">
@@ -280,7 +272,7 @@ function OverviewTab({
                 {/* Hourly Line */}
                 <div className="rounded-xl border border-cream-200 bg-white shadow-sm p-5">
                     <h3 className="text-xs font-bold uppercase text-cream-400 mb-4 flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5" /> Phân bổ theo giờ (hôm nay)
+                        Phân bổ theo giờ (hôm nay)
                     </h3>
                     <ResponsiveContainer width="100%" height={200}>
                         <AreaChart data={hourlyData}>
@@ -343,7 +335,7 @@ function OverviewTab({
                 {/* Top Products mini list */}
                 <div className="rounded-xl border border-cream-200 bg-white shadow-sm p-5">
                     <h3 className="text-xs font-bold uppercase text-cream-400 mb-4 flex items-center gap-1.5">
-                        <Award className="h-3.5 w-3.5" /> Top sản phẩm hôm nay
+                        Top sản phẩm hôm nay
                     </h3>
                     <div className="space-y-2.5">
                         {topProducts.length > 0 ? topProducts.slice(0, 7).map((p, i) => (
@@ -372,7 +364,7 @@ function OverviewTab({
             {staff.length > 0 && (
                 <div className="rounded-xl border border-cream-200 bg-white shadow-sm p-5">
                     <h3 className="text-xs font-bold uppercase text-cream-400 mb-4 flex items-center gap-1.5">
-                        <Users className="h-3.5 w-3.5" /> Bảng xếp hạng nhân viên (tháng này)
+                        Bảng xếp hạng nhân viên (tháng này)
                     </h3>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                         {staff.slice(0, 3).map((s, i) => (
@@ -412,7 +404,7 @@ function RevenueTab({
     return (
         <div className="space-y-5">
             <div className="flex justify-between items-center">
-                <h2 className="font-display text-lg font-bold text-green-900">📈 Phân tích doanh thu</h2>
+                <h2 className="font-display text-lg font-bold text-green-900">Phân tích doanh thu</h2>
                 <button onClick={() => onExport("revenue")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-cream-200 bg-white text-xs font-medium text-green-900 hover:bg-cream-50 shadow-sm">
                     <Download className="h-3.5 w-3.5" /> Xuất doanh thu
                 </button>
@@ -516,7 +508,7 @@ function ProductsTab({
     return (
         <div className="space-y-5">
             <div className="flex justify-between items-center">
-                <h2 className="font-display text-lg font-bold text-green-900">📦 Phân tích sản phẩm</h2>
+                <h2 className="font-display text-lg font-bold text-green-900">Phân tích sản phẩm</h2>
                 <button onClick={() => onExport("products")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-cream-200 bg-white text-xs font-medium text-green-900 hover:bg-cream-50 shadow-sm">
                     <Download className="h-3.5 w-3.5" /> Xuất sản phẩm
                 </button>
@@ -598,7 +590,7 @@ function ProductsTab({
 function ZonesTab({ zones, hourly }: { zones: ZoneHeatmap[]; hourly: HourlyHeatmap[] }) {
     return (
         <div className="space-y-5">
-            <h2 className="font-display text-lg font-bold text-green-900">📍 Phân tích khu vực & thời gian</h2>
+            <h2 className="font-display text-lg font-bold text-green-900">Phân tích khu vực & thời gian</h2>
 
             {/* Zone Cards with Table Heatmap */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -633,7 +625,7 @@ function ZonesTab({ zones, hourly }: { zones: ZoneHeatmap[]; hourly: HourlyHeatm
 
             {/* Hourly Heatmap Grid */}
             <div className="rounded-xl border border-cream-200 bg-white shadow-sm p-5">
-                <h3 className="text-xs font-bold uppercase text-cream-400 mb-4">🕐 Biểu đồ nhiệt: Ngày × Giờ (7 ngày)</h3>
+                <h3 className="text-xs font-bold uppercase text-cream-400 mb-4">Biểu đồ nhiệt: Ngày × Giờ (7 ngày)</h3>
                 <div className="overflow-x-auto">
                     <div className="inline-block min-w-full">
                         {/* Hour headers */}
@@ -685,7 +677,7 @@ function StaffTab({ staff, onExport }: { staff: StaffLeaderboard[]; onExport: (t
     return (
         <div className="space-y-5">
             <div className="flex justify-between items-center">
-                <h2 className="font-display text-lg font-bold text-green-900">👥 Hiệu suất nhân viên</h2>
+                <h2 className="font-display text-lg font-bold text-green-900">Hiệu suất nhân viên</h2>
                 <button onClick={() => onExport("staff")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-cream-200 bg-white text-xs font-medium text-green-900 hover:bg-cream-50 shadow-sm">
                     <Download className="h-3.5 w-3.5" /> Xuất nhân viên
                 </button>
@@ -697,7 +689,6 @@ function StaffTab({ staff, onExport }: { staff: StaffLeaderboard[]; onExport: (t
                     {/* 2nd place */}
                     <div className="text-center w-40">
                         <div className="rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 p-5">
-                            <Medal className="h-8 w-8 mx-auto text-slate-400 mb-2" />
                             <p className="font-display text-sm font-bold text-green-900">{staff[1].name}</p>
                             <Badge variant="outline" className="text-[9px] mt-1">{staff[1].role}</Badge>
                             <p className="font-mono text-xl font-bold text-green-700 mt-3">₫{fmtK(staff[1].revenue)}</p>
@@ -729,7 +720,6 @@ function StaffTab({ staff, onExport }: { staff: StaffLeaderboard[]; onExport: (t
                     {/* 3rd place */}
                     <div className="text-center w-40">
                         <div className="rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 p-5">
-                            <Star className="h-8 w-8 mx-auto text-orange-400 mb-2" />
                             <p className="font-display text-sm font-bold text-green-900">{staff[2].name}</p>
                             <Badge variant="outline" className="text-[9px] mt-1">{staff[2].role}</Badge>
                             <p className="font-mono text-xl font-bold text-green-700 mt-3">₫{fmtK(staff[2].revenue)}</p>
@@ -819,7 +809,6 @@ function KPICard({
     return (
         <div className={cn("rounded-xl p-4 border bg-gradient-to-br shadow-sm", colorMap[color])}>
             <div className="flex items-center gap-1.5 mb-2">
-                <Icon className={cn("h-4 w-4", iconColor[color])} />
                 <span className="text-[10px] font-medium uppercase tracking-wider text-cream-500">{label}</span>
             </div>
             <div className="flex items-end gap-2">

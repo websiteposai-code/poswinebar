@@ -201,8 +201,8 @@ export async function getWasteRecords(params?: {
 
     if (params?.dateFrom || params?.dateTo) {
         const dateFilter: Record<string, Date> = {}
-        if (params.dateFrom) dateFilter.gte = new Date(params.dateFrom)
-        if (params.dateTo) dateFilter.lte = new Date(params.dateTo + "T23:59:59")
+        if (params.dateFrom) dateFilter.gte = new Date(params.dateFrom + (params.dateFrom.includes("T") ? "" : "T00:00:00"))
+        if (params.dateTo) dateFilter.lte = new Date(params.dateTo + (params.dateTo.includes("T") ? "" : "T23:59:59.999"))
         where.createdAt = dateFilter
     }
 

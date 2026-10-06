@@ -14,6 +14,7 @@ import {
 import { prisma } from '@/lib/prisma'
 
 const createdStaffIds: string[] = []
+let createdStaffPin = ''
 
 describe('Staff — CRUD (Real DB)', () => {
     afterAll(async () => {
@@ -43,6 +44,7 @@ describe('Staff — CRUD (Real DB)', () => {
         do {
             uniquePin = `${Math.floor(1000 + Math.random() * 8999)}`
         } while (await prisma.staff.findFirst({ where: { pinCode: uniquePin } }))
+        createdStaffPin = uniquePin
 
         const result = await createStaff({
             fullName: 'Test Staff Unit',
@@ -58,13 +60,11 @@ describe('Staff — CRUD (Real DB)', () => {
 
     // ─── U-STF-03: createStaff duplicate PIN ───────────────────
     it('U-STF-03: createStaff — duplicate PIN should fail', async () => {
-        if (createdStaffIds.length === 0) return
-        const existing = await prisma.staff.findUnique({ where: { id: createdStaffIds[0] } })
-        if (!existing?.pinCode) return
+        if (!createdStaffPin) return
 
         const result = await createStaff({
             fullName: 'Duplicate',
-            pin: existing.pinCode,
+            pin: createdStaffPin,
             role: 'WAITER',
             phone: '0900000000',
         })
@@ -112,11 +112,9 @@ describe('Staff — CRUD (Real DB)', () => {
 
     // ─── U-STF-08: verifyStaffPin ─────────────────────────────
     it('U-STF-08: verifyStaffPin — valid PIN should return staff', async () => {
-        if (createdStaffIds.length === 0) return
-        const staff = await prisma.staff.findUnique({ where: { id: createdStaffIds[0] } })
-        if (!staff?.pinCode) return
+        if (!createdStaffPin) return
 
-        const result = await verifyStaffPin(staff.pinCode)
+        const result = await verifyStaffPin(createdStaffPin)
         expect(result).toBeDefined()
         expect(result!.id).toBe(createdStaffIds[0])
     })

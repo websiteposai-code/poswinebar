@@ -2,40 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import {
-    Users,
-    UserPlus,
-    Search,
-    Shield,
-    Phone,
-    Mail,
-    Clock,
-    Award,
-    X,
-    KeyRound,
-    UserCheck,
-    UserX,
-    Palmtree,
-    RefreshCcw,
-    Wine,
-    ChefHat,
-    Martini,
-    HandPlatter,
-    LogIn,
-    LogOut,
-    CalendarDays,
-    Download,
-    Timer,
-    CheckCircle2,
-    AlertCircle,
-    Wallet,
-    Calendar,
-    ChevronLeft,
-    ChevronRight,
-    Copy,
-    Plus,
-    Trash2,
-} from "lucide-react"
+import { Users, UserPlus, Search, Shield, Phone, Mail, Clock, Award, X, KeyRound, UserCheck, UserX, Palmtree, RefreshCcw, Wine, ChefHat, Martini, HandPlatter, LogIn, LogOut, CalendarDays, Download, Timer, CheckCircle2, AlertCircle, Wallet, Calendar, ChevronLeft, ChevronRight, Copy, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -217,7 +184,7 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
     const handleCheckIn = async (staffId: string) => {
         const result = await checkIn(staffId)
         if (result.success) {
-            toast.success("✅ Chấm công vào thành công")
+            toast.success("Chấm công vào thành công")
             loadAttendance()
         } else {
             toast.error(result.error ?? "Lỗi")
@@ -227,7 +194,7 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
     const handleCheckOut = async (staffId: string) => {
         const result = await checkOut(staffId)
         if (result.success) {
-            toast.success(`✅ Chấm công ra — ${result.hoursWorked}h`)
+            toast.success(`Chấm công ra — ${result.hoursWorked}h`)
             loadAttendance()
         } else {
             toast.error(result.error ?? "Lỗi")
@@ -273,7 +240,7 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
         a.download = `nhan-su-${new Date().toISOString().split("T")[0]}.csv`
         a.click()
         URL.revokeObjectURL(url)
-        toast.success("📥 Đã xuất file CSV")
+        toast.success("Đã xuất file CSV")
     }
 
     const loadPayroll = useCallback(async () => {
@@ -351,7 +318,7 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
         a.download = `bang-luong-${payrollData?.monthLabel ?? "thang"}.csv`
         a.click()
         URL.revokeObjectURL(url)
-        toast.success("📥 Đã xuất bảng lương CSV")
+        toast.success("Đã xuất bảng lương CSV")
     }
 
     const tabs: { key: TabKey; label: string; icon: typeof Users }[] = [
@@ -370,9 +337,6 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                        <Users className="h-5 w-5 text-green-700" />
-                    </div>
                     <div>
                         <h1 className="font-display text-lg lg:text-2xl font-bold text-green-900">Nhân sự</h1>
                         <p className="text-sm text-cream-500">Quản lý nhân viên Noon & Noir</p>
@@ -410,7 +374,6 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
                     return (
                         <div key={stat.label} className="rounded-xl border border-cream-300 bg-cream-100 p-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <Icon className="h-4 w-4 text-cream-400" />
                                 <span className="text-[10px] text-cream-400">{stat.label}</span>
                             </div>
                             <p className={cn("font-mono text-2xl font-bold", stat.color)}>{stat.value}</p>
@@ -524,7 +487,7 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
                                             </span>
                                             {todayAtt?.checkIn && (
                                                 <span className="text-[8px] text-green-600 font-mono">
-                                                    🟢 {todayAtt.checkIn}
+                                                    {todayAtt.checkIn}
                                                 </span>
                                             )}
                                         </div>
@@ -563,7 +526,6 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
                     {/* Empty state */}
                     {filtered.length === 0 && !loading && (
                         <div className="flex flex-col items-center justify-center py-16">
-                            <Users className="h-12 w-12 text-cream-300 mb-3" />
                             <p className="text-sm text-cream-400">Không tìm thấy nhân viên</p>
                         </div>
                     )}
@@ -578,7 +540,6 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
                         <div className="rounded-xl border border-cream-300 bg-cream-100 overflow-x-auto">
                             <div className="flex items-center justify-between px-5 py-3 border-b border-cream-200 bg-cream-50">
                                 <h3 className="text-xs font-bold text-green-900 uppercase flex items-center gap-1.5">
-                                    <CalendarDays className="h-3.5 w-3.5" />
                                     Chấm công hôm nay — {new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })}
                                 </h3>
                                 <button onClick={loadAttendance} className="text-cream-400 hover:text-green-700 transition-colors">
@@ -612,12 +573,12 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
                                             <div className="text-right shrink-0 min-w-[100px]">
                                                 {att?.checkIn && (
                                                     <p className="text-[10px] text-green-700 font-mono">
-                                                        <LogIn className="inline h-2.5 w-2.5 mr-0.5" /> {att.checkIn}
+                                                        {att.checkIn}
                                                     </p>
                                                 )}
                                                 {att?.checkOut && (
                                                     <p className="text-[10px] text-wine-600 font-mono">
-                                                        <LogOut className="inline h-2.5 w-2.5 mr-0.5" /> {att.checkOut}
+                                                        {att.checkOut}
                                                     </p>
                                                 )}
                                                 {att?.hoursWorked != null && (
@@ -785,7 +746,7 @@ export function StaffClient({ initialData }: { initialData: StaffInitialData }) 
                 <div>
                     <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
                         <h3 className="text-xs font-bold text-green-900 uppercase flex items-center gap-1.5">
-                            <Wallet className="h-3.5 w-3.5" /> Bảng lương — {payrollData?.monthLabel ?? "..."}
+                            Bảng lương — {payrollData?.monthLabel ?? "..."}
                         </h3>
                         <Button
                             variant="outline"

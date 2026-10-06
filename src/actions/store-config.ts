@@ -116,7 +116,7 @@ const DEFAULT_RECEIPT: ReceiptConfig = {
     autoPrint: true,
     showLogo: true,
     showFooter: true,
-    footerText: "Cảm ơn quý khách! ♥",
+    footerText: "Cảm ơn quý khách!",
     paperWidth: "80",
 }
 
