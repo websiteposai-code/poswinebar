@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react"
-import { Search, Plus, Minus, Trash2, Wine, ShoppingCart, Receipt, CreditCard, Banknote, QrCode, X, MessageSquare, Armchair, Hash, Loader2, CheckCircle2, CreditCard as TabIcon, User, Clock, UserPlus, Star, Timer, CircleMinus, Bell, Pause, Play, ShieldCheck, Percent, Thermometer, GlassWater, Grape, MapPin, Info, ChevronRight, BookOpen, ChevronDown, ChevronUp, Utensils, Sparkles, Menu as MenuIcon } from "lucide-react"
+import { Search, Plus, Minus, Trash2, Wine, ShoppingCart, Receipt, CreditCard, Banknote, QrCode, X, MessageSquare, Armchair, Hash, Loader2, CheckCircle2, CreditCard as TabIcon, User, Clock, UserPlus, Star, Timer, CircleMinus, Bell, Pause, Play, ShieldCheck, Percent, Thermometer, GlassWater, Grape, MapPin, Info, ChevronRight, BookOpen, ChevronDown, ChevronUp, Utensils, Sparkles, Menu as MenuIcon, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -319,6 +319,7 @@ export default function POSPage() {
     const [activeCategory, setActiveCategory] = useState<string>("all")
     const [searchTerm, setSearchTerm] = useState("")
     const [tableModalOpen, setTableModalOpen] = useState(false)
+    const pendingProductRef = useRef<Product | null>(null)
     const [noteItemId, setNoteItemId] = useState<string | null>(null)
     const [noteText, setNoteText] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -641,12 +642,12 @@ export default function POSPage() {
     }, [activeCategory, searchTerm, dbProducts])
 
     const handleAddToCart = (product: Product) => {
-        // Require table selection for dine-in before adding products (PAY_AFTER only)
-        const needsTable = paymentMode === "PAY_AFTER" && cart.orderType === "DINE_IN" && !cart.selectedTable
-        if (needsTable) {
-            toast.error("Vui lòng chọn bàn trước", {
-                description: "Nhấn 'Chọn bàn...' để chọn bàn trước khi order",
-                duration: 3000,
+        // Require table selection for dine-in before adding products
+        if (cart.orderType === "DINE_IN" && !cart.selectedTable) {
+            pendingProductRef.current = product
+            toast.error("Vui lòng chọn bàn cho đơn hàng", {
+                description: `Chọn bàn để phục vụ món: ${product.name}`,
+                duration: 3500,
                 action: { label: "Chọn bàn", onClick: () => setTableModalOpen(true) },
             })
             setTableModalOpen(true)
@@ -690,7 +691,10 @@ export default function POSPage() {
             return
         }
         cart.addItem(product)
-        toast.success(`+1 ${product.name}`, { duration: 1500 })
+        const tableSuffix = cart.orderType === "DINE_IN" && cart.selectedTable
+            ? ` (Bàn ${cart.selectedTable.tableNumber})`
+            : cart.orderType === "TAKEAWAY" ? " (Mang đi)" : ""
+        toast.success(`+1 ${product.name}${tableSuffix}`, { duration: 1500 })
     }
 
     // 86 toggle via right-click
@@ -786,8 +790,11 @@ export default function POSPage() {
             toast.error("Giỏ hàng trống")
             return
         }
-        if (cart.orderType === "DINE_IN" && !cart.selectedTable && paymentMode === "PAY_AFTER") {
-            toast.error("Chọn bàn trước khi gửi bếp")
+        if (cart.orderType === "DINE_IN" && !cart.selectedTable) {
+            toast.error("Chọn bàn trước khi gửi bếp", {
+                description: "Đơn tại bàn cần chọn số bàn để phục vụ",
+                action: { label: "Chọn bàn", onClick: () => setTableModalOpen(true) }
+            })
             setTableModalOpen(true)
             return
         }
@@ -860,8 +867,11 @@ export default function POSPage() {
             toast.error("Giỏ hàng trống")
             return
         }
-        if (cart.orderType === "DINE_IN" && !cart.selectedTable && paymentMode === "PAY_AFTER") {
-            toast.error("Chọn bàn trước khi thanh toán")
+        if (cart.orderType === "DINE_IN" && !cart.selectedTable) {
+            toast.error("Vui lòng chọn bàn", {
+                description: "Đơn tại bàn cần chọn số bàn để thanh toán",
+                action: { label: "Chọn bàn", onClick: () => setTableModalOpen(true) }
+            })
             setTableModalOpen(true)
             return
         }
@@ -1510,10 +1520,60 @@ export default function POSPage() {
                                 toast("Đã xóa đơn hàng")
                             }}
                             className="rounded-md p-1 text-cream-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                            title="Xóa toàn bộ đơn"
                         >
                             <Trash2 className="h-3.5 w-3.5" />
                         </button>
                     )}
+                </div>
+
+                {/* Table / Serving Info Banner */}
+                <div className="flex items-center justify-between border-b border-cream-200 bg-cream-50/90 px-4 py-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        {cart.orderType === "DINE_IN" ? (
+                            cart.selectedTable ? (
+                                <button
+                                    onClick={() => setTableModalOpen(true)}
+                                    className="flex items-center gap-1.5 rounded-lg border border-green-300 bg-green-50 px-2.5 py-1 text-xs font-bold text-green-900 hover:bg-green-100 transition-all"
+                                    title="Nhấn để đổi bàn khác"
+                                >
+                                    <Armchair className="h-3.5 w-3.5 text-green-700" />
+                                    <span>Bàn {cart.selectedTable.tableNumber}</span>
+                                    <span className="text-[10px] font-normal text-green-700">· {cart.selectedTable.seats} chỗ</span>
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => setTableModalOpen(true)}
+                                    className="flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-900 hover:bg-amber-100 transition-all animate-pulse"
+                                    title="Nhấn để chọn bàn phục vụ"
+                                >
+                                    <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
+                                    <span>Chưa chọn bàn — Chọn ngay</span>
+                                </button>
+                            )
+                        ) : (
+                            <div className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-700">
+                                <ShoppingCart className="h-3.5 w-3.5 text-stone-500" />
+                                <span>Mang đi (Takeaway)</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            if (cart.orderType === "DINE_IN") {
+                                setTableModalOpen(true)
+                            } else {
+                                cart.setOrderType("DINE_IN")
+                                if (!cart.selectedTable) setTableModalOpen(true)
+                            }
+                        }}
+                        className="text-[11px] font-semibold text-green-800 hover:underline hover:text-green-900"
+                    >
+                        {cart.orderType === "DINE_IN"
+                            ? (cart.selectedTable ? "Đổi bàn" : "Chọn bàn")
+                            : "Đổi sang tại bàn"}
+                    </button>
                 </div>
 
                 {/* Cart Items */}
@@ -1922,6 +1982,14 @@ export default function POSPage() {
                                     {pushSaleItems.length}
                                 </Badge>
                             )}
+                            {cart.orderType === "DINE_IN" && (
+                                <span className={cn(
+                                    "text-[10px] font-bold px-1.5 py-0.5 rounded ml-1 truncate max-w-[90px]",
+                                    cart.selectedTable ? "text-green-800 bg-green-100" : "text-amber-800 bg-amber-100"
+                                )}>
+                                    {cart.selectedTable ? `Bàn ${cart.selectedTable.tableNumber}` : "Chưa bàn"}
+                                </span>
+                            )}
                             <ChevronRight className="h-3 w-3 ml-auto" />
                         </div>
                     ) : (
@@ -1952,8 +2020,7 @@ export default function POSPage() {
                                             key={item.id}
                                             onClick={() => {
                                                 if (product) {
-                                                    cart.addItem(product)
-                                                    toast.success(`Đã thêm ${item.productName} vào giỏ`)
+                                                    handleAddToCart(product)
                                                 } else {
                                                     toast.error("Không tìm thấy sản phẩm")
                                                 }
@@ -2000,8 +2067,9 @@ export default function POSPage() {
                                                     onClick={(e) => {
                                                         e.stopPropagation()
                                                         if (product) {
-                                                            cart.addItem(product)
-                                                            toast.success(`Đã thêm ${item.productName} vào giỏ`)
+                                                            handleAddToCart(product)
+                                                        } else {
+                                                            toast.error("Không tìm thấy sản phẩm")
                                                         }
                                                     }}
                                                     className="ml-auto rounded-md bg-green-700 px-2 py-0.5 text-[9px] font-bold text-white hover:bg-green-600 transition-all"
@@ -2078,15 +2146,32 @@ export default function POSPage() {
             {/* Table Selector Modal */}
             <TableSelector
                 open={tableModalOpen}
-                onClose={() => setTableModalOpen(false)}
+                onClose={() => {
+                    setTableModalOpen(false)
+                    pendingProductRef.current = null
+                }}
                 zones={dbZones}
                 tables={dbTables}
-                onSelect={(table) => { cart.selectTable(table); setActiveOrderId(null); refreshFloorData() }}
+                onSelect={(table) => {
+                    cart.selectTable(table)
+                    setActiveOrderId(null)
+                    refreshFloorData()
+                    if (pendingProductRef.current) {
+                        const prod = pendingProductRef.current
+                        pendingProductRef.current = null
+                        setTimeout(() => handleAddToCart(prod), 60)
+                    }
+                }}
                 onSelectOccupied={(table, order) => {
                     cart.selectTable(table)
                     setActiveOrderId(order.id)
                     setExistingOrderData(order)
                     toast.info(`Bàn ${table.tableNumber} — thêm món vào đơn ${order.orderNumber}`)
+                    if (pendingProductRef.current) {
+                        const prod = pendingProductRef.current
+                        pendingProductRef.current = null
+                        setTimeout(() => handleAddToCart(prod), 60)
+                    }
                 }}
                 onPayOrder={(order) => setPayingOrder(order)}
             />
@@ -2644,8 +2729,7 @@ export default function POSPage() {
                                     onClick={() => {
                                         const product = dbProducts.find(p => p.id === rec.id)
                                         if (product) {
-                                            cart.addItem(product)
-                                            toast.success(`+1 ${product.name}`, { duration: 1500 })
+                                            handleAddToCart(product)
                                             setShowRecommendations(false)
                                         }
                                     }}
