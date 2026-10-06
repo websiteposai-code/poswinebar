@@ -641,9 +641,10 @@ export default function POSPage() {
         return products
     }, [activeCategory, searchTerm, dbProducts])
 
-    const handleAddToCart = (product: Product) => {
+    const handleAddToCart = (product: Product, overrideTable?: FloorTable) => {
+        const activeTable = overrideTable ?? cart.selectedTable
         // Require table selection for dine-in before adding products
-        if (cart.orderType === "DINE_IN" && !cart.selectedTable) {
+        if (cart.orderType === "DINE_IN" && !activeTable) {
             pendingProductRef.current = product
             toast.error("Vui lòng chọn bàn cho đơn hàng", {
                 description: `Chọn bàn để phục vụ món: ${product.name}`,
@@ -691,8 +692,8 @@ export default function POSPage() {
             return
         }
         cart.addItem(product)
-        const tableSuffix = cart.orderType === "DINE_IN" && cart.selectedTable
-            ? ` (Bàn ${cart.selectedTable.tableNumber})`
+        const tableSuffix = cart.orderType === "DINE_IN" && activeTable
+            ? ` (Bàn ${activeTable.tableNumber})`
             : cart.orderType === "TAKEAWAY" ? " (Mang đi)" : ""
         toast.success(`+1 ${product.name}${tableSuffix}`, { duration: 1500 })
     }
@@ -2156,10 +2157,10 @@ export default function POSPage() {
                     cart.selectTable(table)
                     setActiveOrderId(null)
                     refreshFloorData()
-                    if (pendingProductRef.current) {
-                        const prod = pendingProductRef.current
-                        pendingProductRef.current = null
-                        setTimeout(() => handleAddToCart(prod), 60)
+                    const pendingProd = pendingProductRef.current
+                    pendingProductRef.current = null
+                    if (pendingProd) {
+                        handleAddToCart(pendingProd, table)
                     }
                 }}
                 onSelectOccupied={(table, order) => {
@@ -2167,10 +2168,10 @@ export default function POSPage() {
                     setActiveOrderId(order.id)
                     setExistingOrderData(order)
                     toast.info(`Bàn ${table.tableNumber} — thêm món vào đơn ${order.orderNumber}`)
-                    if (pendingProductRef.current) {
-                        const prod = pendingProductRef.current
-                        pendingProductRef.current = null
-                        setTimeout(() => handleAddToCart(prod), 60)
+                    const pendingProd = pendingProductRef.current
+                    pendingProductRef.current = null
+                    if (pendingProd) {
+                        handleAddToCart(pendingProd, table)
                     }
                 }}
                 onPayOrder={(order) => setPayingOrder(order)}
