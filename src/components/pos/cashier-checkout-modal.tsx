@@ -15,15 +15,20 @@ import {
     RefreshCw,
     AlertCircle,
     CheckCircle2,
-    ArrowRight
+    ArrowRight,
+    Building2,
+    Search,
+    FileText,
 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import { processOrderWithCOGS, type PaymentMethod, type Order, type SplitPaymentEntry } from "@/actions/orders"
 import { splitBill } from "@/actions/tables"
 import { generateQRPayment, getBankConfig, type QRPaymentRequest, type QRPaymentConfig } from "@/actions/qr-payment"
+import { lookupCompanyByTaxCode, submitInvoiceRequest } from "@/actions/invoices"
 
 interface CashierCheckoutModalProps {
     open: boolean
@@ -72,6 +77,37 @@ export function CashierCheckoutModal({
     // Split items state
     const [selectedItemIds, setSelectedItemIds] = useState<string[]>([])
     const [splitting, setSplitting] = useState(false)
+
+    // Cashier direct VAT Invoice state
+    const [showVatForm, setShowVatForm] = useState(false)
+    const [vatTaxCode, setVatTaxCode] = useState("")
+    const [vatCompanyName, setVatCompanyName] = useState("")
+    const [vatCompanyAddress, setVatCompanyAddress] = useState("")
+    const [vatRecipientEmail, setVatRecipientEmail] = useState("")
+    const [vatLookingUp, setVatLookingUp] = useState(false)
+
+    const handleLookupVat = async () => {
+        const clean = vatTaxCode.trim().replace(/[^0-9-]/g, "")
+        if (clean.length < 10) {
+            toast.error("Mã số thuế doanh nghiệp phải từ 10 - 14 ký tự")
+            return
+        }
+        setVatLookingUp(true)
+        try {
+            const res = await lookupCompanyByTaxCode(clean)
+            if (res.success && res.data) {
+                setVatCompanyName(res.data.name)
+                setVatCompanyAddress(res.data.address)
+                toast.success(`Đã tìm thấy: ${res.data.name}`)
+            } else {
+                toast.warning(res.error || "Không tìm thấy MST, vui lòng nhập tay")
+            }
+        } catch {
+            toast.error("Lỗi khi tra cứu mã số thuế")
+        } finally {
+            setVatLookingUp(false)
+        }
+    }
 
     // Calculate equal split price
     const perPersonPrice = useMemo(() => {
@@ -146,6 +182,30 @@ export function CashierCheckoutModal({
                 if (result.stockWarnings && result.stockWarnings.length > 0) {
                     for (const w of result.stockWarnings) toast.warning(w)
                 }
+
+                // Auto-submit VAT request if cashier filled information
+                if (showVatForm && vatTaxCode.trim() && vatCompanyName.trim() && vatRecipientEmail.trim()) {
+                    try {
+                        await submitInvoiceRequest({
+                            orderId: order.id,
+                            orderNumber: order.orderNumber,
+                            tableNumber: order.tableNumber,
+                            orderTotal: totalAmount,
+                            orderSubtotal: order.subtotal ?? totalAmount,
+                            vatAmount: order.tax ?? 0,
+                            orderDate: new Date().toISOString(),
+                            customerTaxCode: vatTaxCode.trim(),
+                            companyName: vatCompanyName.trim(),
+                            companyAddress: vatCompanyAddress.trim(),
+                            recipientEmail: vatRecipientEmail.trim(),
+                            source: "POS_CASHIER",
+                        })
+                        toast.success("Đã ghi nhận yêu cầu hoá đơn VAT cho khách!")
+                    } catch {
+                        console.error("Lỗi gửi yêu cầu VAT từ POS")
+                    }
+                }
+
                 toast.success(`Đã thanh toán đơn ${order.orderNumber}!`, {
                     description: `Tổng tiền: ₫${formatPrice(totalAmount)} · Phương thức: ${
                         paymentMethod === "CASH" ? "Tiền mặt" : paymentMethod === "CARD" ? "Thẻ" : "VietQR"
@@ -322,6 +382,74 @@ export function CashierCheckoutModal({
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+
+                            {/* VAT Invoice Accordion for Cashier */}
+                            <div className="border-t border-cream-200 bg-cream-100/80 p-2.5 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowVatForm(!showVatForm)}
+                                    className={cn(
+                                        "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all",
+                                        showVatForm || vatTaxCode
+                                            ? "border-amber-400 bg-amber-50 text-amber-900 shadow-2xs"
+                                            : "border-cream-300 bg-cream-50 text-cream-600 hover:bg-cream-200/60"
+                                    )}
+                                >
+                                    <span className="flex items-center gap-1.5">
+                                        <Building2 className="h-3.5 w-3.5 text-amber-700" />
+                                        <span>Xuất HĐ VAT</span>
+                                        {vatTaxCode && (
+                                            <Badge className="bg-amber-600 text-white text-[9px] px-1 py-0 h-4 border-none font-mono">
+                                                {vatTaxCode}
+                                            </Badge>
+                                        )}
+                                    </span>
+                                    <span className="text-[10px] text-amber-800 font-medium">
+                                        {showVatForm ? "Thu gọn ▲" : "+ Nhập MST ▼"}
+                                    </span>
+                                </button>
+
+                                {showVatForm && (
+                                    <div className="mt-2 space-y-1.5 p-2 bg-white rounded-lg border border-amber-200 text-xs">
+                                        <div className="flex gap-1.5">
+                                            <Input
+                                                placeholder="Mã số thuế..."
+                                                value={vatTaxCode}
+                                                onChange={(e) => setVatTaxCode(e.target.value)}
+                                                className="h-7 text-xs font-mono uppercase bg-cream-50"
+                                            />
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                onClick={handleLookupVat}
+                                                disabled={vatLookingUp || !vatTaxCode.trim()}
+                                                className="h-7 px-2 bg-green-900 text-cream-50 hover:bg-green-800 text-[10px]"
+                                            >
+                                                {vatLookingUp ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />}
+                                            </Button>
+                                        </div>
+                                        <Input
+                                            placeholder="Tên công ty/đơn vị..."
+                                            value={vatCompanyName}
+                                            onChange={(e) => setVatCompanyName(e.target.value)}
+                                            className="h-7 text-xs bg-cream-50"
+                                        />
+                                        <Input
+                                            placeholder="Địa chỉ trụ sở..."
+                                            value={vatCompanyAddress}
+                                            onChange={(e) => setVatCompanyAddress(e.target.value)}
+                                            className="h-7 text-xs bg-cream-50"
+                                        />
+                                        <Input
+                                            type="email"
+                                            placeholder="Email nhận HĐ điện tử (bắt buộc)..."
+                                            value={vatRecipientEmail}
+                                            onChange={(e) => setVatRecipientEmail(e.target.value)}
+                                            className="h-7 text-xs bg-cream-50"
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             {/* Totals Summary Footer */}

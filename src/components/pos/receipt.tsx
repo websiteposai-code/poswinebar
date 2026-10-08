@@ -22,10 +22,15 @@ function formatDateTime(date: Date): string {
 type ReceiptProps = {
     order: Order
     className?: string
+    showInvoiceQr?: boolean
 }
 
 export const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
-    function Receipt({ order, className }, ref) {
+    function Receipt({ order, className, showInvoiceQr = true }, ref) {
+        const origin = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://poswinebar.vercel.app")
+        const invoicePortalUrl = `${origin}/invoice-request/${order.orderNumber}`
+        const qrCodeUrl = `https://quickchart.io/qr?text=${encodeURIComponent(invoicePortalUrl)}&size=140&margin=1`
+
         return (
             <div
                 ref={ref}
@@ -153,6 +158,34 @@ export const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
                                 {formatDateTime(order.paidAt)}
                             </p>
                         )}
+                    </div>
+                )}
+
+                {/* VAT E-INVOICE QR CODE SECTION */}
+                {showInvoiceQr && (
+                    <div className="mt-4 pt-3 border-t border-dashed border-gray-400 text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-black">
+                            QUÉT MÃ ĐỂ LẤY HOÁ ĐƠN VAT
+                        </p>
+                        <p className="text-[8px] text-gray-500 mt-0.5">
+                            Thời hạn tra cứu: 48h từ lúc thanh toán
+                        </p>
+                        <div className="my-2 flex justify-center">
+                            <div className="p-1.5 bg-white border border-gray-300 rounded">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={qrCodeUrl}
+                                    alt="QR Xuất Hóa Đơn VAT"
+                                    width={105}
+                                    height={105}
+                                    className="block mx-auto"
+                                    loading="eager"
+                                />
+                            </div>
+                        </div>
+                        <p className="text-[8px] font-mono text-gray-500">
+                            {order.orderNumber}
+                        </p>
                     </div>
                 )}
 

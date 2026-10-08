@@ -38,11 +38,12 @@ import {
     getNotificationConfig, updateNotificationConfig, type NotificationConfig as NotifConfig,
     getSystemConfig, updateSystemConfig, type SystemConfig,
 } from "@/actions/store-config"
+import { getInvoiceConfig, updateInvoiceConfig, type InvoiceConfig } from "@/actions/invoices"
 
 type TaxReportLine = Awaited<ReturnType<typeof getTaxReport>>[number]
 type TaxBreakdown = Awaited<ReturnType<typeof getTaxBreakdownByRate>>[number]
 
-type SettingSection = "store" | "tax" | "service-charge" | "payment" | "receipt" | "notification" | "display" | "operational" | "system" | "hr" | "setup" | "rbac"
+type SettingSection = "store" | "tax" | "service-charge" | "payment" | "receipt" | "notification" | "display" | "operational" | "system" | "hr" | "setup" | "rbac" | "invoice-config"
 
 type NavGroup = {
     label: string
@@ -63,6 +64,7 @@ const NAV_GROUPS: NavGroup[] = [
         items: [
             { id: "payment", label: "Thanh toán QR", icon: Banknote },
             { id: "tax", label: "Thuế (VAT)", icon: Receipt },
+            { id: "invoice-config", label: "Cấu hình Hoá đơn VAT", icon: FileText },
             { id: "service-charge", label: "Phí dịch vụ", icon: HandCoins },
             { id: "receipt", label: "Hoá đơn & In", icon: Printer },
         ],
@@ -132,6 +134,7 @@ export default function SettingsPage() {
                     {activeSection === "setup" && <SetupSettings />}
                     {activeSection === "store" && <StoreSettings />}
                     {activeSection === "tax" && <TaxSettings />}
+                    {activeSection === "invoice-config" && <InvoiceConfigSettings />}
                     {activeSection === "service-charge" && <ServiceChargeSettings />}
                     {activeSection === "payment" && <PaymentSettings />}
                     {activeSection === "receipt" && <ReceiptSettings />}
@@ -2210,3 +2213,186 @@ function RbacSettings() {
         </>
     )
 }
+
+function InvoiceConfigSettings() {
+    const [config, setConfig] = useState<InvoiceConfig | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [saving, setSaving] = useState(false)
+
+    useEffect(() => {
+        getInvoiceConfig().then((cfg) => {
+            setConfig(cfg)
+            setLoading(false)
+        })
+    }, [])
+
+    const handleSave = async (updated: Partial<InvoiceConfig>) => {
+        if (!config) return
+        const next = { ...config, ...updated }
+        setConfig(next)
+        setSaving(true)
+        try {
+            const res = await updateInvoiceConfig(updated)
+            if (res.success) {
+                toast.success("Đã lưu cấu hình hoá đơn VAT")
+            } else {
+                toast.error(res.error || "Không thể lưu cấu hình")
+            }
+        } catch {
+            toast.error("Lỗi khi lưu cài đặt")
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    if (loading || !config) {
+        return (
+            <div className="flex items-center justify-center py-12 text-cream-500">
+                <p className="text-xs">Đang tải cài đặt hoá đơn VAT...</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-6">
+            <div>
+                <h2 className="font-display text-base font-bold text-green-900">
+                    Cấu hình Hoá đơn Điện tử & Mã QR Bill
+                </h2>
+                <p className="text-xs text-cream-500">
+                    Thiết lập thông tin pháp nhân của quán, thời hạn quét mã và in QR trên hoá đơn nhiệt
+                </p>
+            </div>
+
+            {/* Toggle QR code on Receipt */}
+            <SettingGroup title="In mã QR trên bill nhiệt">
+                <div className="flex items-center justify-between rounded-xl border border-cream-200 bg-white p-4">
+                    <div>
+                        <p className="text-xs font-semibold text-green-950">
+                            In mã QR xuất hoá đơn VAT ở chân bill
+                        </p>
+                        <p className="text-[11px] text-cream-500 mt-0.5">
+                            Khi bật, mọi phiếu in thanh toán sẽ tự động kèm mã QR để khách dùng điện thoại quét và tự nhập MST lấy HĐ.
+                        </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={config.enableQrInvoice}
+                            onChange={(e) => handleSave({ enableQrInvoice: e.target.checked })}
+                            className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-cream-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800"></div>
+                    </label>
+                </div>
+            </SettingGroup>
+
+            {/* Seller Business Information */}
+            <SettingGroup title="Thông tin Doanh nghiệp xuất hoá đơn (Bên bán)">
+                <div className="space-y-3 bg-white p-4 rounded-xl border border-cream-200">
+                    <div>
+                        <label className="text-xs font-semibold text-green-950">
+                            Tên doanh nghiệp / Đơn vị
+                        </label>
+                        <Input
+                            value={config.sellerCompanyName}
+                            onChange={(e) => setConfig({ ...config, sellerCompanyName: e.target.value })}
+                            onBlur={() => handleSave({ sellerCompanyName: config.sellerCompanyName })}
+                            placeholder="CÔNG TY TNHH..."
+                            className="text-xs mt-1 bg-cream-50"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label className="text-xs font-semibold text-green-950">
+                                Mã số thuế (MST) của quán
+                            </label>
+                            <Input
+                                value={config.sellerTaxCode}
+                                onChange={(e) => setConfig({ ...config, sellerTaxCode: e.target.value })}
+                                onBlur={() => handleSave({ sellerTaxCode: config.sellerTaxCode })}
+                                placeholder="0318xxxxxx"
+                                className="text-xs font-mono mt-1 bg-cream-50"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs font-semibold text-green-950">
+                                Email kế toán nhận thông báo
+                            </label>
+                            <Input
+                                type="email"
+                                value={config.sellerEmail}
+                                onChange={(e) => setConfig({ ...config, sellerEmail: e.target.value })}
+                                onBlur={() => handleSave({ sellerEmail: config.sellerEmail })}
+                                placeholder="ketoan@noonnoir.vn"
+                                className="text-xs mt-1 bg-cream-50"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-semibold text-green-950">
+                            Địa chỉ trụ sở đăng ký kinh doanh
+                        </label>
+                        <Input
+                            value={config.sellerAddress}
+                            onChange={(e) => setConfig({ ...config, sellerAddress: e.target.value })}
+                            onBlur={() => handleSave({ sellerAddress: config.sellerAddress })}
+                            placeholder="Địa chỉ trụ sở..."
+                            className="text-xs mt-1 bg-cream-50"
+                        />
+                    </div>
+                </div>
+            </SettingGroup>
+
+            {/* Expiry and VAT rate */}
+            <SettingGroup title="Thời hạn & Thuế suất">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white p-4 rounded-xl border border-cream-200">
+                    <div>
+                        <label className="text-xs font-semibold text-green-950">
+                            Thời hạn quét QR (giờ)
+                        </label>
+                        <Input
+                            type="number"
+                            min={1}
+                            max={168}
+                            value={config.requestExpireHours}
+                            onChange={(e) => setConfig({ ...config, requestExpireHours: Number(e.target.value) || 48 })}
+                            onBlur={() => handleSave({ requestExpireHours: config.requestExpireHours })}
+                            className="text-xs mt-1 font-mono bg-cream-50"
+                        />
+                        <p className="text-[11px] text-cream-500 mt-1">
+                            Mặc định là 48 giờ. Sau thời gian này link QR của đơn hàng sẽ báo hết hạn.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-semibold text-green-950">
+                            Thuế suất VAT (%)
+                        </label>
+                        <Input
+                            type="number"
+                            min={0}
+                            max={20}
+                            value={config.vatRate}
+                            onChange={(e) => setConfig({ ...config, vatRate: Number(e.target.value) || 10 })}
+                            onBlur={() => handleSave({ vatRate: config.vatRate })}
+                            className="text-xs mt-1 font-mono bg-cream-50"
+                        />
+                        <p className="text-[11px] text-cream-500 mt-1">
+                            Tỷ lệ VAT áp dụng trên các mặt hàng dịch vụ (thường là 8% hoặc 10%).
+                        </p>
+                    </div>
+                </div>
+            </SettingGroup>
+
+            {saving && (
+                <p className="text-center text-xs text-cream-500 animate-pulse">
+                    Đang tự động lưu cài đặt...
+                </p>
+            )}
+        </div>
+    )
+}
+

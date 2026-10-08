@@ -34,6 +34,7 @@ import {
     Target,
     Menu,
     X,
+    FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/stores/auth-store"
@@ -60,6 +61,7 @@ const navSections = [
             { label: "Bảng điều khiển", href: "/dashboard", icon: LayoutDashboard, rbac: "dashboard" },
             { label: "Báo cáo phân tích", href: "/dashboard/analytics", icon: PieChart, rbac: "analytics" },
             { label: "Tài chính & Doanh thu", href: "/dashboard/finance", icon: DollarSign, rbac: "finance" },
+            { label: "Hoá đơn VAT", href: "/dashboard/invoices", icon: FileText, rbac: "finance" },
             { label: "Mục tiêu & KPI", href: "/dashboard/kpi", icon: Target, rbac: "kpi" },
         ],
     },
