@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { DollarSign, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Layers, Package, RefreshCcw } from "lucide-react"
+import { useState, useEffect } from "react"
+import { DollarSign, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Layers, Package, RefreshCcw, Printer, Clock, CheckCircle2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +17,8 @@ import {
     type ExpenseCategory,
     type DailyChartPoint,
 } from "@/actions/finance"
+import { getShifts, getShiftZReport, type ShiftZReport } from "@/actions/shifts"
+import { ZReportModal } from "@/components/pos/z-report-modal"
 import { toast } from "sonner"
 
 function fmt(n: number) { return new Intl.NumberFormat("vi-VN").format(n) }
@@ -47,7 +49,7 @@ function StatCard({ label, value, sub, color, icon: Icon, accent }: { label: str
     )
 }
 
-type TabType = "overview" | "cogs" | "products"
+type TabType = "overview" | "cogs" | "products" | "shifts"
 
 type FinanceInitialData = {
     cogsRecords: COGSRecord[]
@@ -70,6 +72,36 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
     const [topProducts, setTopProducts] = useState(initial.topProducts)
     const [refreshing, setRefreshing] = useState(false)
 
+    // Shifts state
+    const [shifts, setShifts] = useState<Awaited<ReturnType<typeof getShifts>>>([])
+    const [shiftsLoading, setShiftsLoading] = useState(false)
+    const [selectedZReport, setSelectedZReport] = useState<ShiftZReport | null>(null)
+    const [zReportModalOpen, setZReportModalOpen] = useState(false)
+
+    useEffect(() => {
+        if (tab === "shifts") {
+            setShiftsLoading(true)
+            getShifts(50)
+                .then((data) => setShifts(data))
+                .catch(() => toast.error("Không thể tải danh sách ca"))
+                .finally(() => setShiftsLoading(false))
+        }
+    }, [tab])
+
+    const handleViewZReport = async (shiftId: string) => {
+        try {
+            const res = await getShiftZReport(shiftId)
+            if (res.success && res.data) {
+                setSelectedZReport(res.data)
+                setZReportModalOpen(true)
+            } else {
+                toast.error(res.error || "Không thể tải báo cáo Z-Report")
+            }
+        } catch {
+            toast.error("Lỗi khi tải Z-Report")
+        }
+    }
+
     const refresh = async () => {
         setRefreshing(true)
         try {
@@ -79,6 +111,10 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
             ])
             setCogsRecords(r); setCogsSummary(cs); setFinanceSummary(fs); setExpenses(ex); setProductCOGS(pc)
             setDailyChart(dc); setTopProducts(tp)
+            if (tab === "shifts") {
+                const s = await getShifts(50)
+                setShifts(s)
+            }
             toast.success("Đã cập nhật dữ liệu tài chính")
         } catch {
             toast.error("Lỗi tải dữ liệu")
@@ -126,6 +162,7 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                     { key: "overview" as TabType, label: "Tổng quan P&L" },
                     { key: "cogs" as TabType, label: "Chi tiết COGS" },
                     { key: "products" as TabType, label: "Biên LN sản phẩm" },
+                    { key: "shifts" as TabType, label: "Lịch sử Ca & Z-Report" },
                 ]).map((t) => (
                     <button
                         key={t.key}
@@ -420,6 +457,144 @@ export function FinanceClient({ initial }: { initial: FinanceInitialData }) {
                         </div>
                     )}
                 </div>
+            )}
+
+            {/* ═══════════ SHIFTS & Z-REPORTS HISTORY ═══════════ */}
+            {tab === "shifts" && (
+                <div className="rounded-xl border border-cream-200 bg-white p-4 shadow-sm space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="font-display text-sm font-bold text-green-900">
+                                Lịch sử Ca làm việc & Báo cáo Z-Report
+                            </h3>
+                            <p className="text-xs text-cream-500">
+                                Báo cáo kết ca của thu ngân, đối soát quỹ tiền mặt và lịch sử chênh lệch két
+                            </p>
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={shiftsLoading}
+                            onClick={() => {
+                                setShiftsLoading(true)
+                                getShifts(50).then(setShifts).finally(() => setShiftsLoading(false))
+                            }}
+                            className="border-cream-300 text-xs h-8 text-cream-600"
+                        >
+                            <RefreshCcw className={cn("h-3 w-3 mr-1.5", shiftsLoading && "animate-spin")} />
+                            Tải lại
+                        </Button>
+                    </div>
+
+                    {shiftsLoading ? (
+                        <div className="py-16 text-center text-xs text-cream-500">
+                            Đang tải lịch sử ca làm việc...
+                        </div>
+                    ) : shifts.length === 0 ? (
+                        <div className="py-12 text-center">
+                            <Clock className="h-8 w-8 text-cream-300 mx-auto mb-2" />
+                            <p className="text-sm font-semibold text-green-950">Chưa có ca làm việc nào được ghi nhận</p>
+                            <p className="text-xs text-cream-400 mt-1">Khi thu ngân mở ca tại màn hình POS, dữ liệu ca sẽ hiển thị tại đây.</p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr>
+                                        <th className={TH}>Mã ca</th>
+                                        <th className={TH}>Thu ngân</th>
+                                        <th className={TH}>Thời gian</th>
+                                        <th className={THR}>Quỹ mở ca</th>
+                                        <th className={THR}>Doanh thu thực</th>
+                                        <th className={THR}>Tiền đếm cuối ca</th>
+                                        <th className={THR}>Chênh lệch két</th>
+                                        <th className={THC}>Trạng thái</th>
+                                        <th className={THR}>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {shifts.map((s) => {
+                                        const isOpen = s.status === "OPEN"
+                                        const diff = s.variance ?? 0
+                                        const isOk = Math.abs(diff) <= 10000
+
+                                        return (
+                                            <tr key={s.id} className="hover:bg-cream-50/70 transition-colors">
+                                                <td className={cn(TD, "font-mono font-bold text-green-950")}>
+                                                    {s.shiftNumber}
+                                                </td>
+                                                <td className={cn(TD, "font-medium")}>
+                                                    {s.staffName}
+                                                </td>
+                                                <td className={TD}>
+                                                    <p className="text-[11px] text-cream-600">
+                                                        Mở: {new Date(s.openedAt).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                                                    </p>
+                                                    {s.closedAt && (
+                                                        <p className="text-[10px] text-cream-400">
+                                                            Đóng: {new Date(s.closedAt).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                                                        </p>
+                                                    )}
+                                                </td>
+                                                <td className={TDR}>
+                                                    ₫{fmt(s.openingCash)}
+                                                </td>
+                                                <td className={cn(TDR, "font-bold text-green-900")}>
+                                                    {s.totalRevenue !== null ? `₫${fmt(s.totalRevenue)}` : "—"}
+                                                </td>
+                                                <td className={TDR}>
+                                                    {s.closingCash !== null ? `₫${fmt(s.closingCash)}` : "—"}
+                                                </td>
+                                                <td className={TDR}>
+                                                    {s.variance !== null ? (
+                                                        <span className={cn(
+                                                            "font-bold",
+                                                            isOk ? "text-green-700" : diff > 0 ? "text-amber-700" : "text-red-600"
+                                                        )}>
+                                                            {diff >= 0 ? "+" : ""}₫{fmt(diff)}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-cream-400">—</span>
+                                                    )}
+                                                </td>
+                                                <td className={TDC}>
+                                                    {isOpen ? (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                                            <Clock className="h-3 w-3" /> Đang mở
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                                            <CheckCircle2 className="h-3 w-3" /> Đã đóng
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className={TDR}>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => handleViewZReport(s.id)}
+                                                        className="h-7 px-2.5 text-[11px] font-semibold text-green-900 hover:bg-green-50 border-green-300"
+                                                    >
+                                                        <Printer className="h-3 w-3 mr-1" />
+                                                        {isOpen ? "Xem X-Report" : "In Z-Report"}
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Sub-Modal: Print Z-Report */}
+            {zReportModalOpen && selectedZReport && (
+                <ZReportModal
+                    report={selectedZReport}
+                    onClose={() => setZReportModalOpen(false)}
+                />
             )}
         </div>
     )
