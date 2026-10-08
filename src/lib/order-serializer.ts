@@ -19,6 +19,7 @@ export function serializeOrder(order: any) {
             subtotal: Number(item.subtotal),
             notes: item.notes ?? null,
             status: item.status ?? "PENDING",
+            productType: item.product?.type ?? "OTHER",
         })),
         subtotal: Number(order.subtotal),
         discount: Number(order.discountAmount),

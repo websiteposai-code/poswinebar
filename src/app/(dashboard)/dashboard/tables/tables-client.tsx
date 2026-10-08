@@ -1,18 +1,27 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Armchair, Plus, RefreshCcw, Users, Clock, DollarSign, Check, Trash2, Sparkles, X, MapPin } from "lucide-react"
+import { Armchair, Plus, RefreshCcw, Check, Trash2, X, MapPin } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useRouter } from "next/navigation"
 import { updateTableStatus, createTable, createZone, deleteTable, deleteZone } from "@/actions/tables"
 import { getTablesPageData } from "@/actions/tables-loader"
+import { getActiveOrderByTable, type Order } from "@/actions/orders"
 import { TablesInlineSkeleton } from "@/components/inline-skeletons"
+import { TableOrderDetailModal } from "@/components/pos/table-order-detail-modal"
+import { CashierCheckoutModal } from "@/components/pos/cashier-checkout-modal"
+import { useAuthStore } from "@/stores/auth-store"
 import { usePrefetchStore } from "@/stores/prefetch-store"
 import dynamic from "next/dynamic"
 
 const FloorPlanEditor = dynamic(() => import("@/components/floor-plan-editor"), { ssr: false })
+const ReceiptPrintFrame = dynamic(
+    () => import("@/components/pos/receipt").then((mod) => mod.ReceiptPrintFrame),
+    { ssr: false }
+)
 
 type TablesPageData = Awaited<ReturnType<typeof getTablesPageData>>
 type FloorTable = TablesPageData["tables"][number]
@@ -71,6 +80,8 @@ const STATUS_CONFIG: Record<
 }
 
 export function TablesClient({ initialData }: { initialData: TablesPageData }) {
+    const router = useRouter()
+    const staff = useAuthStore((s) => s.staff)
     const [zones, setZones] = useState<TableZone[]>(initialData.zones as TableZone[])
     const [tables, setTables] = useState<FloorTable[]>(initialData.tables as FloorTable[])
     const [selectedZone, setSelectedZone] = useState<string>("all")
@@ -80,6 +91,13 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
     const [showAddTable, setShowAddTable] = useState(false)
     const [showZoneManager, setShowZoneManager] = useState(false)
     const [viewMode, setViewMode] = useState<"list" | "floorplan">("list")
+
+    // Active order detail & checkout modals
+    const [detailModalTable, setDetailModalTable] = useState<FloorTable | null>(null)
+    const [detailModalOrder, setDetailModalOrder] = useState<Order | null>(null)
+    const [loadingOrderDetail, setLoadingOrderDetail] = useState(false)
+    const [payingOrder, setPayingOrder] = useState<Order | null>(null)
+    const [receiptOrder, setReceiptOrder] = useState<Order | null>(null)
 
     const [activeOrderMap, setActiveOrderMap] = useState<Record<string, { orderNo: string; total: number; createdAt: Date; itemCount: number }>>(() => {
         const orderMap: Record<string, { orderNo: string; total: number; createdAt: Date; itemCount: number }> = {}
@@ -170,11 +188,11 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
             {/* Stats Bar */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
                 {[
-                    { label: "Tổng bàn", value: stats.total, icon: Armchair, color: "text-green-900", bg: "bg-cream-100" },
-                    { label: "Trống", value: stats.available, icon: Check, color: "text-green-600", bg: "bg-green-50" },
-                    { label: "Đang dùng", value: stats.occupied, icon: Users, color: "text-wine-600", bg: "bg-wine-50" },
-                    { label: "Đặt trước", value: stats.reserved, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
-                    { label: "Dọn dẹp", value: stats.cleaning, icon: Sparkles, color: "text-cream-500", bg: "bg-cream-100" },
+                    { label: "Tổng bàn", value: stats.total, color: "text-green-900", bg: "bg-cream-100" },
+                    { label: "Trống", value: stats.available, color: "text-green-600", bg: "bg-green-50" },
+                    { label: "Đang dùng", value: stats.occupied, color: "text-wine-600", bg: "bg-wine-50" },
+                    { label: "Đặt trước", value: stats.reserved, color: "text-amber-600", bg: "bg-amber-50" },
+                    { label: "Dọn dẹp", value: stats.cleaning, color: "text-cream-500", bg: "bg-cream-100" },
                 ].map((stat) => {
                     return (
                         <div
@@ -273,66 +291,71 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                     return (
                         <button
                             key={table.id}
-                            onClick={() =>
-                                setSelectedTable(isSelected ? null : table)
-                            }
+                            onClick={() => {
+                                if (table.status === "OCCUPIED") {
+                                    setDetailModalTable(table)
+                                    setLoadingOrderDetail(true)
+                                    getActiveOrderByTable(table.id)
+                                        .then((ord) => {
+                                            setDetailModalOrder(ord)
+                                            setLoadingOrderDetail(false)
+                                        })
+                                        .catch(() => {
+                                            setLoadingOrderDetail(false)
+                                        })
+                                } else {
+                                    setSelectedTable(isSelected ? null : table)
+                                }
+                            }}
                             className={cn(
-                                "relative flex flex-col items-center rounded-xl border-2 p-4 card-hover",
+                                "group relative flex flex-col justify-between rounded-2xl border p-4 text-left transition-all duration-150 card-hover min-h-[125px]",
                                 cfg.bg,
                                 cfg.border,
-                                isSelected && `ring-2 ${cfg.ring} shadow-lg scale-[1.02]`
+                                isSelected && `ring-2 ${cfg.ring} shadow-md scale-[1.02]`
                             )}
                         >
-                            {/* Table number */}
-                            <span className="font-display text-lg lg:text-2xl font-bold text-green-900">
-                                {table.tableNumber}
-                            </span>
+                            {/* Top row: Table number + Status label */}
+                            <div className="flex items-center justify-between w-full">
+                                <span className="font-display text-xl font-bold text-green-950">
+                                    {table.tableNumber}
+                                </span>
+                                <span
+                                    className={cn(
+                                        "text-[10px] font-semibold px-2 py-0.5 rounded-md border",
+                                        cfg.bg,
+                                        cfg.color,
+                                        cfg.border
+                                    )}
+                                >
+                                    {cfg.label}
+                                </span>
+                            </div>
 
-                            {/* Seats */}
-                            <span className="mt-0.5 text-[10px] text-cream-400 flex items-center gap-1">
-                                <Users className="h-2.5 w-2.5" />
-                                {table.seats} chỗ
-                            </span>
+                            {/* Middle row: Zone and seats */}
+                            <div className="text-[11px] text-cream-600 mt-1 font-medium">
+                                {table.zone?.name ? `${table.zone.name} · ` : ""}{table.seats} chỗ
+                            </div>
 
-                            {/* Zone */}
-                            <span className="text-[9px] text-cream-400 mt-0.5">
-                                {table.zone?.name ?? ""}
-                            </span>
-
-                            {/* Status badge */}
-                            <span
-                                className={cn(
-                                    "mt-2 rounded-full px-2.5 py-0.5 text-[10px] font-semibold",
-                                    cfg.bg,
-                                    cfg.color,
-                                    "border",
-                                    cfg.border
-                                )}
-                            >
-                                {cfg.label}
-                            </span>
-
-                            {/* Occupied info — from real active orders */}
-                            {table.status === "OCCUPIED" && activeOrderMap[table.id] && (() => {
+                            {/* Bottom row: Occupied active order or available prompt */}
+                            {table.status === "OCCUPIED" && activeOrderMap[table.id] ? (() => {
                                 const order = activeOrderMap[table.id]
                                 const elapsed = Math.floor((Date.now() - order.createdAt.getTime()) / 60000)
                                 return (
-                                    <div className="mt-2 space-y-0.5 text-center">
-                                        <p className="text-[10px] text-cream-500 font-mono">
-                                            {order.orderNo}
-                                        </p>
-                                        <p className="text-[10px] text-wine-600">
-                                            {order.itemCount} món
-                                        </p>
-                                        <p className="flex items-center justify-center gap-0.5 text-[10px] text-cream-500">
-                                            {formatDuration(elapsed)}
-                                        </p>
-                                        <p className="font-mono text-xs font-bold text-wine-700">
+                                    <div className="mt-3 pt-2 border-t border-wine-200/60 w-full space-y-0.5">
+                                        <div className="flex items-center justify-between text-[10px] text-cream-500 font-medium">
+                                            <span>{order.itemCount} món</span>
+                                            <span className="font-mono">{formatDuration(elapsed)}</span>
+                                        </div>
+                                        <p className="font-mono text-sm font-bold text-wine-800 text-right">
                                             ₫{formatPrice(order.total)}
                                         </p>
                                     </div>
                                 )
-                            })()}
+                            })() : (
+                                <div className="mt-auto pt-2 text-[10px] text-cream-400">
+                                    {table.status === "AVAILABLE" ? "Sẵn sàng đón khách" : ""}
+                                </div>
+                            )}
                         </button>
                     )
                 })}
@@ -340,32 +363,38 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
 
             {/* Quick Action Panel */}
             {selectedTable && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 translate-x-[110px] z-30">
-                    <div className="flex items-center gap-2 rounded-2xl border border-cream-300 bg-cream-50 px-5 py-3 shadow-2xl">
-                        <span className="font-display text-sm font-bold text-green-900 mr-2">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 lg:translate-x-[110px] max-w-[95vw]">
+                    <div className="flex items-center gap-2 rounded-2xl border border-cream-300 bg-cream-50 px-4 py-3 shadow-2xl flex-wrap justify-center">
+                        <span className="font-display text-sm font-bold text-green-900 mr-1">
                             {selectedTable.tableNumber}
                         </span>
-                        <span className="text-[10px] text-cream-400 mr-3">
-                            {STATUS_CONFIG[selectedTable.status].label}
+                        <span className="text-[11px] font-medium text-cream-500 mr-2">
+                            · {STATUS_CONFIG[selectedTable.status].label}
                         </span>
 
                         {selectedTable.status === "AVAILABLE" && (
                             <>
                                 <Button
                                     size="sm"
-                                    className="bg-green-700 text-cream-50 hover:bg-green-600 text-xs"
+                                    className="bg-green-800 text-cream-50 hover:bg-green-700 text-xs px-3.5"
+                                    onClick={() => router.push(`/pos?tableId=${selectedTable.id}`)}
+                                >
+                                    Gọi món
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-green-300 text-green-800 hover:bg-green-50 text-xs px-3.5"
                                     onClick={() => handleStatusChange(selectedTable.id, "OCCUPIED")}
                                 >
-                                    <Users className="mr-1 h-3 w-3" />
                                     Mở bàn
                                 </Button>
                                 <Button
                                     size="sm"
                                     variant="outline"
-                                    className="border-amber-300 text-amber-700 hover:bg-amber-50 text-xs"
+                                    className="border-amber-300 text-amber-700 hover:bg-amber-50 text-xs px-3.5"
                                     onClick={() => handleStatusChange(selectedTable.id, "RESERVED")}
                                 >
-                                    <Clock className="mr-1 h-3 w-3" />
                                     Đặt trước
                                 </Button>
                             </>
@@ -374,22 +403,26 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                             <>
                                 <Button
                                     size="sm"
-                                    className="bg-wine-700 text-cream-50 hover:bg-wine-600 text-xs"
+                                    className="bg-wine-700 text-cream-50 hover:bg-wine-600 text-xs px-3.5"
                                     onClick={() => {
-                                        toast.success(`Thanh toán bàn ${selectedTable.tableNumber}`)
-                                        handleStatusChange(selectedTable.id, "CLEANING")
+                                        setDetailModalTable(selectedTable)
+                                        setLoadingOrderDetail(true)
+                                        getActiveOrderByTable(selectedTable.id)
+                                            .then((ord) => {
+                                                setDetailModalOrder(ord)
+                                                setLoadingOrderDetail(false)
+                                            })
+                                            .catch(() => setLoadingOrderDetail(false))
                                     }}
                                 >
-                                    <DollarSign className="mr-1 h-3 w-3" />
-                                    Thanh toán
+                                    Xem đơn & Tính tiền
                                 </Button>
                                 <Button
                                     size="sm"
                                     variant="outline"
-                                    className="border-cream-300 text-cream-500 text-xs"
+                                    className="border-cream-300 text-cream-600 text-xs px-3.5"
                                     onClick={() => handleStatusChange(selectedTable.id, "CLEANING")}
                                 >
-                                    <Sparkles className="mr-1 h-3 w-3" />
                                     Dọn bàn
                                 </Button>
                             </>
@@ -398,16 +431,15 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                             <>
                                 <Button
                                     size="sm"
-                                    className="bg-green-700 text-cream-50 hover:bg-green-600 text-xs"
+                                    className="bg-green-700 text-cream-50 hover:bg-green-600 text-xs px-3.5"
                                     onClick={() => handleStatusChange(selectedTable.id, "OCCUPIED")}
                                 >
-                                    <Users className="mr-1 h-3 w-3" />
-                                    Khách đến
+                                    Khách nhận bàn
                                 </Button>
                                 <Button
                                     size="sm"
                                     variant="outline"
-                                    className="border-cream-300 text-cream-500 text-xs"
+                                    className="border-cream-300 text-cream-500 text-xs px-3.5"
                                     onClick={() => handleStatusChange(selectedTable.id, "AVAILABLE")}
                                 >
                                     Hủy đặt
@@ -417,11 +449,10 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                         {selectedTable.status === "CLEANING" && (
                             <Button
                                 size="sm"
-                                className="bg-green-700 text-cream-50 hover:bg-green-600 text-xs"
+                                className="bg-green-700 text-cream-50 hover:bg-green-600 text-xs px-3.5"
                                 onClick={() => handleStatusChange(selectedTable.id, "AVAILABLE")}
                             >
-                                <Check className="mr-1 h-3 w-3" />
-                                Sẵn sàng
+                                Đã dọn xong
                             </Button>
                         )}
 
@@ -429,14 +460,14 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
                             <Button
                                 size="sm"
                                 variant="outline"
-                                className="border-red-200 text-red-500 text-xs hover:bg-red-50"
+                                className="border-red-200 text-red-500 text-xs hover:bg-red-50 px-3.5"
                                 onClick={async () => {
                                     const r = await deleteTable(selectedTable.id)
                                     if (r.success) { toast.success("Đã xóa bàn"); setSelectedTable(null); loadData() }
                                     else toast.error(r.error ?? "Lỗi")
                                 }}
                             >
-                                <Trash2 className="mr-1 h-3 w-3" /> Xóa
+                                Xóa bàn
                             </Button>
                         )}
 
@@ -464,6 +495,56 @@ export function TablesClient({ initialData }: { initialData: TablesPageData }) {
             <p className="mt-6 text-center font-script text-sm text-cream-400 italic">
                 drink slowly · laugh quietly · stay longer
             </p>
+
+            {/* Table Order Detail Modal */}
+            <TableOrderDetailModal
+                open={!!detailModalTable}
+                table={detailModalTable}
+                order={detailModalOrder}
+                isLoading={loadingOrderDetail}
+                onClose={() => {
+                    setDetailModalTable(null)
+                    setDetailModalOrder(null)
+                }}
+                onPay={(order) => {
+                    setPayingOrder(order)
+                }}
+                onAddItems={(table, order) => {
+                    router.push(`/pos?tableId=${table.id}${order?.id ? `&orderId=${order.id}` : ""}`)
+                }}
+                onPrintBill={(order) => setReceiptOrder(order)}
+                onCleanTable={async (tableId) => {
+                    await handleStatusChange(tableId, "CLEANING")
+                    setDetailModalTable(null)
+                }}
+            />
+
+            {/* Cashier Checkout Modal */}
+            {payingOrder && (
+                <CashierCheckoutModal
+                    open={!!payingOrder}
+                    order={payingOrder}
+                    staffName={staff?.fullName ?? "Staff"}
+                    onClose={() => setPayingOrder(null)}
+                    onPaidSuccess={(paidOrd) => {
+                        toast.success(`Thanh toán ${paidOrd.orderNumber} thành công`)
+                        setPayingOrder(null)
+                        setDetailModalTable(null)
+                        setDetailModalOrder(null)
+                        setReceiptOrder(paidOrd)
+                        loadData()
+                    }}
+                    onSplitSuccess={loadData}
+                />
+            )}
+
+            {/* Receipt Print Frame */}
+            {receiptOrder && (
+                <ReceiptPrintFrame
+                    order={receiptOrder}
+                    onClose={() => setReceiptOrder(null)}
+                />
+            )}
 
             {/* ============ ADD TABLE MODAL ============ */}
             {showAddTable && (
@@ -549,6 +630,7 @@ function AddTableModal({ zones, onClose, onCreated }: { zones: TableZone[]; onCl
 function ZoneManagerModal({ zones, onClose, onChanged }: { zones: TableZone[]; onClose: () => void; onChanged: () => void }) {
     const [newName, setNewName] = useState("")
     const [adding, setAdding] = useState(false)
+    const [confirmCascade, setConfirmCascade] = useState<{ zoneId: string; zoneName: string; tableCount: number } | null>(null)
 
     const handleAdd = async () => {
         if (!newName.trim()) return
@@ -558,25 +640,60 @@ function ZoneManagerModal({ zones, onClose, onChanged }: { zones: TableZone[]; o
         if (r.success) { toast.success(`Đã thêm "${newName}"`); setNewName(""); onChanged() }
     }
 
-    const handleDelete = async (id: string, name: string) => {
-        const r = await deleteZone(id)
-        if (r.success) { toast.success(`Đã xóa "${name}"`); onChanged() }
-        else toast.error(r.error ?? "Lỗi")
+    const handleDelete = async (id: string, name: string, cascade = false) => {
+        const r = await deleteZone(id, cascade)
+        if (r.success) {
+            toast.success(cascade ? `Đã xóa khu vực "${name}" và ${r.tableCount} bàn` : `Đã xóa "${name}"`)
+            setConfirmCascade(null)
+            onChanged()
+        } else if ((r as any).requiresCascade) {
+            setConfirmCascade({ zoneId: id, zoneName: name, tableCount: (r as any).tableCount })
+        } else {
+            toast.error(r.error ?? "Lỗi xóa khu vực")
+        }
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-modal-backdrop">
-            <div className="w-full max-w-[360px] rounded-2xl border border-cream-200 bg-white shadow-2xl animate-modal-content">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-modal-backdrop p-4">
+            <div className="w-full max-w-[400px] rounded-2xl border border-cream-200 bg-white shadow-2xl animate-modal-content overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-cream-200">
                     <h2 className="text-lg font-bold text-green-900">Quản lý khu vực</h2>
                     <button onClick={onClose} className="rounded-lg p-2 hover:bg-cream-100"><X className="h-4 w-4 text-cream-400" /></button>
                 </div>
                 <div className="p-5 space-y-3">
+                    {confirmCascade && (
+                        <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs space-y-2">
+                            <p className="font-semibold text-amber-900">
+                                Khu vực &quot;{confirmCascade.zoneName}&quot; đang có {confirmCascade.tableCount} bàn!
+                            </p>
+                            <p className="text-amber-700">
+                                Bạn có muốn xóa khu vực này cùng toàn bộ {confirmCascade.tableCount} bàn bên trong không?
+                            </p>
+                            <div className="flex justify-end gap-2 pt-1">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 text-xs border-amber-300 text-amber-800"
+                                    onClick={() => setConfirmCascade(null)}
+                                >
+                                    Hủy
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    className="h-7 text-xs bg-red-600 text-white hover:bg-red-700 font-medium"
+                                    onClick={() => handleDelete(confirmCascade.zoneId, confirmCascade.zoneName, true)}
+                                >
+                                    Xóa tất cả ({confirmCascade.tableCount} bàn)
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
                     {zones.map((zone) => (
                         <div key={zone.id} className="flex items-center justify-between rounded-lg border border-cream-200 px-3 py-2">
                             <span className="text-xs font-medium text-green-900">{zone.name}</span>
                             <button onClick={() => handleDelete(zone.id, zone.name)} className="rounded p-1 text-cream-400 hover:text-red-500 hover:bg-red-50 transition-all">
-                                <Trash2 className="h-3 w-3" />
+                                <Trash2 className="h-3.5 w-3.5" />
                             </button>
                         </div>
                     ))}

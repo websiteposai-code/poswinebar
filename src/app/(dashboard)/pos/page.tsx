@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react"
-import { Search, Plus, Minus, Trash2, Wine, ShoppingCart, Receipt, CreditCard, Banknote, QrCode, X, MessageSquare, Armchair, Hash, Loader2, CheckCircle2, CreditCard as TabIcon, User, Clock, UserPlus, Star, Timer, CircleMinus, Bell, Pause, Play, ShieldCheck, Percent, Thermometer, GlassWater, Grape, MapPin, Info, ChevronRight, BookOpen, ChevronDown, ChevronUp, Utensils, Sparkles, Menu as MenuIcon, AlertCircle } from "lucide-react"
+import { Search, Plus, Minus, Trash2, Wine, ShoppingCart, Receipt, CreditCard, Banknote, QrCode, X, MessageSquare, Armchair, Hash, Loader2, CheckCircle2, CreditCard as TabIcon, User, Clock, UserPlus, Star, Timer, CircleMinus, Bell, Pause, Play, ShieldCheck, Percent, Thermometer, GlassWater, Grape, MapPin, Info, ChevronRight, BookOpen, ChevronDown, ChevronUp, Utensils, Menu as MenuIcon, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -58,7 +58,11 @@ const ReceiptPrintFrame = dynamic(
 )
 import { usePrefetchStore } from "@/stores/prefetch-store"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { QuickServingModal } from "@/components/pos/quick-serving-modal"
+import { MobileWaiterBar } from "@/components/pos/mobile-waiter-bar"
+import { CashierCheckoutModal } from "@/components/pos/cashier-checkout-modal"
 import type { Product, Category, Customer, CustomerTab } from "@/types"
+import type { OrderItem } from "@/stores/cart-store"
 type FloorTable = Awaited<ReturnType<typeof getTables>>[number]
 type TableZone = Awaited<ReturnType<typeof getZones>>[number]
 
@@ -141,13 +145,10 @@ function TableSelector({
             onSelect(table)
             onClose()
         } else if (table.status === "OCCUPIED") {
-            // ★ Instant lookup from pre-fetched map — no DB call
+            // ★ Instant lookup from pre-fetched map — open order detail panel
             const order = orderMap.get(table.id)
             if (order) {
-                if (onSelectOccupied) {
-                    onSelectOccupied(table, order)
-                }
-                onClose()
+                setViewingOrder({ table, order })
             } else {
                 // No active order found — allow creating new
                 onSelect(table)
@@ -157,17 +158,17 @@ function TableSelector({
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4">
             <div className={cn(
-                "max-h-[85vh] rounded-2xl border border-cream-300 bg-cream-50 shadow-2xl overflow-hidden transition-all",
-                viewingOrder ? "w-full max-w-[840px] lg:grid lg:grid-cols-[1fr_320px]" : "w-full max-w-[600px]"
+                "w-full sm:max-w-[600px] max-h-[88vh] rounded-t-2xl sm:rounded-2xl border border-cream-300 bg-cream-50 shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200 transition-all",
+                viewingOrder && "sm:max-w-[840px] lg:grid lg:grid-cols-[1fr_320px]"
             )}>
                 <div className="flex flex-col">
                     {/* Header */}
-                    <div className="flex items-center justify-between border-b border-cream-300 px-5 py-4">
+                    <div className="flex items-center justify-between border-b border-cream-300 px-4 sm:px-5 py-3 sm:py-4">
                         <div>
-                            <h2 className="font-display text-lg font-bold text-green-900">Chọn bàn</h2>
-                            <p className="text-xs text-cream-500">Bàn trống → tạo đơn mới · Bàn đang dùng → xem / thêm món</p>
+                            <h2 className="font-display text-base sm:text-lg font-bold text-green-900">Chọn bàn</h2>
+                            <p className="text-[11px] sm:text-xs text-cream-500">Trống → tạo mới · Đang dùng → thêm món</p>
                         </div>
                         <button onClick={() => { setViewingOrder(null); onClose() }} className="rounded-lg p-2 hover:bg-cream-200 transition-all">
                             <X className="h-4 w-4 text-cream-500" />
@@ -175,15 +176,15 @@ function TableSelector({
                     </div>
 
                     {/* Zone tabs */}
-                    <div className="flex gap-1 border-b border-cream-300 px-4 py-2 overflow-x-auto">
+                    <div className="flex gap-1 border-b border-cream-300 px-3 sm:px-4 py-2 overflow-x-auto scroll-hide-bar">
                         {zones.map((zone) => (
                             <button
                                 key={zone.id}
                                 onClick={() => { setSelectedZone(zone.id); setViewingOrder(null) }}
                                 className={cn(
-                                    "whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                                    "whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition-all touch-target",
                                     selectedZone === zone.id
-                                        ? "bg-green-900 text-cream-50"
+                                        ? "bg-green-900 text-cream-50 shadow-xs"
                                         : "text-cream-500 hover:bg-cream-200"
                                 )}
                             >
@@ -193,7 +194,7 @@ function TableSelector({
                     </div>
 
                     {/* Table grid */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-5 max-h-[50vh] overflow-y-auto">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-5 max-h-[55vh] overflow-y-auto">
                         {filteredTables.map((table) => {
                             const isViewing = viewingOrder?.table.id === table.id
                             return (
@@ -215,10 +216,10 @@ function TableSelector({
                                     </span>
                                     <span
                                         className={cn(
-                                            "mt-1 rounded-full px-2 py-0.5 text-[10px] font-medium",
-                                            table.status === "AVAILABLE" ? "bg-green-100 text-green-700" :
-                                                table.status === "OCCUPIED" ? "bg-wine-100 text-wine-700" :
-                                                    "bg-cream-200 text-cream-500"
+                                            "mt-1 rounded-md px-2 py-0.5 text-[10px] font-semibold",
+                                            table.status === "AVAILABLE" ? "bg-green-100 text-green-800" :
+                                                table.status === "OCCUPIED" ? "bg-wine-100 text-wine-800" :
+                                                    "bg-cream-200 text-cream-600"
                                         )}
                                     >
                                         {statusLabels[table.status]}
@@ -230,14 +231,14 @@ function TableSelector({
 
                     {/* Legend */}
                     <div className="flex justify-center gap-4 border-t border-cream-300 px-4 py-2.5">
-                        <span className="flex items-center gap-1 text-[10px] text-cream-500">
-                            <span className="h-2.5 w-2.5 rounded-full bg-green-400" /> Trống — tạo đơn
+                        <span className="flex items-center gap-1.5 text-[10px] text-cream-500 font-medium">
+                            <span className="h-2 w-2 rounded-full bg-green-500" /> Trống — tạo đơn
                         </span>
-                        <span className="flex items-center gap-1 text-[10px] text-cream-500">
-                            <span className="h-2.5 w-2.5 rounded-full bg-wine-400" /> Đang dùng — xem/thêm món
+                        <span className="flex items-center gap-1.5 text-[10px] text-cream-500 font-medium">
+                            <span className="h-2 w-2 rounded-full bg-wine-500" /> Đang dùng — xem / thêm món
                         </span>
-                        <span className="flex items-center gap-1 text-[10px] text-cream-500">
-                            <span className="h-2.5 w-2.5 rounded-full bg-amber-400" /> Đặt trước
+                        <span className="flex items-center gap-1.5 text-[10px] text-cream-500 font-medium">
+                            <span className="h-2 w-2 rounded-full bg-amber-400" /> Đặt trước
                         </span>
                     </div>
                 </div>
@@ -289,9 +290,8 @@ function TableSelector({
                                     }
                                     onClose()
                                 }}
-                                className="w-full rounded-lg bg-wine-700 py-2 text-xs font-bold text-white hover:bg-wine-600 transition-all flex items-center justify-center gap-1.5"
+                                className="w-full rounded-lg bg-wine-700 py-2.5 text-xs font-bold text-white hover:bg-wine-800 transition-all text-center shadow-xs"
                             >
-                                <Plus className="h-3.5 w-3.5" />
                                 Thêm món cho bàn này
                             </button>
                             <button
@@ -299,9 +299,8 @@ function TableSelector({
                                     onPayOrder?.(viewingOrder.order)
                                     onClose()
                                 }}
-                                className="w-full rounded-lg bg-green-700 py-2 text-xs font-bold text-white hover:bg-green-600 transition-all flex items-center justify-center gap-1.5"
+                                className="w-full rounded-lg bg-green-800 py-2.5 text-xs font-bold text-white hover:bg-green-700 transition-all text-center shadow-xs"
                             >
-                                <Banknote className="h-3.5 w-3.5" />
                                 Thanh toán đơn · ₫{formatPrice(viewingOrder.order.total)}
                             </button>
                         </div>
@@ -322,6 +321,7 @@ export default function POSPage() {
     const pendingProductRef = useRef<Product | null>(null)
     const [noteItemId, setNoteItemId] = useState<string | null>(null)
     const [noteText, setNoteText] = useState("")
+    const [servingNoteItem, setServingNoteItem] = useState<OrderItem | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [lastOrder, setLastOrder] = useState<{ orderNumber: string; total: number } | null>(null)
     const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
@@ -569,6 +569,32 @@ export default function POSPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // URL param sync: auto-select table and active order when routed from Table map (/dashboard/tables)
+    useEffect(() => {
+        if (typeof window === "undefined" || dbTables.length === 0) return
+        const params = new URLSearchParams(window.location.search)
+        const tableId = params.get("tableId")
+        if (tableId) {
+            const table = dbTables.find((t) => t.id === tableId)
+            if (table) {
+                cart.selectTable(table)
+                getActiveOrderByTable(table.id).then((ord) => {
+                    if (ord) {
+                        setActiveOrderId(ord.id)
+                        setExistingOrderData(ord)
+                        toast.info(`Bàn ${table.tableNumber} — sẵn sàng thêm món vào ${ord.orderNumber}`)
+                    } else {
+                        setActiveOrderId(null)
+                        setExistingOrderData(null)
+                        toast.success(`Đã chọn bàn ${table.tableNumber}`)
+                    }
+                }).catch(() => {
+                    toast.success(`Đã chọn bàn ${table.tableNumber}`)
+                })
+            }
+        }
+    }, [dbTables])
+
     // Load stock for all wine products — batch version (1 query instead of N)
     const refreshStockMap = useCallback(async () => {
         const { getAllWineStock } = await import("@/actions/wine-advisor")
@@ -655,7 +681,7 @@ export default function POSPage() {
             return
         }
         if (product86Ids.includes(product.id)) {
-            toast.error(`86: ${product.name} đã hết`, { description: "Sản phẩm không còn phục vụ", duration: 3000 })
+            toast.error(`Món "${product.name}" hiện đang tạm hết`, { description: "Sản phẩm tạm ngưng phục vụ", duration: 3000 })
             return
         }
         // Stock check for wine products
@@ -712,7 +738,7 @@ export default function POSPage() {
         if (is86) {
             await unmark86(product.id)
             setProduct86Ids((prev) => prev.filter((id) => id !== product.id))
-            toast.success(`${product.name} — đã mở lại`, { duration: 2000 })
+            toast.success(`Đã mở bán lại: ${product.name}`, { duration: 2000 })
         } else {
             await markProduct86({
                 productId: product.id,
@@ -722,7 +748,7 @@ export default function POSPage() {
                 staffName: staff?.fullName ?? "Staff",
             })
             setProduct86Ids((prev) => [...prev, product.id])
-            toast.warning(`86: ${product.name} — đã đánh dấu hết`, { duration: 2000 })
+            toast.warning(`Đã báo tạm hết món: ${product.name}`, { duration: 2000 })
         }
     }
 
@@ -1068,9 +1094,9 @@ export default function POSPage() {
     }
 
     return (
-        <div className="flex h-[100dvh] w-full max-w-[100vw] flex-col lg:flex-row overflow-hidden bg-cream-50">
+        <div className="flex h-[100dvh] w-full max-w-[100vw] flex-col md:flex-row overflow-hidden bg-cream-50">
             {/* ============ LEFT: Product Grid ============ */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden pb-16 md:pb-0">
                 {/* Top Bar */}
                 <div className="flex items-center gap-1.5 lg:gap-3 border-b border-cream-300 bg-cream-100 px-2 lg:px-4 py-2 lg:py-3 min-w-0 w-full overflow-x-auto scroll-hide-bar">
                     {/* Mobile: Open Navigation Drawer */}
@@ -1270,13 +1296,12 @@ export default function POSPage() {
                     <button
                         onClick={() => setActiveCategory("all")}
                         className={cn(
-                            "flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                            "whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
                             activeCategory === "all"
                                 ? "bg-green-900 text-cream-50 shadow-sm"
                                 : "bg-cream-200 text-cream-500 hover:bg-cream-300 hover:text-green-900"
                         )}
                     >
-                        <Hash className="h-3 w-3" />
                         Tất cả
                     </button>
                     {dbCategories.filter((c) => c.isActive).map((cat) => (
@@ -1320,68 +1345,54 @@ export default function POSPage() {
                                         onClick={() => handleAddToCart(product)}
                                         onContextMenu={(e) => handleProductContextMenu(e, product)}
                                         className={cn(
-                                            "group relative flex flex-col rounded-xl border bg-cream-100 p-2 lg:p-3 text-left transition-all hover:shadow-md hover:border-green-600 active:scale-[0.97]",
-                                            is86 ? "border-red-300" :
-                                                inCart ? "border-green-600 ring-1 ring-green-600/30" : "border-cream-300"
+                                            "group relative flex flex-col rounded-xl border p-3 text-left transition-all",
+                                            "touch-target card-hover",
+                                            is86
+                                                ? "border-cream-300 bg-cream-100/50 opacity-60"
+                                                : inCart
+                                                    ? "border-green-800/40 bg-white ring-1 ring-green-800/20 shadow-xs"
+                                                    : "border-cream-300 bg-white hover:border-cream-400"
                                         )}
                                     >
-                                        {/* 86 overlay — only cover product info area, not action buttons */}
+                                        {/* Out of stock overlay */}
                                         {is86 && (
-                                            <span className="absolute left-0 right-0 top-0 bottom-12 flex items-center justify-center z-10 bg-cream-100/60 rounded-t-xl">
-                                                <span className="rounded-lg bg-red-600 px-3 py-1 text-xs font-bold text-white rotate-[-12deg] shadow-lg">86 — HếT</span>
-                                            </span>
+                                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-cream-100/80 backdrop-blur-[1px] rounded-xl pointer-events-none">
+                                                <span className="rounded-md border border-wine-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-wine-800 shadow-2xs">
+                                                    Tạm hết hàng
+                                                </span>
+                                            </div>
                                         )}
-                                        {/* Badge — quantity in cart */}
+                                        {/* Cart count pill */}
                                         {inCart && (
-                                            <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-green-700 text-[10px] font-bold text-cream-50">
+                                            <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-green-800 text-[10px] font-bold text-cream-50 shadow-xs">
                                                 {inCart.quantity}
                                             </span>
                                         )}
 
-                                        {/* Type badge */}
-                                        <div className="mb-2 flex items-center gap-1.5">
-                                            <span className="text-[9px] font-medium uppercase tracking-[0.14em] text-cream-500">
-                                                {product.type === "WINE_BOTTLE" ? "Chai" :
-                                                    product.type === "WINE_GLASS" ? "Ly" :
+                                        {/* Header metadata row — unified, single-line, no broken badges */}
+                                        <div className="mb-1.5 flex items-center justify-between text-[10px] text-cream-500 font-medium">
+                                            <span className="uppercase tracking-wider">
+                                                {product.type === "WINE_BOTTLE" ? "Rượu chai" :
+                                                    product.type === "WINE_GLASS" ? "Rượu ly" :
                                                         product.type === "WINE_TASTING" ? "Tasting" :
                                                             product.type === "FOOD" ? "Món ăn" :
                                                                 product.type === "DRINK" ? "Đồ uống" : "Khác"}
                                             </span>
-                                            {product.isByGlass && gs && (
-                                                <Badge className={cn(
-                                                    "text-[9px] px-1.5 py-0",
-                                                    gs.glassesRemaining <= 2
-                                                        ? "bg-red-100 text-red-700"
-                                                        : gs.glassesRemaining <= 4
-                                                            ? "bg-amber-100 text-amber-700"
-                                                            : "bg-green-100 text-green-700"
-                                                )}>
-                                                    {gs.glassesRemaining}/{gs.glassesTotal} ly
-                                                </Badge>
-                                            )}
-                                            {product.isByGlass && !gs && (
-                                                <Badge className="bg-green-100 text-green-700 text-[9px] px-1.5 py-0">
-                                                    By Glass
-                                                </Badge>
-                                            )}
-                                            {/* Stock count badge for wine */}
+                                            {/* Single cohesive stock/serving indicator */}
                                             {["WINE_BOTTLE", "WINE_GLASS", "WINE_TASTING"].includes(product.type) && (() => {
                                                 const stock = stockMap.get(product.id) ?? 0
-                                                return (
-                                                    <Badge className={cn(
-                                                        "text-[9px] px-1.5 py-0",
-                                                        stock <= 0 ? "bg-red-100 text-red-700" :
-                                                            stock <= product.lowStockAlert ? "bg-amber-100 text-amber-700" :
-                                                                "bg-green-100 text-green-700"
-                                                    )}>
-                                                        {stock} chai
-                                                    </Badge>
-                                                )
+                                                if (stock <= 0) {
+                                                    return <span className="text-wine-700 font-semibold">Hết kho</span>
+                                                }
+                                                if (product.isByGlass && gs && gs.glassesRemaining > 0) {
+                                                    return <span className="text-green-800 font-medium">Mở {gs.glassesRemaining}/{gs.glassesTotal} ly</span>
+                                                }
+                                                return <span className="font-mono text-cream-400">Kho: {stock}</span>
                                             })()}
                                         </div>
 
                                         {/* Name */}
-                                        <h3 className="text-sm font-semibold text-green-900 leading-tight line-clamp-2">
+                                        <h3 className="text-sm font-semibold text-green-950 leading-snug line-clamp-2">
                                             {product.name}
                                         </h3>
                                         {product.nameVi && (
@@ -1389,77 +1400,35 @@ export default function POSPage() {
                                                 {product.nameVi}
                                             </p>
                                         )}
-                                        {/* Wine info inline subtitle — hidden on mobile for compact view */}
+
+                                        {/* Wine info subtitle */}
                                         {(product.type === "WINE_BOTTLE" || product.type === "WINE_GLASS" || product.type === "WINE_TASTING") && (
-                                            <p className="hidden lg:block mt-0.5 text-[10px] text-wine-600 line-clamp-1">
+                                            <p className="hidden sm:block mt-1 text-[10px] text-cream-500 line-clamp-1">
                                                 {product.alcoholPct && <span>{product.alcoholPct}%</span>}
                                                 {product.alcoholPct && (product.region || product.country) && <span> · </span>}
                                                 {product.region && <span>{product.region}</span>}
                                                 {product.region && product.country && <span>, </span>}
                                                 {!product.region && product.country && <span>{product.country}</span>}
-                                                {product.region && product.country && <span>{product.country}</span>}
-                                            </p>
-                                        )}
-                                        {product.vintage && !product.alcoholPct && (
-                                            <p className="text-[10px] text-cream-400">
-                                                {product.vintage} · {product.country}
                                             </p>
                                         )}
 
-                                        <div className="mt-auto pt-1.5 lg:pt-2 flex items-center justify-between relative z-20">
+                                        {/* Price block */}
+                                        <div className="mt-auto pt-2 flex items-baseline justify-between">
                                             <div>
-                                                <span className="font-mono text-sm font-bold text-green-900">
-                                                    ₫{formatPrice(displayPrice)}
-                                                </span>
-                                                {product.isByGlass && product.glassPrice && (
-                                                    <span className="ml-1 text-[10px] text-cream-400">/ly</span>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="font-mono text-sm font-bold text-green-950">
+                                                        ₫{formatPrice(displayPrice)}
+                                                    </span>
+                                                    {product.isByGlass && product.glassPrice && (
+                                                        <span className="text-[10px] text-cream-500">/ly</span>
+                                                    )}
+                                                </div>
+                                                {product.isByGlass && product.sellPrice && (
+                                                    <div className="text-[10px] text-wine-800 font-mono font-medium">
+                                                        Chai: ₫{formatPrice(product.sellPrice)}
+                                                    </div>
                                                 )}
                                             </div>
-                                            {/* Wine Guide quick button — only xl+ to avoid overlap on lg/1280px laptops */}
-                                            {(product.type === "WINE_BOTTLE" || product.type === "WINE_GLASS" || product.type === "WINE_TASTING") && (
-                                                <span className="hidden xl:contents">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            setWineGuideProduct(product)
-                                                        }}
-                                                        className="flex items-center gap-1 rounded-md bg-wine-50 border border-wine-200 px-1.5 py-0.5 text-wine-700 hover:bg-wine-100 hover:border-wine-400 transition-all"
-                                                        title="Wine Guide"
-                                                    >
-                                                        <BookOpen className="h-3 w-3" />
-                                                        <span className="text-[8px] font-bold">Guide</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            getWineRecommendations(product.id).then((recs) => {
-                                                                setRecommendations(recs)
-                                                                setRecoSourceName(product.name)
-                                                                setShowRecommendations(true)
-                                                            })
-                                                        }}
-                                                        className="flex items-center gap-1 rounded-md bg-green-50 border border-green-200 px-1.5 py-0.5 text-green-700 hover:bg-green-100 hover:border-green-400 transition-all"
-                                                        title="Gợi ý rượu tương tự"
-                                                    >
-                                                        <Sparkles className="h-3 w-3" />
-                                                        <span className="text-[8px] font-bold">Gợi ý</span>
-                                                    </button>
-                                                </span>
-                                            )}
-                                            {/* Food Pairing button — only xl+ to avoid overlap on lg/1280px laptops */}
-                                            {(product.type === "FOOD" || product.type === "DRINK" || product.type === "OTHER") && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        setFoodPairingProduct(product)
-                                                    }}
-                                                    className="hidden xl:flex items-center gap-1 rounded-md bg-wine-50 border border-wine-200 px-1.5 py-0.5 text-wine-700 hover:bg-wine-100 hover:border-wine-400 transition-all"
-                                                    title="Rượu hợp uống cùng"
-                                                >
-                                                    <Wine className="h-3 w-3" />
-                                                    <span className="text-[8px] font-bold">Rượu kèm</span>
-                                                </button>
-                                            )}
                                         </div>
                                     </button>
                                 )
@@ -1468,43 +1437,41 @@ export default function POSPage() {
                     )}
                 </div>
 
-                {/* ============ MOBILE: Floating Cart Bar ============ */}
-                {isMobile && cart.items.length > 0 && !mobileCartOpen && (
-                    <button
-                        onClick={() => setMobileCartOpen(true)}
-                        className="flex items-center justify-between border-t border-cream-300 bg-green-900 px-4 py-3 text-cream-50 active:scale-[0.99] transition-transform touch-target"
-                    >
-                        <div className="flex items-center gap-2">
-                            <ShoppingCart className="h-4 w-4" />
-                            <span className="text-sm font-bold">{cart.itemCount()} món</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-mono text-sm font-bold">₫{formatPrice(Math.round(cart.subtotal() * (1 + (taxRate.rate / 100))))}</span>
-                            <ChevronUp className="h-4 w-4" />
-                        </div>
-                    </button>
-                )}
+                {/* ============ MOBILE: Ergonomic Bottom Waiter Bar (Thumb Zone) ============ */}
+                <MobileWaiterBar
+                    orderType={cart.orderType}
+                    selectedTable={cart.selectedTable}
+                    itemCount={cart.itemCount()}
+                    totalAmount={Math.round(cart.subtotal() * (1 + (taxRate.rate / 100)))}
+                    activeOrderId={activeOrderId}
+                    existingOrderTotal={existingOrderData?.total}
+                    isSubmitting={isSubmitting}
+                    onOpenTableSelector={() => setTableModalOpen(true)}
+                    onOpenCart={() => setMobileCartOpen(true)}
+                    onSendToKitchen={sendToKitchen}
+                    onPayExistingOrder={() => {
+                        if (existingOrderData) setPayingOrder(existingOrderData)
+                    }}
+                />
             </div>
 
-            {/* ============ RIGHT: Cart ============ */}
+            {/* ============ RIGHT: Cart (Side-by-side on iPad/Desktop >= md, Slide Drawer on Phone < md) ============ */}
             <div className={cn(
                 "flex flex-col border-l border-cream-300 bg-cream-100",
-                "fixed inset-0 z-50 lg:relative lg:inset-auto lg:z-auto",
-                "w-full lg:w-[340px]",
+                "fixed inset-0 z-50 md:relative md:inset-auto md:z-auto",
+                "w-full md:w-[310px] lg:w-[340px] xl:w-[380px]",
                 "transition-transform duration-300 ease-out",
-                mobileCartOpen ? "translate-y-0" : "translate-y-full lg:translate-y-0"
+                mobileCartOpen ? "translate-y-0" : "translate-y-full md:translate-y-0"
             )}>
                 {/* Cart Header */}
                 <div className="flex items-center justify-between border-b border-cream-300 px-4 py-3">
                     <div className="flex items-center gap-2">
-                        {isMobile && (
-                            <button
-                                onClick={() => setMobileCartOpen(false)}
-                                className="flex h-8 w-8 items-center justify-center rounded-lg text-cream-400 hover:bg-cream-200 transition-all mr-1"
-                            >
-                                <ChevronDown className="h-5 w-5" />
-                            </button>
-                        )}
+                        <button
+                            onClick={() => setMobileCartOpen(false)}
+                            className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg text-cream-500 hover:bg-cream-200 transition-all mr-1"
+                        >
+                            <ChevronDown className="h-5 w-5" />
+                        </button>
                         <h2 className="font-display text-sm font-bold text-green-900">
                             Đơn hàng
                         </h2>
@@ -1664,10 +1631,15 @@ export default function POSPage() {
                                             <p className="font-mono text-[10px] text-cream-400">
                                                 ₫{formatPrice(item.unitPrice)} × {item.quantity}
                                             </p>
-                                            {item.notes && (
-                                                <p className="mt-0.5 text-[10px] text-wine-600 italic">
-                                                    {item.notes}
-                                                </p>
+                                            {(item.note || item.notes) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setServingNoteItem(item)}
+                                                    className="mt-1 flex items-center gap-1 rounded bg-cream-200/80 px-2 py-0.5 text-[10px] text-wine-800 font-medium italic hover:bg-cream-300 transition-colors w-fit text-left"
+                                                    title="Bấm để sửa yêu cầu phục vụ"
+                                                >
+                                                    <span>📝 {item.note || item.notes}</span>
+                                                </button>
                                             )}
                                         </div>
 
@@ -1681,7 +1653,7 @@ export default function POSPage() {
                                     <div className="mt-1.5 flex items-center gap-1">
                                         <button
                                             onClick={() => cart.updateQuantity(item.id, item.quantity - 1)}
-                                            className="rounded-md border border-cream-300 p-1 hover:bg-cream-200 transition-all"
+                                            className="rounded-md border border-cream-300 p-1 hover:bg-cream-200 transition-all touch-target"
                                         >
                                             <Minus className="h-3 w-3 text-cream-500" />
                                         </button>
@@ -1690,20 +1662,24 @@ export default function POSPage() {
                                         </span>
                                         <button
                                             onClick={() => cart.updateQuantity(item.id, item.quantity + 1)}
-                                            className="rounded-md border border-cream-300 p-1 hover:bg-cream-200 transition-all"
+                                            className="rounded-md border border-cream-300 p-1 hover:bg-cream-200 transition-all touch-target"
                                         >
                                             <Plus className="h-3 w-3 text-cream-500" />
                                         </button>
 
-                                        {/* Note button */}
+                                        {/* Quick Serving / Note button */}
                                         <button
-                                            onClick={() => {
-                                                setNoteItemId(item.id)
-                                                setNoteText(item.notes ?? "")
-                                            }}
-                                            className="ml-auto rounded-md p-1 text-cream-400 hover:text-green-700 hover:bg-cream-200 transition-all"
+                                            type="button"
+                                            onClick={() => setServingNoteItem(item)}
+                                            className={cn(
+                                                "ml-auto rounded-md p-1.5 transition-all touch-target",
+                                                (item.note || item.notes)
+                                                    ? "text-wine-700 bg-wine-50 hover:bg-wine-100 ring-1 ring-wine-300"
+                                                    : "text-cream-400 hover:text-green-700 hover:bg-cream-200"
+                                            )}
+                                            title="Yêu cầu phục vụ & ghi chú rượu"
                                         >
-                                            <MessageSquare className="h-3 w-3" />
+                                            <MessageSquare className="h-3.5 w-3.5" />
                                         </button>
 
                                         {/* Delete */}
@@ -1837,7 +1813,14 @@ export default function POSPage() {
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 px-4 pb-2">
                             <button
                                 onClick={() => {
-                                    if (cart.items.length === 0) { toast.error("Giỏ hàng trống"); return }
+                                    if (cart.items.length === 0) {
+                                        if (existingOrderData && activeOrderId) {
+                                            setPayingOrder(existingOrderData)
+                                            return
+                                        }
+                                        toast.error("Giỏ hàng trống")
+                                        return
+                                    }
                                     setCashReceived(0)
                                     setCashModalOpen(true)
                                 }}
@@ -1848,7 +1831,13 @@ export default function POSPage() {
                                 Tiền mặt
                             </button>
                             <button
-                                onClick={() => handleCheckout("CARD")}
+                                onClick={() => {
+                                    if (cart.items.length === 0 && existingOrderData && activeOrderId) {
+                                        setPayingOrder(existingOrderData)
+                                        return
+                                    }
+                                    handleCheckout("CARD")
+                                }}
                                 disabled={isSubmitting}
                                 className="flex flex-col items-center gap-1 rounded-xl border border-cream-300 bg-cream-100 py-2.5 text-[10px] font-medium text-cream-500 hover:border-green-600 hover:bg-green-50 hover:text-green-700 transition-all disabled:opacity-50"
                             >
@@ -1857,7 +1846,14 @@ export default function POSPage() {
                             </button>
                             <button
                                 onClick={async () => {
-                                    if (cart.items.length === 0) { toast.error("Giỏ hàng trống"); return }
+                                    if (cart.items.length === 0) {
+                                        if (existingOrderData && activeOrderId) {
+                                            setPayingOrder(existingOrderData)
+                                            return
+                                        }
+                                        toast.error("Giỏ hàng trống")
+                                        return
+                                    }
                                     setQrLoading(true)
                                     try {
                                         const config = await getBankConfig()
@@ -2122,7 +2118,7 @@ export default function POSPage() {
                                 className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-wine-700 hover:bg-wine-50 transition-all border-b border-cream-100"
                             >
                                 <BookOpen className="h-3.5 w-3.5" />
-                                Xem Wine Guide
+                                Sổ tay rượu vang
                             </button>
                         )}
                         <button
@@ -2135,9 +2131,9 @@ export default function POSPage() {
                             )}
                         >
                             {product86Ids.includes(contextMenu.product.id) ? (
-                                <>Mở lại — bỏ 86</>
+                                <>Mở bán lại món</>
                             ) : (
-                                <>Đánh dấu 86 — Hết</>
+                                <>Báo tạm hết món</>
                             )}
                         </button>
                     </div>
@@ -2177,26 +2173,23 @@ export default function POSPage() {
                 onPayOrder={(order) => setPayingOrder(order)}
             />
 
-            {/* Pay Existing Order Modal */}
+            {/* Cashier Counter Checkout Modal (Numpad + VietQR + Split Bill) */}
             {payingOrder && (
-                <PayExistingOrderModal
+                <CashierCheckoutModal
+                    open={!!payingOrder}
                     order={payingOrder}
+                    staffName={staff?.fullName ?? "Staff"}
                     onClose={() => setPayingOrder(null)}
-                    onPaid={() => {
-                        const paidOrd = payingOrder
+                    onPaidSuccess={(paidOrd) => {
                         setPayingOrder(null)
                         setExistingOrderData(null)
                         setActiveOrderId(null)
                         refreshFloorData()
-                        toast.success(`Đã thanh toán đơn ${paidOrd.orderNumber}`, {
-                            duration: 8000,
-                            action: {
-                                label: "In bill",
-                                onClick: () => setReceiptOrder(paidOrd),
-                            },
-                        })
+                        setReceiptOrder(paidOrd)
                     }}
-                    staffName={staff?.fullName ?? "Staff"}
+                    onSplitSuccess={() => {
+                        refreshFloorData()
+                    }}
                 />
             )}
 
@@ -2207,6 +2200,17 @@ export default function POSPage() {
                     onClose={() => setReceiptOrder(null)}
                 />
             )}
+
+            {/* Quick Serving & Modifiers Modal (Waiter Handheld) */}
+            <QuickServingModal
+                open={!!servingNoteItem}
+                onClose={() => setServingNoteItem(null)}
+                item={servingNoteItem}
+                onSaveNote={(itemId, note) => {
+                    cart.updateNote(itemId, note)
+                    toast.success("Đã lưu yêu cầu phục vụ")
+                }}
+            />
 
             {/* Open Tab Modal */}
             {openTabModal && (
@@ -2428,18 +2432,46 @@ export default function POSPage() {
                                 </div>
                             </div>
 
-                            {/* Custom Input */}
+                            {/* Custom Input & Numpad */}
                             <div>
-                                <p className="text-[10px] font-bold uppercase text-cream-400 mb-1.5">Hoặc nhập số tiền</p>
-                                <div className="relative">
+                                <div className="relative mb-2">
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cream-400 font-bold">₫</span>
                                     <input
                                         type="number"
                                         value={cashReceived || ""}
                                         onChange={(e) => setCashReceived(Number(e.target.value) || 0)}
                                         placeholder="Nhập số tiền khách đưa..."
-                                        className="w-full rounded-xl border-2 border-cream-200 bg-cream-50 py-3 pl-8 pr-4 font-mono text-lg font-bold text-green-900 placeholder:text-cream-300 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+                                        className="w-full rounded-xl border-2 border-cream-200 bg-cream-50 py-2.5 pl-8 pr-4 font-mono text-lg font-bold text-green-900 placeholder:text-cream-300 focus:border-green-500 focus:outline-hidden"
                                     />
+                                </div>
+                                <div className="grid grid-cols-3 gap-1.5">
+                                    {["1", "2", "3", "4", "5", "6", "7", "8", "9", "000", "0", "DEL"].map((key) => (
+                                        <button
+                                            key={key}
+                                            type="button"
+                                            onClick={() => {
+                                                if (key === "DEL") {
+                                                    const str = cashReceived.toString()
+                                                    setCashReceived(str.length > 1 ? Number(str.slice(0, -1)) : 0)
+                                                } else if (key === "000") {
+                                                    setCashReceived(prev => prev * 1000)
+                                                } else {
+                                                    const str = cashReceived === 0 ? key : `${cashReceived}${key}`
+                                                    setCashReceived(Number(str))
+                                                }
+                                            }}
+                                            className={cn(
+                                                "h-10 rounded-xl border font-mono text-sm font-bold transition-all active:scale-95 shadow-2xs touch-target",
+                                                key === "DEL"
+                                                    ? "border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
+                                                    : key === "000"
+                                                        ? "border-cream-300 bg-cream-200 text-green-900"
+                                                        : "border-cream-300 bg-white text-green-950 hover:bg-cream-100"
+                                            )}
+                                        >
+                                            {key === "DEL" ? "⌫" : key}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
 
@@ -2523,6 +2555,33 @@ export default function POSPage() {
                         </div>
 
                         <div className="overflow-y-auto flex-1 px-6 py-4 space-y-4">
+                            {/* Whole bottle sale option */}
+                            {bottleSelectorProduct.sellPrice > 0 && (
+                                <div className="rounded-xl border border-wine-200 bg-wine-50/70 p-3.5 flex items-center justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-wine-950">Bán nguyên chai</span>
+                                            <Badge className="bg-wine-700 text-white text-[9px] px-1.5 py-0 font-medium">Nguyên chai</Badge>
+                                        </div>
+                                        <p className="text-xs font-mono font-bold text-wine-800 mt-0.5">
+                                            ₫{formatPrice(bottleSelectorProduct.sellPrice)} / chai
+                                        </p>
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => {
+                                            cart.addItem(bottleSelectorProduct, { unit: "BOTTLE", unitPrice: bottleSelectorProduct.sellPrice })
+                                            toast.success(`+1 ${bottleSelectorProduct.name} (Nguyên chai)`, { duration: 2000 })
+                                            setShowBottleSelector(false)
+                                        }}
+                                        className="bg-wine-700 text-white hover:bg-wine-800 text-xs font-bold rounded-lg h-9 px-3.5 shadow-xs flex items-center gap-1.5"
+                                    >
+                                        <Plus className="h-4 w-4" />
+                                        <span>Bán cả chai</span>
+                                    </Button>
+                                </div>
+                            )}
+
                             {/* Opened Bottles */}
                             {openedBottles.length > 0 && (
                                 <div>

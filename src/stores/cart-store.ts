@@ -15,6 +15,7 @@ export type OrderItem = {
     quantity: number
     unitPrice: number
     note?: string
+    unit?: "GLASS" | "BOTTLE" | "PORTION"
     // Computed getters for compatibility
     productId?: string
     name?: string
@@ -29,7 +30,7 @@ export type CartState = {
     _hasHydrated: boolean
 
     // Actions
-    addItem: (product: Product) => void
+    addItem: (product: Product, options?: { unit?: "GLASS" | "BOTTLE"; unitPrice?: number; name?: string }) => void
     removeItem: (itemId: string) => void
     updateQuantity: (itemId: string, quantity: number) => void
     updateNote: (itemId: string, note: string) => void
@@ -48,22 +49,26 @@ export const useCartStore = create<CartState>()((set, get) => ({
     orderType: "DINE_IN",
     _hasHydrated: true,
 
-    addItem: (product: Product) => {
+    addItem: (product: Product, options?: { unit?: "GLASS" | "BOTTLE"; unitPrice?: number; name?: string }) => {
+        const unit = options?.unit ?? (product.isByGlass && product.glassPrice ? "GLASS" : "BOTTLE")
+        const price = options?.unitPrice ?? (unit === "GLASS" && product.glassPrice ? product.glassPrice : product.sellPrice)
         const { items } = get()
-        const existing = items.find((item) => item.product.id === product.id)
+        const existing = items.find((item) => {
+            const itemUnit = item.unit ?? (item.product.isByGlass && item.product.glassPrice ? "GLASS" : "BOTTLE")
+            return item.product.id === product.id && itemUnit === unit
+        })
 
         if (existing) {
             set({
                 items: items.map((item) =>
-                    item.product.id === product.id
+                    item === existing
                         ? { ...item, quantity: item.quantity + 1 }
                         : item
                 ),
             })
         } else {
-            const price = product.isByGlass && product.glassPrice
-                ? product.glassPrice
-                : product.sellPrice
+            const unitLabel = unit === "GLASS" ? "Ly" : "Chai"
+            const displayName = options?.name ?? (product.isByGlass ? `${product.name} (${unitLabel})` : product.name)
 
             set({
                 items: [
@@ -73,6 +78,10 @@ export const useCartStore = create<CartState>()((set, get) => ({
                         product,
                         quantity: 1,
                         unitPrice: price,
+                        unit,
+                        name: displayName,
+                        productId: product.id,
+                        price,
                     },
                 ],
             })
@@ -98,7 +107,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
     updateNote: (itemId: string, note: string) => {
         set({
             items: get().items.map((item) =>
-                item.id === itemId ? { ...item, note } : item
+                item.id === itemId ? { ...item, note, notes: note } : item
             ),
         })
     },

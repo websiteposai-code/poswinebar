@@ -48,18 +48,52 @@ export async function updateZone(
     }
 }
 
-export async function deleteZone(id: string) {
-    const hasTables = await prisma.floorTable.count({
-        where: { zoneId: id, isActive: true },
-    })
-    if (hasTables > 0) return { success: false, error: "Khu vực còn bàn, không thể xóa" }
-
+export async function deleteZone(id: string, cascade: boolean = false) {
     try {
-        await prisma.tableZone.update({ where: { id }, data: { isActive: false } })
+        // 1. Check if any table is currently occupied
+        const occupiedTables = await prisma.floorTable.findMany({
+            where: { zoneId: id, isActive: true, status: "OCCUPIED" },
+            select: { tableNumber: true },
+        })
+        if (occupiedTables.length > 0) {
+            const tableList = occupiedTables.map((t) => t.tableNumber).join(", ")
+            return {
+                success: false,
+                error: `Khu vực có ${occupiedTables.length} bàn đang phục vụ (${tableList}). Vui lòng thanh toán trước khi xóa.`,
+            }
+        }
+
+        // 2. Count active tables
+        const tableCount = await prisma.floorTable.count({
+            where: { zoneId: id, isActive: true },
+        })
+
+        if (tableCount > 0 && !cascade) {
+            return {
+                success: false,
+                requiresCascade: true,
+                tableCount,
+                error: `Khu vực có ${tableCount} bàn. Bạn có muốn xóa khu vực và tất cả bàn này không?`,
+            }
+        }
+
+        // 3. Deactivate tables and zone in transaction
+        await prisma.$transaction([
+            prisma.floorTable.updateMany({
+                where: { zoneId: id, isActive: true },
+                data: { isActive: false },
+            }),
+            prisma.tableZone.update({
+                where: { id },
+                data: { isActive: false },
+            }),
+        ])
+
         revalidatePath("/dashboard/tables")
-        return { success: true }
+        revalidatePath("/pos")
+        return { success: true, tableCount }
     } catch {
-        return { success: false, error: "Không tìm thấy" }
+        return { success: false, error: "Lỗi hệ thống khi xóa khu vực" }
     }
 }
 

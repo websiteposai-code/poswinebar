@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useMemo } from "react"
-import { Trash2, RefreshCw, Plus, Wine, AlertTriangle, Package, Layers, X, TrendingDown, DollarSign, Search, Filter, ArrowDownRight, Target, Clock, Percent, FileWarning, ShieldCheck, Droplets, Sparkles } from "lucide-react"
+import { Trash2, RefreshCw, Plus, Wine, AlertTriangle, Package, Layers, X, TrendingDown, DollarSign, Search, Filter, ArrowDownRight, Target, Clock, Percent, FileWarning, ShieldCheck, Droplets, GlassWater } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -31,7 +31,7 @@ const REASON_ICONS: Record<WasteReasonCategory, typeof Wine> = {
     OXIDATION: Clock,
     BREAKAGE: Trash2,
     SPILLAGE: Droplets,
-    TASTING: Sparkles,
+    TASTING: GlassWater,
     SPOILAGE: AlertTriangle,
     OTHER: Package,
 }

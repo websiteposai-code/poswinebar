@@ -17,7 +17,7 @@ import {
     ChefHat,
     Truck,
     Heart,
-    Sparkles,
+    Tag,
     BookOpenCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -27,18 +27,18 @@ import { usePrefetchStore } from "@/stores/prefetch-store"
 
 const navItems = [
     { label: "POS", href: "/pos", icon: LayoutGrid },
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Menu", href: "/dashboard/menu", icon: UtensilsCrossed },
+    { label: "Bảng điều khiển", href: "/dashboard", icon: LayoutDashboard },
+    { label: "Thực đơn", href: "/dashboard/menu", icon: UtensilsCrossed },
     { label: "Bếp", href: "/pos/kitchen", icon: ChefHat },
     { label: "Đơn hàng", href: "/pos/orders", icon: ClipboardList },
-    { label: "Bàn", href: "/dashboard/tables", icon: Armchair },
+    { label: "Bàn & Sơ đồ", href: "/dashboard/tables", icon: Armchair },
     { label: "Mua hàng", href: "/dashboard/procurement", icon: Truck },
     { label: "Kho", href: "/dashboard/inventory", icon: Package },
     { label: "Nhân sự", href: "/dashboard/staff", icon: Users },
     { label: "Khách hàng", href: "/dashboard/customers", icon: Heart },
-    { label: "Khuyến mãi", href: "/dashboard/promotions", icon: Sparkles },
-    { label: "Wine Guide", href: "/dashboard/wine-guide", icon: BookOpenCheck },
-    { label: "Lãi Lỗ", href: "/dashboard/reports", icon: BarChart3 },
+    { label: "Khuyến mãi", href: "/dashboard/promotions", icon: Tag },
+    { label: "Sổ tay rượu", href: "/dashboard/wine-guide", icon: BookOpenCheck },
+    { label: "Báo cáo tài chính", href: "/dashboard/reports", icon: BarChart3 },
 ]
 
 const bottomItems = [

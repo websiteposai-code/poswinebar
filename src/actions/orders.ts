@@ -24,6 +24,7 @@ export type Order = {
         subtotal: number
         notes: string | null
         status: string
+        productType?: string
     }>
     subtotal: number
     discount: number
@@ -450,7 +451,7 @@ export async function getActiveOrders() {
     const orders = await prisma.order.findMany({
         where: { status: { in: ["OPEN", "PENDING", "PREPARING", "READY", "SERVED"] } },
         include: {
-            items: { include: { product: { select: { name: true } } } },
+            items: { include: { product: { select: { name: true, type: true } } } },
         },
         orderBy: { createdAt: "desc" },
     })
